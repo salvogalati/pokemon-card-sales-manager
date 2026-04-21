@@ -15,10 +15,13 @@ QPushButton {
     font-size: 16px;
 }
 QPushButton:hover {
-    background-color: #2980b9;
+    background-color: #0575c0;
 }
 QPushButton:pressed {
     background-color: #1f618d;
+}
+QPushButton:disabled {
+    background-color: #66747d;
 }
 QLineEdit {
     border: 2px solid #bdc3c7;

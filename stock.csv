@@ -1,16 +1,16 @@
-id,nome_completo,prezzo_eur,quantita_stock
-SWSH039,Pikachu V Full Art,12.50,3
-BUS-20,Charizard GX Shiny,45.00,1
-XY122,Blastoise EX Holo,18.75,5
-SWSH102,Venusaur VMAX Rainbow,22.30,2
-SLG-78,Mewtwo GX Secret Rare,39.99,4
-FST-253,Gengar V Alt Art,27.50,1
-EVS-218,Rayquaza VMAX Hyper Rare,55.00,2
-SM158,Lucario EX Promo,9.90,6
-SWSH142,Snorlax VMAX,14.20,3
-SM233,Eevee GX Full Art,11.00,7
-BRS-123,Dragonite VSTAR,19.80,2
-EVS-215,Umbreon VMAX Alt Art,120.00,1
-BRS-184,Arceus VSTAR Gold,65.00,2
-SV-56,Greninja GX Shiny Vault,13.60,3
-BST-155,Tyranitar V Alt Art,28.40,2
+barcode,espansione,nome_completo,prezzo_eur,quantita_stock
+A7K3M9Q1,SWSH039,Pikachu V Full Art,12.50,3
+K4M8T2Z9,BUS-20,Charizard GX Shiny,45.00,1
+PR9X2L7B,XY122,Blastoise EX Holo,18.75,5
+VX8Q1M4C,SWSH102,Venusaur VMAX Rainbow,22.30,2
+MN3K9P6T,SLG-78,Mewtwo GX Secret Rare,39.99,4
+Z7B2X8Q1,FST-253,Gengar V Alt Art,27.50,1
+RT5K9M2X,EVS-218,Rayquaza VMAX Hyper Rare,55.00,2
+LC8P3V7Q,SM158,Lucario EX Promo,9.90,6
+SN6X2K9M,SWSH142,Snorlax VMAX,14.20,3
+EE7Q9B2L,SM233,Eevee GX Full Art,11.00,7
+DR4M8X1T,BRS-123,Dragonite VSTAR,19.80,2
+UM9K2P7X,EVS-215,Umbreon VMAX Alt Art,120.00,1
+AR7Q1M8V,BRS-184,Arceus VSTAR Gold,65.00,2
+GR2X9K5B,SV-56,Greninja GX Shiny Vault,13.60,3
+TY8M3Q7P,BST-155,Tyranitar V Alt Art,28.40,2

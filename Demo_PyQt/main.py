@@ -1,5 +1,6 @@
 import sys, re
 from PyQt5 import QtWidgets, uic, QtSql, QtGui
+from PyQt5 import QtCore
 from PyQt5.QtCore import Qt
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -33,15 +34,18 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.button_svuota_carrello.clicked.connect(self.svuota_carrello)
 
-        self.tableWidget_carrello.setColumnCount(5)
-        self.tableWidget_carrello.setHorizontalHeaderLabels(["ID", "Nome", "Prezzo stock", "Prezzo di vendita", " "])
-        self.tableWidget_carrello.itemChanged.connect(self.valida_prezzo)
-        self.tableWidget_carrello.itemChanged.connect(self.salva_valore)
+        self.tableWidget_carrello.setColumnCount(6)
+        self.tableWidget_carrello.setHorizontalHeaderLabels(["Barcode","Espansione", "Nome", "Prezzo stock", "Prezzo di vendita", " "])
+        self.tableWidget_carrello.setColumnHidden(0, True)
+        #self.tableWidget_carrello.itemChanged.connect(self.valida_prezzo)
+        #self.tableWidget_carrello.itemChanged.connect(self.salva_valore)
         self._old_value = {}
 
         #self.button_aggiungi_carta.clicked.connect(self.aggiungi_al_carrello)
 
         self.sconto_input.textChanged.connect(self.applica_sconto)
+        self.button_concludi_vendita.clicked.connect(self.concludi_vendita)
+
 
     def filtra_tabella(self, testo):
         if not testo:
@@ -84,16 +88,17 @@ class MainWindow(QtWidgets.QMainWindow):
 
         row = index.row()
 
-        id_ = self.model.data(self.model.index(row, 0))
-        nome = self.model.data(self.model.index(row, 1))
-        prezzo = self.model.data(self.model.index(row, 2))
-        stock = self.model.data(self.model.index(row, 3))
+        barcode = self.model.data(self.model.index(row, 0))
+        espansione = self.model.data(self.model.index(row, 1))
+        nome = self.model.data(self.model.index(row, 2))
+        prezzo = self.model.data(self.model.index(row, 3))
+        stock = self.model.data(self.model.index(row, 4))
         stock_disponibile = int(stock)
 
         quantita_nel_carrello = 0
 
         for i in range(self.tableWidget_carrello.rowCount()):
-            if self.tableWidget_carrello.item(i, 0).text() == str(id_):
+            if self.tableWidget_carrello.item(i, 0).text() == str(barcode):
                 quantita_nel_carrello += 1
 
         if quantita_nel_carrello >= stock_disponibile:
@@ -109,13 +114,13 @@ class MainWindow(QtWidgets.QMainWindow):
         # aggiungi nuova riga
         row_pos = self.tableWidget_carrello.rowCount()
         self.tableWidget_carrello.insertRow(row_pos)
-
-        id_item = QtWidgets.QTableWidgetItem(str(id_))
+        barcode_item = QtWidgets.QTableWidgetItem(str(barcode))
+        espansione_item = QtWidgets.QTableWidgetItem(str(espansione))
         nome_item = QtWidgets.QTableWidgetItem(str(nome))
         prezzo_item = QtWidgets.QTableWidgetItem(str(prezzo))
         prezzo_vendita_item = QtWidgets.QTableWidgetItem(str(prezzo))
         # ID NON editabile
-        id_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+        barcode_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
 
         # Nome NON editabile
         nome_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
@@ -123,10 +128,11 @@ class MainWindow(QtWidgets.QMainWindow):
         # Prezzo editabile
         #prezzo_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable)
 
-        self.tableWidget_carrello.setItem(row_pos, 0, id_item)
-        self.tableWidget_carrello.setItem(row_pos, 1, nome_item)
-        self.tableWidget_carrello.setItem(row_pos, 2, prezzo_item)
-        self.tableWidget_carrello.setItem(row_pos, 3, prezzo_vendita_item)
+        self.tableWidget_carrello.setItem(row_pos, 0, barcode_item)
+        self.tableWidget_carrello.setItem(row_pos, 1, espansione_item)
+        self.tableWidget_carrello.setItem(row_pos, 2, nome_item)
+        self.tableWidget_carrello.setItem(row_pos, 3, prezzo_item)
+        self.tableWidget_carrello.setItem(row_pos, 4, prezzo_vendita_item)
 
         # ✔️ QUI va il bottone X
         btn = QtWidgets.QPushButton("")
@@ -134,7 +140,7 @@ class MainWindow(QtWidgets.QMainWindow):
         btn.setToolTip("Rimuovi dal carrello")
         btn.clicked.connect(self.rimuovi_riga_button)
 
-        self.tableWidget_carrello.setCellWidget(row_pos, 4, btn)
+        self.tableWidget_carrello.setCellWidget(row_pos, 5, btn)
 
         self.aggiorna_totale()
         self.aggiorna_stock_visivo()
@@ -165,7 +171,7 @@ class MainWindow(QtWidgets.QMainWindow):
         totale = 0.0
 
         for row in range(self.tableWidget_carrello.rowCount()):
-            item = self.tableWidget_carrello.item(row, 2)  # colonna prezzo
+            item = self.tableWidget_carrello.item(row, 4)  # colonna prezzo
             if item is not None:
                 try:
                     prezzo = float(item.text())
@@ -178,9 +184,11 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.tableWidget_carrello.rowCount() > 0:
             self.button_svuota_carrello.setEnabled(True)
             self.sconto_input.setEnabled(True)
+            self.button_concludi_vendita.setEnabled(True)
         else:
             self.button_svuota_carrello.setEnabled(False)
             self.sconto_input.setEnabled(False)
+            self.button_concludi_vendita.setEnabled(False)
 
         if self.tableWidget_carrello.rowCount() > 0:    
             self.applica_sconto(self.sconto_input.text())
@@ -198,8 +206,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.label_totale_dapagare.setText(f"{totale_scontato:.2f} €")
         
         for row in range(self.tableWidget_carrello.rowCount()):
-            prezzo_item = self.tableWidget_carrello.item(row, 2)  # colonna prezzo stock
-            prezzo_scontato_item = self.tableWidget_carrello.item(row, 3)
+            prezzo_item = self.tableWidget_carrello.item(row, 3)  # colonna prezzo stock
+            prezzo_scontato_item = self.tableWidget_carrello.item(row, 4)
             if prezzo_item is not None and prezzo_scontato_item is not None:
                 try:
                     prezzo = float(prezzo_item.text())
@@ -246,11 +254,79 @@ class MainWindow(QtWidgets.QMainWindow):
             # aggiorna SOLO UI
             self.model.setData(self.model.index(row, 3), stock_visibile)
 
+    def concludi_vendita(self):
+        if self.tableWidget_carrello.rowCount() == 0:
+            return
+
+
+        # 🔒 inizio transazione
+        self.db.transaction()
+
+        try:
+            for row in range(self.tableWidget_carrello.rowCount()):
+                id_ = self.tableWidget_carrello.item(row, 0).text()
+                nome = self.tableWidget_carrello.item(row, 1).text()
+                prezzo_stock = float(self.tableWidget_carrello.item(row, 2).text())
+                prezzo_vendita = float(self.tableWidget_carrello.item(row, 3).text())
+                sell_date = QtCore.QDateTime.currentDateTime().toString("yyyy-MM-dd HH:mm:ss")
+
+                # INSERT vendita
+                insert_query = QtSql.QSqlQuery()
+                insert_query.prepare("""
+                    INSERT INTO sell (id_stock, nome, prezzo_stock, prezzo_vendita, sell_date)
+                    VALUES (:id, :nome, :ps, :pv, :date)
+                """)
+
+                insert_query.bindValue(":id", id_)
+                insert_query.bindValue(":nome", nome)
+                insert_query.bindValue(":ps", prezzo_stock)
+                insert_query.bindValue(":pv", prezzo_vendita)
+                insert_query.bindValue(":date", sell_date)
+                if not insert_query.exec_():
+                    raise Exception(insert_query.lastError().text())
+
+                # UPDATE stock
+                update_query = QtSql.QSqlQuery()
+                update_query.prepare("UPDATE stock SET quantita_stock = quantita_stock - 1 WHERE id = ?")
+                update_query.addBindValue(id_)
+                if not update_query.exec_():
+                    raise Exception(update_query.lastError().text())
+
+            # ✅ commit UNA SOLA VOLTA
+            self.db.commit()
+
+        except Exception as e:
+            # ❌ rollback totale
+            self.db.rollback()
+
+            msg = self.createMessageBox(
+                "Errore",
+                f"Errore durante la vendita:\n{str(e)}",
+                QtWidgets.QMessageBox.Critical
+            )
+            msg.exec_()
+            import traceback
+            traceback.print_exc()
+            return
+
+        # 🔄 refresh dati
+        self.model.select()
+
+        msg = self.createMessageBox(
+            "Vendita conclusa",
+            "La vendita è stata registrata con successo!",
+            QtWidgets.QMessageBox.Information,
+        )
+        msg.exec_()
+
+        self.svuota_carrello()
+
     def createMessageBox(self, title, text, icon=QtWidgets.QMessageBox.Information , buttons=[]):
         msg = QtWidgets.QMessageBox()
         msg.setWindowTitle(title)
         msg.setText(text)
         msg.setIcon(icon)
+        msg.setWindowIcon(QtGui.QIcon("icons/logo_kingdom_cards.png"))
         for button in buttons:
             msg.addButton(button)
         return msg
