@@ -1,16 +1,18 @@
-barcode,espansione,nome_completo,prezzo_eur,quantita_stock
-A7K3M9Q1,SWSH039,Pikachu V Full Art,12.50,3
-K4M8T2Z9,BUS-20,Charizard GX Shiny,45.00,1
-PR9X2L7B,XY122,Blastoise EX Holo,18.75,5
-VX8Q1M4C,SWSH102,Venusaur VMAX Rainbow,22.30,2
-MN3K9P6T,SLG-78,Mewtwo GX Secret Rare,39.99,4
-Z7B2X8Q1,FST-253,Gengar V Alt Art,27.50,1
-RT5K9M2X,EVS-218,Rayquaza VMAX Hyper Rare,55.00,2
-LC8P3V7Q,SM158,Lucario EX Promo,9.90,6
-SN6X2K9M,SWSH142,Snorlax VMAX,14.20,3
-EE7Q9B2L,SM233,Eevee GX Full Art,11.00,7
-DR4M8X1T,BRS-123,Dragonite VSTAR,19.80,2
-UM9K2P7X,EVS-215,Umbreon VMAX Alt Art,120.00,1
-AR7Q1M8V,BRS-184,Arceus VSTAR Gold,65.00,2
-GR2X9K5B,SV-56,Greninja GX Shiny Vault,13.60,3
-TY8M3Q7P,BST-155,Tyranitar V Alt Art,28.40,2
+
+barcode,espansione,nome,prezzo,quantita_stock,condizione,prezzo_acquisto
+PIKA-SWS-GO-2B1AC4,SWSH039,Pikachu V Full Art,12.5,3,Good,10.23
+CHAR-BUS-PL-2EAFE2,BUS-20,Charizard GX Shiny,45.0,1,Played,36.82
+BLAS-XY1-NE-704B67,XY122,Blastoise EX Holo,18.75,5,Near Mint,15.34
+VENU-SWS-PL-D47DEE,SWSH102,Venusaur VMAX Rainbow,22.3,2,Played,18.25
+MEWT-SLG-EX-82C58C,SLG-78,Mewtwo GX Secret Rare,39.99,4,Excellent,32.72
+GENG-FST-MI-C992C6,FST-253,Gengar V Alt Art,27.5,1,Mint,22.5
+RAYQ-EVS-NE-8804B1,EVS-218,Rayquaza VMAX Hyper Rare,55.0,2,Near Mint,45.0
+LUCA-SM1-NE-0B853F,SM158,Lucario EX Promo,9.9,6,Near Mint,8.1
+SNOR-SWS-GO-9A44B1,SWSH142,Snorlax VMAX,14.2,3,Good,11.62
+EEVE-SM2-GO-4F504D,SM233,Eevee GX Full Art,11.0,7,Good,9.0
+DRAG-BRS-PL-472B6A,BRS-123,Dragonite VSTAR,19.8,2,Played,16.2
+UMBR-EVS-PL-8F38C0,EVS-215,Umbreon VMAX Alt Art,120.0,1,Played,98.18
+ARCE-BRS-GO-CC50EB,BRS-184,Arceus VSTAR Gold,65.0,2,Good,53.18
+GREN-SV5-EX-FC50D6,SV-56,Greninja GX Shiny Vault,13.6,3,Excellent,11.13
+TYRA-BST-GO-461FE3,BST-155,Tyranitar V Alt Art,28.4,2,Good,23.24
+
