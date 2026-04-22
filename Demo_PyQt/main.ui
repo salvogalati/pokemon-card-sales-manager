@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1084</width>
-    <height>712</height>
+    <width>692</width>
+    <height>473</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,7 +27,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -256,10 +256,567 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_2">
+      <widget class="QWidget" name="tabMagazzino">
        <attribute name="title">
         <string>Magazzino</string>
        </attribute>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="0" column="0">
+         <layout class="QVBoxLayout" name="verticalLayout_21">
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="label_3">
+            <property name="maximumSize">
+             <size>
+              <width>270</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>20</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img height=&quot;28&quot; src=&quot;:/icons/icons-filter.png&quot;/&gt; Filter&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_10">
+            <item>
+             <widget class="QLabel" name="label_4">
+              <property name="maximumSize">
+               <size>
+                <width>270</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>11</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>Nome</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="lineEdit_2">
+              <property name="maximumSize">
+               <size>
+                <width>270</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QLineEdit {
+    border: 1px solid gray;
+    border-radius: 10px;
+    padding: 5px;
+}</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_9">
+            <item>
+             <widget class="QLabel" name="label_5">
+              <property name="maximumSize">
+               <size>
+                <width>270</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>11</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>Espansione</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="lineEditMagazzinoFiltroEspansione">
+              <property name="maximumSize">
+               <size>
+                <width>270</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QLineEdit {
+    border: 1px solid gray;
+    border-radius: 10px;
+    padding: 5px;
+}</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_8">
+            <item>
+             <widget class="QLabel" name="label_6">
+              <property name="maximumSize">
+               <size>
+                <width>270</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>11</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>Condizione</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBoxCondizione">
+              <property name="maximumSize">
+               <size>
+                <width>270</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QComboBox {
+    border: 1px solid gray;
+    border-radius: 10px;
+    padding: 5px 30px 5px 10px; /* spazio per la freccia */
+    background-color: white;
+}
+
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 15px;
+
+    border-left-width: 1px;
+    border-left-color: darkgray;
+    border-left-style: solid; /* just a single line */
+    border-top-right-radius: 3px; /* same radius as the QComboBox */
+    border-bottom-right-radius: 3px;
+}
+
+QSpinBox::drop:hover {
+    background: rgb(85, 170, 255)
+}
+
+QComboBox::down-arrow {
+    image: url(C:/Users/Salvo/Documents/Coding/pokemon-card-sales-manager/Demo_PyQt/icons/icons-arrow-combox.png);
+    width: 10px;
+    height: 10px;
+}
+
+QComboBox QAbstractItemView {
+    border: 2px solid darkgray;
+    background: white;
+    selection-background-color: lightgray;
+    selection-color: black;
+}</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_7">
+            <item>
+             <widget class="QLabel" name="label_7">
+              <property name="maximumSize">
+               <size>
+                <width>270</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>11</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>Quantità</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="spinBoxMagazzinoQty">
+              <property name="maximumSize">
+               <size>
+                <width>270</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QSpinBox {
+    border: 1px solid gray;
+    border-radius: 10px;
+    padding: 5px 25px 5px 5px; /* spazio per frecce */
+    background: white;
+}
+
+QSpinBox::up-button {
+    subcontrol-origin: border;
+    subcontrol-position: top right;
+    width: 20px;
+    border-left: 1px solid gray;
+}
+
+QSpinBox::up-button:hover {
+    background: rgb(85, 170, 255)
+}
+
+QSpinBox::down-button:hover {
+    background: rgb(85, 170, 255)
+}
+
+QSpinBox::down-button {
+    subcontrol-origin: border;
+    subcontrol-position: bottom right;
+    width: 20px;
+    border-left: 1px solid gray;
+}
+
+QSpinBox::down-arrow {
+    image: url(C:/Users/Salvo/Documents/Coding/pokemon-card-sales-manager/Demo_PyQt/icons/icons-arrow-combox.png);
+    width: 10px;
+    height: 10px;
+}
+
+QSpinBox::up-arrow {
+    image: url(C:/Users/Salvo/Documents/Coding/pokemon-card-sales-manager/Demo_PyQt/icons/icons-arrow-up.png);
+    width: 10px;
+    height: 10px;
+}</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_6">
+            <item>
+             <widget class="QSplitter" name="splitter_6">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <widget class="QLabel" name="label_8">
+               <property name="maximumSize">
+                <size>
+                 <width>120</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>11</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>Prezzo min</string>
+               </property>
+              </widget>
+              <widget class="QLabel" name="label_9">
+               <property name="maximumSize">
+                <size>
+                 <width>120</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>11</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>Prezzo max</string>
+               </property>
+              </widget>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSplitter" name="splitter_5">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <widget class="QSplitter" name="splitter_7">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <widget class="QDoubleSpinBox" name="doubleSpinBoxMagazzinoPrezzoMin">
+                <property name="maximumSize">
+                 <size>
+                  <width>120</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QDoubleSpinBox {
+    border: 1px solid gray;
+    border-radius: 10px;
+    padding: 5px 25px 5px 5px; /* spazio per frecce */
+    background: white;
+}
+
+QDoubleSpinBox::up-button {
+    subcontrol-origin: border;
+    subcontrol-position: top right;
+    width: 20px;
+    border-left: 1px solid gray;
+}
+
+QDoubleSpinBox::up-button:hover {
+    background: rgb(85, 170, 255)
+}
+
+QDoubleSpinBox::down-button:hover {
+    background: rgb(85, 170, 255)
+}
+
+QDoubleSpinBox::down-button {
+    subcontrol-origin: border;
+    subcontrol-position: bottom right;
+    width: 20px;
+    border-left: 1px solid gray;
+}
+
+QDoubleSpinBox::down-arrow {
+    image: url(C:/Users/Salvo/Documents/Coding/pokemon-card-sales-manager/Demo_PyQt/icons/icons-arrow-combox.png);
+    width: 10px;
+    height: 10px;
+}
+
+QDoubleSpinBox::up-arrow {
+    image: url(C:/Users/Salvo/Documents/Coding/pokemon-card-sales-manager/Demo_PyQt/icons/icons-arrow-up.png);
+    width: 10px;
+    height: 10px;
+}</string>
+                </property>
+               </widget>
+               <widget class="QDoubleSpinBox" name="doubleSpinBoxMagazzinoPrezzoMax">
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QDoubleSpinBox {
+    border: 1px solid gray;
+    border-radius: 10px;
+    padding: 5px 25px 5px 5px; /* spazio per frecce */
+    background: white;
+}
+
+QDoubleSpinBox::up-button {
+    subcontrol-origin: border;
+    subcontrol-position: top right;
+    width: 20px;
+    border-left: 1px solid gray;
+}
+
+QDoubleSpinBox::up-button:hover {
+    background: rgb(85, 170, 255)
+}
+
+QDoubleSpinBox::down-button:hover {
+    background: rgb(85, 170, 255)
+}
+
+QDoubleSpinBox::down-button {
+    subcontrol-origin: border;
+    subcontrol-position: bottom right;
+    width: 20px;
+    border-left: 1px solid gray;
+}
+
+QDoubleSpinBox::down-arrow {
+    image: url(C:/Users/Salvo/Documents/Coding/pokemon-card-sales-manager/Demo_PyQt/icons/icons-arrow-combox.png);
+    width: 10px;
+    height: 10px;
+}
+
+QDoubleSpinBox::up-arrow {
+    image: url(C:/Users/Salvo/Documents/Coding/pokemon-card-sales-manager/Demo_PyQt/icons/icons-arrow-up.png);
+    width: 10px;
+    height: 10px;
+}</string>
+                </property>
+                <property name="maximum">
+                 <double>100000.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>100000.000000000000000</double>
+                </property>
+               </widget>
+              </widget>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QSplitter" name="splitter_4">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <widget class="QPushButton" name="button_applica_filtro">
+             <property name="maximumSize">
+              <size>
+               <width>120</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Applica</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="button_resetta_filtro">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>120</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Resetta</string>
+             </property>
+            </widget>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item row="0" column="2">
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QPushButton" name="buttonMagazzinoSave">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>180</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Salva modifiche</string>
+              </property>
+              <property name="default">
+               <bool>false</bool>
+              </property>
+              <property name="flat">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="buttonMagazzinoRipristina">
+              <property name="text">
+               <string>Ripristina</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>31</width>
+                <height>17</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QTableView" name="tableViewMagazzino">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>520</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="selectionMode">
+             <enum>QAbstractItemView::SingleSelection</enum>
+            </property>
+            <property name="sortingEnabled">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="0" column="1">
+         <spacer name="horizontalSpacer_5">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Minimum</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>15</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
@@ -270,13 +827,15 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1084</width>
-     <height>26</height>
+     <width>692</width>
+     <height>18</height>
     </rect>
    </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources/>
+ <resources>
+  <include location="icons/icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

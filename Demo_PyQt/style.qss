@@ -66,3 +66,15 @@ QTabBar::tab:selected {
 QMessageBox {
     background-color: #f5f5f5;
 }
+QTableView {
+    font-size: 25px;
+}
+
+QTableView::item {
+    height: 40px;
+}
+
+QTableView QLineEdit {
+    font-size: 25px;
+    padding: 2px;
+}

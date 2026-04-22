@@ -2,6 +2,7 @@ import sys, re
 from PyQt5 import QtWidgets, uic, QtSql, QtGui
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt
+from tabs.magazzino import MagazzinoTabController
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -45,6 +46,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.sconto_input.textChanged.connect(self.applica_sconto)
         self.button_concludi_vendita.clicked.connect(self.concludi_vendita)
+
+        self.tab_magazzino_controller = MagazzinoTabController(self)
 
 
     def filtra_tabella(self, testo):
@@ -264,20 +267,22 @@ class MainWindow(QtWidgets.QMainWindow):
 
         try:
             for row in range(self.tableWidget_carrello.rowCount()):
-                id_ = self.tableWidget_carrello.item(row, 0).text()
-                nome = self.tableWidget_carrello.item(row, 1).text()
-                prezzo_stock = float(self.tableWidget_carrello.item(row, 2).text())
-                prezzo_vendita = float(self.tableWidget_carrello.item(row, 3).text())
+                barcode = self.tableWidget_carrello.item(row, 0).text()
+                espansione = self.tableWidget_carrello.item(row, 1).text()
+                nome = self.tableWidget_carrello.item(row, 2).text()
+                prezzo_stock = float(self.tableWidget_carrello.item(row, 3).text())
+                prezzo_vendita = float(self.tableWidget_carrello.item(row, 4).text())
                 sell_date = QtCore.QDateTime.currentDateTime().toString("yyyy-MM-dd HH:mm:ss")
 
                 # INSERT vendita
                 insert_query = QtSql.QSqlQuery()
                 insert_query.prepare("""
-                    INSERT INTO sell (id_stock, nome, prezzo_stock, prezzo_vendita, sell_date)
-                    VALUES (:id, :nome, :ps, :pv, :date)
+                    INSERT INTO sell (barcode, espansione, nome, prezzo_stock, prezzo_vendita, sell_date)
+                    VALUES (:barcode, :espansione, :nome, :ps, :pv, :date)
                 """)
 
-                insert_query.bindValue(":id", id_)
+                insert_query.bindValue(":barcode", barcode)
+                insert_query.bindValue(":espansione", espansione)
                 insert_query.bindValue(":nome", nome)
                 insert_query.bindValue(":ps", prezzo_stock)
                 insert_query.bindValue(":pv", prezzo_vendita)
@@ -287,8 +292,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 # UPDATE stock
                 update_query = QtSql.QSqlQuery()
-                update_query.prepare("UPDATE stock SET quantita_stock = quantita_stock - 1 WHERE id = ?")
-                update_query.addBindValue(id_)
+                update_query.prepare("UPDATE stock SET quantita_stock = quantita_stock - 1 WHERE barcode = ?")
+                update_query.addBindValue(barcode)
                 if not update_query.exec_():
                     raise Exception(update_query.lastError().text())
 
