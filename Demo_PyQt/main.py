@@ -3,6 +3,7 @@ from PyQt5 import QtWidgets, uic, QtSql, QtGui
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt
 from tabs.magazzino import MagazzinoTabController
+from tabs.acquisti import AcquistiTabController
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -12,15 +13,22 @@ class MainWindow(QtWidgets.QMainWindow):
         uic.loadUi("main.ui", self)
         
         # Connessione DB
-        self.db = QtSql.QSqlDatabase.addDatabase("QSQLITE")
-        self.db.setDatabaseName("../pokemon.db")
+        self.db_main = QtSql.QSqlDatabase.addDatabase("QSQLITE", "main_connection")
+        self.db_main.setDatabaseName("../pokemon.db")
+        self.db_main.open()
 
-        if not self.db.open():
-            print("Errore apertura DB", self.db.lastError().text())
+        self.db_cards = QtSql.QSqlDatabase.addDatabase("QSQLITE", "card_db_connection")
+        self.db_cards.setDatabaseName("../card_database.db")
+        self.db_cards.open()
+
+        if not self.db_main.isOpen() or not self.db_cards.isOpen():
+            print("Errore apertura DB", self.db_main.lastError().text())
+            print("Errore apertura DB cards", self.db_cards.lastError().text())
             return
 
         # Modello
-        self.model = QtSql.QSqlTableModel(self)
+        db = QtSql.QSqlDatabase.database("main_connection")
+        self.model = QtSql.QSqlTableModel(self, db)
         self.model.setTable("stock")  # <-- cambia con la tua tabella
         self.model.select()
 
@@ -48,6 +56,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.button_concludi_vendita.clicked.connect(self.concludi_vendita)
 
         self.tab_magazzino_controller = MagazzinoTabController(self)
+        self.tabAcquisti = AcquistiTabController(self)
 
 
     def filtra_tabella(self, testo):
