@@ -5,7 +5,7 @@ from PyQt5 import QtWidgets, QtGui
 from PyQt5 import QtSql
 from PyQt5.QtWidgets import QMessageBox, QWidget, QVBoxLayout, QTableView
 from PyQt5.QtSql import QSqlQuery, QSqlTableModel
-from .models.magazzino_model import MagazzinoModel
+from .models.magazzino_model import MagazzinoModel, YesNoDelegate
 from PyQt5.QtWidgets import QStyledItemDelegate, QSpinBox
 from icons import icons_rc
 import shutil
@@ -34,9 +34,13 @@ class MagazzinoTabController:
         self.model_magazzino.setEditStrategy(QSqlTableModel.OnManualSubmit)
         self.model_magazzino.setTable("stock")
         self.model_magazzino.select()
-        self.ui.tableViewMagazzino.setModel(self.model_magazzino)
-        self.ui.tableViewMagazzino.setItemDelegateForColumn(4, SpinBoxDelegate())
 
+        self.ui.tableViewMagazzino.setModel(self.model_magazzino)
+        
+    
+        delegate = YesNoDelegate(self.ui.tableViewMagazzino)
+        #self.ui.tableViewMagazzino.setItemDelegateForColumn(self.model_magazzino.fieldIndex("prezzo"), SpinBoxDelegate())
+        self.ui.tableViewMagazzino.setItemDelegateForColumn(self.model_magazzino.fieldIndex("da_prezzare"), delegate)
         # query = QSqlQuery("SELECT DISTINCT condizione FROM stock")
 
         # unique_values_condizione = []
@@ -59,7 +63,7 @@ class MagazzinoTabController:
         filtro_prezzo_max = self.ui.doubleSpinBoxMagazzinoPrezzoMax.value()
 
         filtro_sql = self.check_filtri(filtro_nome, filtro_espansione, filtro_qty, filtro_condizione, filtro_prezzo_min, filtro_prezzo_max)
-        #print(filtro_sql)
+        #☻print(filtro_sql)
         self.model_magazzino.setFilter(filtro_sql)
 
     @staticmethod
@@ -71,7 +75,7 @@ class MagazzinoTabController:
 
         if filtro_nome.strip():
             nome = escape_sql(filtro_nome)
-            condizioni.append(f"nome_completo LIKE '%{nome}%'")
+            condizioni.append(f"nome LIKE '%{nome}%'")
 
         if filtro_espansione.strip():
             esp = escape_sql(filtro_espansione)
@@ -85,10 +89,10 @@ class MagazzinoTabController:
             condizioni.append(f"condizione = '{cond}'")
 
         if filtro_prezzo_min > 0:
-            condizioni.append(f"prezzo_eur >= {filtro_prezzo_min}")
+            condizioni.append(f"prezzo >= {filtro_prezzo_min}")
 
         if filtro_prezzo_max > 0:
-            condizioni.append(f"prezzo_eur <= {filtro_prezzo_max}")
+            condizioni.append(f"prezzo <= {filtro_prezzo_max}")
 
         return " AND ".join(condizioni)
     
