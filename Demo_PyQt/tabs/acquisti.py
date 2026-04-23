@@ -3,7 +3,7 @@ from datetime import datetime
 from PyQt5 import QtWidgets, QtGui
 from PyQt5 import QtSql
 from PyQt5 import QtCore
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QObject, Qt
 from PyQt5.QtWidgets import QMessageBox, QWidget, QVBoxLayout, QTableView
 from PyQt5.QtSql import QSqlQuery, QSqlTableModel, QSqlDatabase
 from .models.card_database_model import CardDatabaseModel
@@ -12,8 +12,9 @@ from icons import icons_rc
 
 
 
-class AcquistiTabController:
+class AcquistiTabController(QObject):
     def __init__(self, ui):
+        super().__init__()
         self.ui = ui
 
         db_cards = QtSql.QSqlDatabase.database("card_db_connection")
@@ -30,7 +31,6 @@ class AcquistiTabController:
 
         self.ui.tableWidgetAcquisti.setColumnCount(5)
         self.ui.tableWidgetAcquisti.setHorizontalHeaderLabels(["Espansione", "Nome", "Condizione", "Prezzo stock", " "])
-        self.ui.tableWidgetAcquisti.setColumnHidden(0, True)
 
         self.ui.tableWidgetAcquisti.itemChanged.connect(self.valida_prezzo)
 
@@ -50,8 +50,8 @@ class AcquistiTabController:
         if not index.isValid():
             return
         record = self.model_card_database.record(index.row())       
-        nome = record.value("name")
-        espansione = record.value("expansion")
+        nome = record.value("nome")
+        espansione = record.value("espansione")
   
         row_pos = self.ui.tableWidgetAcquisti.rowCount()
         self.ui.tableWidgetAcquisti.insertRow(row_pos)
@@ -142,11 +142,13 @@ class AcquistiTabController:
 
                 insert_query = QtSql.QSqlQuery(self.db_main)
                 insert_query.prepare("""
-                    INSERT INTO acquisti (barcode, nome, prezzo_acquisto, data_acquisto)
-                    VALUES (:barcode, :nome, :prezzo, :data)
+                    INSERT INTO purchase (barcode,espansione, nome,condizione, prezzo_acquisto, purchase_date)
+                    VALUES (:barcode, :espansione, :nome, :condizione, :prezzo, :data)
                 """)
                 insert_query.bindValue(":barcode", barcode)
+                insert_query.bindValue(":espansione", espansione)
                 insert_query.bindValue(":nome", nome)
+                insert_query.bindValue(":condizione", condizione)
                 insert_query.bindValue(":prezzo", prezzo_acquisto)
                 insert_query.bindValue(":data", acquisto_date)
                 if not insert_query.exec_():
@@ -156,7 +158,7 @@ class AcquistiTabController:
                 update_query.prepare("""
                     UPDATE stock
                     SET quantita_stock = quantita_stock + 1,
-                        prezzo_stock = :prezzo
+                        prezzo = :prezzo
                     WHERE barcode = :barcode
                 """)
                 update_query.bindValue(":prezzo", prezzo_acquisto)
@@ -167,13 +169,15 @@ class AcquistiTabController:
                 if update_query.numRowsAffected() == 0:
                     insert_stock_query = QtSql.QSqlQuery(self.db_main)
                     insert_stock_query.prepare("""
-                        INSERT INTO stock (barcode, expansion, name, prezzo_stock, quantita_stock)
-                        VALUES (:barcode, :espansione, :nome, :prezzo, 1)
+                        INSERT INTO stock (barcode, espansione, nome, condizione, prezzo, quantita_stock, prezzo_acquisto, da_prezzare)
+                        VALUES (:barcode, :espansione, :nome, :condizione, :prezzo, 1, :prezzo_acquisto, true)
                     """)
                     insert_stock_query.bindValue(":barcode", barcode)
                     insert_stock_query.bindValue(":espansione", espansione)
                     insert_stock_query.bindValue(":nome", nome)
-                    insert_stock_query.bindValue(":prezzo", prezzo_acquisto)
+                    insert_stock_query.bindValue(":condizione", condizione)
+                    insert_stock_query.bindValue(":prezzo", float(prezzo_acquisto))
+                    insert_stock_query.bindValue(":prezzo_acquisto", float(prezzo_acquisto))
                     if not insert_stock_query.exec_():
                         raise Exception(insert_stock_query.lastError().text())
 
