@@ -1,19 +1,19 @@
-import sys, os
-from PyQt5 import QtWidgets, uic, QtSql, QtGui
-from PyQt5 import QtCore
-from PyQt5.QtCore import Qt
+import sys
+import os
+from PyQt5 import QtWidgets, uic, QtSql
 from tabs.magazzino import MagazzinoTabController
 from tabs.acquisti import AcquistiTabController
 from tabs.vendite import VenditeTabController
 from config import main_db, card_db
 
+
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
-        
+
         # Carica il file .ui
         uic.loadUi("main.ui", self)
-        
+
         # Connessione DB
         self.db_main = QtSql.QSqlDatabase.addDatabase("QSQLITE", "main_connection")
         self.db_main.setDatabaseName(os.path.join(os.path.dirname(__file__), main_db))
@@ -35,14 +35,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    
+
     # Stylesheet moderno
     stylesheet = open("style.qss").read()
-    
-    app.setStyle('Fusion')
+
+    app.setStyle("Fusion")
     app.setStyleSheet(stylesheet)
-    
+
     window = MainWindow()
     window.show()
-    
+
     sys.exit(app.exec_())

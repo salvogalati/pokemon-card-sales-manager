@@ -5,13 +5,9 @@ from PyQt5 import QtWidgets, QtGui
 from PyQt5 import QtSql
 from PyQt5 import QtCore
 from PyQt5.QtCore import QObject, Qt
-from PyQt5.QtWidgets import QMessageBox, QWidget, QVBoxLayout, QTableView
-from PyQt5.QtSql import QSqlQuery, QSqlTableModel, QSqlDatabase
-from .models.card_database_model import CardDatabaseModel
 from utils import pulisci_testo, createMessageBox
 
-from icons import icons_rc
-
+from icons import icons_rc  # noqa: F401
 
 
 class VenditeTabController(QObject):
@@ -19,41 +15,50 @@ class VenditeTabController(QObject):
         super().__init__()
         self.ui = ui
 
-        
         db_main = QtSql.QSqlDatabase.database("main_connection")
         self.db_main = db_main  # Assign the main database connection to self.db_main
         self.model = QtSql.QSqlTableModel(None, self.db_main)
         self.model.setTable("stock")  # <-- cambia con la tua tabella
         self.model.select()
-        
+
         # Collega alla tabella
         self.ui.tableStock.setModel(self.model)
         self.ui.tableStock.setColumnHidden(6, True)
         self.ui.tableStock.setColumnHidden(7, True)
 
         self.ui.tableStock.activated.connect(self.aggiungi_al_carrello)
-        #self.ui.tableStock.doubleClicked.connect(self.aggiungi_al_carrello)
-    
+        # self.ui.tableStock.doubleClicked.connect(self.aggiungi_al_carrello)
+
         # Collegamento ricerca live
         self.ui.lineEdit.textChanged.connect(self.filtra_tabella)
-        self.ui.lineEdit.returnPressed.connect(lambda: self.cerca_barcode(self.ui.lineEdit.text()))
+        self.ui.lineEdit.returnPressed.connect(
+            lambda: self.cerca_barcode(self.ui.lineEdit.text())
+        )
 
         self.ui.button_svuota_carrello.clicked.connect(self.svuota_carrello)
 
         self.ui.tableWidget_carrello.setColumnCount(7)
-        self.ui.tableWidget_carrello.setHorizontalHeaderLabels(["Barcode","Espansione",
-                    "Nome", "Condizione", "Prezzo stock", "Prezzo di vendita", " "])
+        self.ui.tableWidget_carrello.setHorizontalHeaderLabels(
+            [
+                "Barcode",
+                "Espansione",
+                "Nome",
+                "Condizione",
+                "Prezzo stock",
+                "Prezzo di vendita",
+                " ",
+            ]
+        )
         self.ui.tableWidget_carrello.setColumnHidden(0, True)
-        #self.ui.tableWidget_carrello.itemChanged.connect(self.valida_prezzo)
-        #self.ui.tableWidget_carrello.itemChanged.connect(self.salva_valore)
+        # self.ui.tableWidget_carrello.itemChanged.connect(self.valida_prezzo)
+        # self.ui.tableWidget_carrello.itemChanged.connect(self.salva_valore)
 
         self._old_value = {}
 
-        #self.button_aggiungi_carta.clicked.connect(self.aggiungi_al_carrello)
+        # self.button_aggiungi_carta.clicked.connect(self.aggiungi_al_carrello)
 
         self.ui.sconto_input.textChanged.connect(self.applica_sconto)
         self.ui.button_concludi_vendita.clicked.connect(self.concludi_vendita)
-
 
     def filtra_tabella(self, testo):
         if not testo:
@@ -74,7 +79,7 @@ class VenditeTabController(QObject):
     def cerca_barcode(self, codice):
         codice = pulisci_testo(codice)
 
-        filtro = f"barcode = '{codice}'"   # match ESATTO
+        filtro = f"barcode = '{codice}'"  # match ESATTO
 
         self.model.setFilter(filtro)
         self.model.select()
@@ -86,7 +91,7 @@ class VenditeTabController(QObject):
             msg = createMessageBox(
                 "Non trovato",
                 f"Codice {codice} non trovato",
-                QtWidgets.QMessageBox.Warning
+                QtWidgets.QMessageBox.Warning,
             )
             msg.exec_()
 
@@ -112,7 +117,11 @@ class VenditeTabController(QObject):
                 quantita_nel_carrello += 1
 
         if quantita_nel_carrello >= stock_disponibile:
-            msg = createMessageBox(title="Stock esaurito", text="La carta è attualmente non disponibile.", icon=QtWidgets.QMessageBox.Warning)
+            msg = createMessageBox(
+                title="Stock esaurito",
+                text="La carta è attualmente non disponibile.",
+                icon=QtWidgets.QMessageBox.Warning,
+            )
             msg.exec_()
             return
 
@@ -137,7 +146,7 @@ class VenditeTabController(QObject):
         nome_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
 
         # Prezzo editabile
-        #prezzo_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable)
+        # prezzo_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable)
 
         self.ui.tableWidget_carrello.setItem(row_pos, 0, barcode_item)
         self.ui.tableWidget_carrello.setItem(row_pos, 1, espansione_item)
@@ -155,7 +164,7 @@ class VenditeTabController(QObject):
 
         self.aggiorna_totale()
         self.aggiorna_stock_visivo()
-  
+
     def rimuovi_dal_carrello(self):
         row = self.ui.tableWidget_carrello.currentRow()
         if row >= 0:
@@ -176,12 +185,11 @@ class VenditeTabController(QObject):
 
         self.aggiorna_totale()
         self.aggiorna_stock_visivo()
-        
+
     def svuota_carrello(self):
         self.ui.tableWidget_carrello.setRowCount(0)
         self.aggiorna_totale()
         self.aggiorna_stock_visivo()
-
 
     def aggiorna_totale(self):
         totale = 0.0
@@ -206,7 +214,7 @@ class VenditeTabController(QObject):
             self.ui.sconto_input.setEnabled(False)
             self.ui.button_concludi_vendita.setEnabled(False)
 
-        if self.ui.tableWidget_carrello.rowCount() > 0:    
+        if self.ui.tableWidget_carrello.rowCount() > 0:
             self.applica_sconto(self.ui.sconto_input.text())
 
     def applica_sconto(self, testo):
@@ -216,18 +224,22 @@ class VenditeTabController(QObject):
             sconto = 0.0
         totale = float(self.ui.label_totale_carrello.text().replace(" €", ""))
         totale_scontato = totale - sconto
-        #sconto_per_riga = sconto / self.ui.tableWidget_carrello.rowCount()
+        # sconto_per_riga = sconto / self.ui.tableWidget_carrello.rowCount()
         self.ui.label_totale_dapagare.setText(f"{totale_scontato:.2f} €")
-        
+
         for row in range(self.ui.tableWidget_carrello.rowCount()):
-            prezzo_item = self.ui.tableWidget_carrello.item(row, 4)  # colonna prezzo stock
+            prezzo_item = self.ui.tableWidget_carrello.item(
+                row, 4
+            )  # colonna prezzo stock
             prezzo_scontato_item = self.ui.tableWidget_carrello.item(row, 5)
             if prezzo_item is not None and prezzo_scontato_item is not None:
                 try:
                     prezzo = float(prezzo_item.text())
                     if totale > 0:
-                        prezzo_scontato = prezzo - (prezzo / totale) * sconto # sconto proporzionale
-                        #prezzo_scontato = prezzo - sconto_per_riga # sconto uniforme
+                        prezzo_scontato = (
+                            prezzo - (prezzo / totale) * sconto
+                        )  # sconto proporzionale
+                        # prezzo_scontato = prezzo - sconto_per_riga # sconto uniforme
                         prezzo_scontato_item.setText(f"{prezzo_scontato:.2f}")
                 except ValueError:
                     pass
@@ -267,11 +279,10 @@ class VenditeTabController(QObject):
 
             # aggiorna SOLO UI
             self.model.setData(self.model.index(row, 3), stock_visibile)
-    
+
     def concludi_vendita(self):
         if self.ui.tableWidget_carrello.rowCount() == 0:
             return
-
 
         # 🔒 inizio transazione
         self.db_main.transaction()
@@ -284,7 +295,9 @@ class VenditeTabController(QObject):
                 condizione = self.ui.tableWidget_carrello.item(row, 3).text()
                 prezzo_stock = float(self.ui.tableWidget_carrello.item(row, 4).text())
                 prezzo_vendita = float(self.ui.tableWidget_carrello.item(row, 5).text())
-                sell_date = QtCore.QDateTime.currentDateTime().toString("yyyy-MM-dd HH:mm:ss")
+                sell_date = QtCore.QDateTime.currentDateTime().toString(
+                    "yyyy-MM-dd HH:mm:ss"
+                )
 
                 # INSERT vendita
                 insert_query = QtSql.QSqlQuery(self.db_main)
@@ -305,12 +318,13 @@ class VenditeTabController(QObject):
 
                 # UPDATE stock
                 update_query = QtSql.QSqlQuery(self.db_main)
-                update_query.prepare("UPDATE stock SET quantita_stock = quantita_stock - 1 WHERE barcode = ?")
+                update_query.prepare(
+                    "UPDATE stock SET quantita_stock = quantita_stock - 1 WHERE barcode = ?"
+                )
                 update_query.addBindValue(barcode)
                 if not update_query.exec_():
                     raise Exception(update_query.lastError().text())
 
-            
             self.db_main.commit()
 
         except Exception as e:
@@ -320,7 +334,7 @@ class VenditeTabController(QObject):
             msg = createMessageBox(
                 "Errore",
                 f"Errore durante la vendita:\n{str(e)}",
-                QtWidgets.QMessageBox.Critical
+                QtWidgets.QMessageBox.Critical,
             )
             msg.exec_()
             traceback.print_exc()

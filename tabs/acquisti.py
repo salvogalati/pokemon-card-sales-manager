@@ -4,12 +4,10 @@ from PyQt5 import QtWidgets, QtGui
 from PyQt5 import QtSql
 from PyQt5 import QtCore
 from PyQt5.QtCore import QObject, Qt
-from PyQt5.QtWidgets import QMessageBox, QWidget, QVBoxLayout, QTableView
-from PyQt5.QtSql import QSqlQuery, QSqlTableModel, QSqlDatabase
+
 from .models.card_database_model import CardDatabaseModel
 
-from icons import icons_rc
-
+from icons import icons_rc  # noqa: F401
 
 
 class AcquistiTabController(QObject):
@@ -25,19 +23,22 @@ class AcquistiTabController(QObject):
         self.model_card_database.setTable("stock")
         self.model_card_database.select()
         self.ui.tableDatabaseAcquisti.setModel(self.model_card_database)
-        self.ui.tableDatabaseAcquisti.doubleClicked.connect(self.aggiungi_a_lista_acquisti)
-    
+        self.ui.tableDatabaseAcquisti.doubleClicked.connect(
+            self.aggiungi_a_lista_acquisti
+        )
+
         self.ui.lineEdit.textChanged.connect(self.filtra_tabella)
 
         self.ui.tableWidgetAcquisti.setColumnCount(5)
-        self.ui.tableWidgetAcquisti.setHorizontalHeaderLabels(["Espansione", "Nome", "Condizione", "Prezzo stock", " "])
+        self.ui.tableWidgetAcquisti.setHorizontalHeaderLabels(
+            ["Espansione", "Nome", "Condizione", "Prezzo stock", " "]
+        )
 
         self.ui.tableWidgetAcquisti.itemChanged.connect(self.valida_prezzo)
 
         self.ui.buttonSvuotaAcquisti.clicked.connect(self.svuota_lista_acquisti)
 
         self.ui.buttonCompletaAcquisti.clicked.connect(self.completa_acquisti)
-
 
     def filtra_tabella(self, testo):
         if not testo:
@@ -49,10 +50,10 @@ class AcquistiTabController(QObject):
     def aggiungi_a_lista_acquisti(self, index):
         if not index.isValid():
             return
-        record = self.model_card_database.record(index.row())       
+        record = self.model_card_database.record(index.row())
         nome = record.value("nome")
         espansione = record.value("espansione")
-  
+
         row_pos = self.ui.tableWidgetAcquisti.rowCount()
         self.ui.tableWidgetAcquisti.insertRow(row_pos)
         espansione_item = QtWidgets.QTableWidgetItem(str(espansione))
@@ -78,7 +79,6 @@ class AcquistiTabController(QObject):
 
         self.ui.tableWidgetAcquisti.setCellWidget(row_pos, 4, btn)
 
-
         self.aggiorna_totale()
 
     def aggiorna_totale(self):
@@ -96,7 +96,7 @@ class AcquistiTabController(QObject):
         if self.ui.tableWidgetAcquisti.rowCount() > 0:
             self.ui.buttonSvuotaAcquisti.setEnabled(True)
             self.ui.buttonCompletaAcquisti.setEnabled(True)
-        else:     
+        else:
             self.ui.buttonSvuotaAcquisti.setEnabled(False)
             self.ui.buttonCompletaAcquisti.setEnabled(False)
 
@@ -108,7 +108,7 @@ class AcquistiTabController(QObject):
                     print("Prezzo non valido. Deve essere un numero positivo.")
             except ValueError:
                 print("Prezzo non valido. Deve essere un numero positivo.")
-                #item.setText("0")  # Reset al valore precedente o a zero
+                # item.setText("0")  # Reset al valore precedente o a zero
             self.aggiorna_totale()
 
     def rimuovi_riga_button(self):
@@ -118,7 +118,7 @@ class AcquistiTabController(QObject):
 
         self.ui.tableWidgetAcquisti.removeRow(row)
         self.aggiorna_totale()
-    
+
     def svuota_lista_acquisti(self):
         self.ui.tableWidgetAcquisti.setRowCount(0)
         self.aggiorna_totale()
@@ -131,14 +131,15 @@ class AcquistiTabController(QObject):
 
         try:
             for row in range(self.ui.tableWidgetAcquisti.rowCount()):
-                
                 espansione = self.ui.tableWidgetAcquisti.item(row, 0).text()
                 nome = self.ui.tableWidgetAcquisti.item(row, 1).text()
-                
+
                 condizione = self.ui.tableWidgetAcquisti.item(row, 2).text()
                 prezzo_acquisto = float(self.ui.tableWidgetAcquisti.item(row, 3).text())
                 barcode = self.generate_barcode(nome, espansione, condizione)
-                acquisto_date = QtCore.QDateTime.currentDateTime().toString("yyyy-MM-dd HH:mm:ss")
+                acquisto_date = QtCore.QDateTime.currentDateTime().toString(
+                    "yyyy-MM-dd HH:mm:ss"
+                )
 
                 insert_query = QtSql.QSqlQuery(self.db_main)
                 insert_query.prepare("""
@@ -177,7 +178,9 @@ class AcquistiTabController(QObject):
                     insert_stock_query.bindValue(":nome", nome)
                     insert_stock_query.bindValue(":condizione", condizione)
                     insert_stock_query.bindValue(":prezzo", float(prezzo_acquisto))
-                    insert_stock_query.bindValue(":prezzo_acquisto", float(prezzo_acquisto))
+                    insert_stock_query.bindValue(
+                        ":prezzo_acquisto", float(prezzo_acquisto)
+                    )
                     if not insert_stock_query.exec_():
                         raise Exception(insert_stock_query.lastError().text())
 
@@ -188,10 +191,11 @@ class AcquistiTabController(QObject):
             msg = self.createMessageBox(
                 "Errore",
                 f"Errore durante l'acquisto:\n{str(e)}",
-                QtWidgets.QMessageBox.Critical
+                QtWidgets.QMessageBox.Critical,
             )
             msg.exec_()
             import traceback
+
             traceback.print_exc()
             return
 
@@ -212,7 +216,9 @@ class AcquistiTabController(QObject):
         base = f"{name}-{expansion}-{condition}"
         return base.upper()
 
-    def createMessageBox(self, title, text, icon=QtWidgets.QMessageBox.Information , buttons=[]):
+    def createMessageBox(
+        self, title, text, icon=QtWidgets.QMessageBox.Information, buttons=[]
+    ):
         msg = QtWidgets.QMessageBox()
         msg.setWindowTitle(title)
         msg.setText(text)
