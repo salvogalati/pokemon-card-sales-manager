@@ -8,6 +8,7 @@ from PyQt5.QtSql import QSqlQuery, QSqlTableModel
 from .models.magazzino_model import MagazzinoModel, YesNoDelegate
 from PyQt5.QtWidgets import QStyledItemDelegate, QSpinBox
 from icons import icons_rc
+from config import main_db, backup_folder
 import shutil
 
 
@@ -122,13 +123,14 @@ class MagazzinoTabController:
     def backup_database(self):
         try:
             date_now = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-            shutil.copy("../pokemon.db", f"../backups/backup_pokemon_cards_{date_now}.db")
+            shutil.copy(os.path.join(os.path.dirname(__file__), main_db),
+                         os.path.join(os.path.dirname(__file__), backup_folder, f"backup_pokemon_cards_{date_now}.db"))
             #QMessageBox.information(self.ui, "Backup", "Backup del database creato con successo!")
         except Exception as e:
             QMessageBox.critical(self.ui, "Errore Backup", f"Errore durante il backup del databse\nAttenzione non sarà possibile ripristinare il database\nERRORE: {str(e)}")
 
     def ripristina_backup(self):
-        backup_files = [f for f in os.listdir("../backups/") if f.startswith("backup_pokemon_cards_") and f.endswith(".db")]
+        backup_files = [f for f in os.listdir(os.path.join(os.path.dirname(__file__), backup_folder)) if f.startswith("backup_pokemon_cards_") and f.endswith(".db")]
         if not backup_files:
             QMessageBox.information(self.ui, "Nessun Backup", "Non sono stati trovati file di backup.")
             return
@@ -141,7 +143,8 @@ class MagazzinoTabController:
         if risposta == QMessageBox.No:
             return
         try:
-            shutil.copy(f"../backups/{backup_to_restore}", "../pokemon.db")
+            shutil.copy(os.path.join(os.path.dirname(__file__), backup_folder, backup_to_restore),
+                         os.path.join(os.path.dirname(__file__), main_db))
             self.model_magazzino.select()  # Ricarica i dati nel modello
             QMessageBox.information(self.ui, "Ripristino", "Database ripristinato con successo dal backup!")
         except Exception as e:

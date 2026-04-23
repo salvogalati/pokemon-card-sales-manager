@@ -1,10 +1,11 @@
-import sys, re
+import sys, os
 from PyQt5 import QtWidgets, uic, QtSql, QtGui
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt
 from tabs.magazzino import MagazzinoTabController
 from tabs.acquisti import AcquistiTabController
 from tabs.vendite import VenditeTabController
+from config import main_db, card_db
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -15,11 +16,11 @@ class MainWindow(QtWidgets.QMainWindow):
         
         # Connessione DB
         self.db_main = QtSql.QSqlDatabase.addDatabase("QSQLITE", "main_connection")
-        self.db_main.setDatabaseName("../pokemon.db")
+        self.db_main.setDatabaseName(os.path.join(os.path.dirname(__file__), main_db))
         self.db_main.open()
 
         self.db_cards = QtSql.QSqlDatabase.addDatabase("QSQLITE", "card_db_connection")
-        self.db_cards.setDatabaseName("../card_database.db")
+        self.db_cards.setDatabaseName(os.path.join(os.path.dirname(__file__), card_db))
         self.db_cards.open()
 
         if not self.db_main.isOpen() or not self.db_cards.isOpen():
