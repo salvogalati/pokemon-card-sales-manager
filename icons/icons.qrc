@@ -1,5 +1,13 @@
 <RCC>
   <qresource prefix="icons">
+    <file>icon-barcode.png</file>
+    <file>icons8-più-40.png</file>
+    <file>icons-arrow-combox.png</file>
+    <file>icons-arrow-up.png</file>
+    <file>icon-search.png</file>
+    <file>icons-filter.png</file>
+    <file>logo_kingdom_cards.png</file>
+    <file>trash-2.svg</file>
     <file>icons-filter.png</file>
   </qresource>
 </RCC>
