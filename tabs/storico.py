@@ -3,7 +3,7 @@ import os
 
 from PyQt5.QtSql import QSqlTableModel
 from .models.magazzino_model import MagazzinoModel
-from icons import icons_rc  # noqa: F401
+from icons import icons  # noqa: F401
 from config import cards_condizioni
 from utils import pulisci_testo, createMessageBox
 from .models.delegates import YesNoDelegate, CondizioneComboBoxDelegate

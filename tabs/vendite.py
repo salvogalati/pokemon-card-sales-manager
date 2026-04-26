@@ -7,7 +7,7 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import QObject, Qt
 from utils import pulisci_testo, createMessageBox
 
-from icons import icons_rc  # noqa: F401
+from icons import icons  # noqa: F401
 
 
 class VenditeTabController(QObject):
@@ -157,7 +157,7 @@ class VenditeTabController(QObject):
 
         # Pulsante rimuovi
         btn = QtWidgets.QPushButton("")
-        btn.setIcon(QtGui.QIcon("icons/trash-2.svg"))
+        btn.setIcon(QtGui.QIcon(":/icons/trash-2.svg"))
         btn.setToolTip("Rimuovi dal carrello")
         btn.clicked.connect(self.rimuovi_riga_button)
         self.ui.tableWidget_carrello.setCellWidget(row_pos, 6, btn)

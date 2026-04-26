@@ -1,5 +1,6 @@
 import re
 from PyQt5 import QtWidgets, QtGui
+from config import get_resource_path
 
 
 
@@ -13,7 +14,7 @@ def createMessageBox(title, text, icon=QtWidgets.QMessageBox.Information, button
     msg.setWindowTitle(title)
     msg.setText(text)
     msg.setIcon(icon)
-    msg.setWindowIcon(QtGui.QIcon("icons/logo_kingdom_cards.png"))
+    msg.setWindowIcon(QtGui.QIcon(get_resource_path("icons/logo_kingdom_cards.png")))
     for button in buttons:
         msg.addButton(button)
     return msg

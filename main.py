@@ -5,7 +5,7 @@ from tabs.magazzino import MagazzinoTabController
 from tabs.acquisti import AcquistiTabController
 from tabs.vendite import VenditeTabController
 from tabs.storico import StoricoTabController
-from config import main_db, card_db
+from config import main_db, card_db, get_resource_path
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -13,15 +13,15 @@ class MainWindow(QtWidgets.QMainWindow):
         super().__init__()
 
         # Carica il file .ui
-        uic.loadUi("main.ui", self)
+        uic.loadUi(get_resource_path("main.ui"), self)
 
         # Connessione DB
         self.db_main = QtSql.QSqlDatabase.addDatabase("QSQLITE", "main_connection")
-        self.db_main.setDatabaseName(os.path.join(os.path.dirname(__file__), main_db))
+        self.db_main.setDatabaseName(get_resource_path(main_db))
         self.db_main.open()
 
         self.db_cards = QtSql.QSqlDatabase.addDatabase("QSQLITE", "card_db_connection")
-        self.db_cards.setDatabaseName(os.path.join(os.path.dirname(__file__), card_db))
+        self.db_cards.setDatabaseName(get_resource_path(card_db))
         self.db_cards.open()
 
         if not self.db_main.isOpen() or not self.db_cards.isOpen():
@@ -40,7 +40,7 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
 
     # Stylesheet moderno
-    stylesheet = open("style.qss").read()
+    stylesheet = open(get_resource_path("style.qss")).read()
 
     app.setStyle("Fusion")
     app.setStyleSheet(stylesheet)

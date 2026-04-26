@@ -6,8 +6,9 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import QObject, Qt
 
 from .models.card_database_model import CardDatabaseModel
+from .models.delegates import CondizioneComboBoxDelegate
 
-from icons import icons_rc  # noqa: F401
+from icons import icons  # noqa: F401
 
 
 class AcquistiTabController(QObject):
@@ -27,11 +28,16 @@ class AcquistiTabController(QObject):
             self.aggiungi_a_lista_acquisti
         )
 
-        self.ui.lineEdit.textChanged.connect(self.filtra_tabella)
+
+        self.ui.lineEditCercaAcquisti.textChanged.connect(self.filtra_tabella)
 
         self.ui.tableWidgetAcquisti.setColumnCount(5)
         self.ui.tableWidgetAcquisti.setHorizontalHeaderLabels(
             ["Espansione", "Nome", "Condizione", "Prezzo stock", " "]
+        )
+        delegateCondizione = CondizioneComboBoxDelegate(self.ui.tableWidgetAcquisti)
+        self.ui.tableWidgetAcquisti.setItemDelegateForColumn(
+           2, delegateCondizione
         )
 
         self.ui.tableWidgetAcquisti.itemChanged.connect(self.valida_prezzo)
@@ -44,7 +50,7 @@ class AcquistiTabController(QObject):
         if not testo:
             self.model_card_database.setFilter("")
         else:
-            filtro = f"name LIKE '%{testo}%' OR expansion LIKE '%{testo}%'"
+            filtro = f"nome LIKE '%{testo}%' OR espansione LIKE '%{testo}%'"
             self.model_card_database.setFilter(filtro)
 
     def aggiungi_a_lista_acquisti(self, index):
@@ -73,12 +79,11 @@ class AcquistiTabController(QObject):
         self.ui.tableWidgetAcquisti.setItem(row_pos, 3, prezzo_item)
 
         btn = QtWidgets.QPushButton("")
-        btn.setIcon(QtGui.QIcon("icons/trash-2.svg"))
+        btn.setIcon(QtGui.QIcon(":/icons/trash-2.svg"))
         btn.setToolTip("Rimuovi dal carrello")
         btn.clicked.connect(self.rimuovi_riga_button)
 
         self.ui.tableWidgetAcquisti.setCellWidget(row_pos, 4, btn)
-
         self.aggiorna_totale()
 
     def aggiorna_totale(self):
@@ -171,7 +176,7 @@ class AcquistiTabController(QObject):
                     insert_stock_query = QtSql.QSqlQuery(self.db_main)
                     insert_stock_query.prepare("""
                         INSERT INTO stock (barcode, espansione, nome, condizione, prezzo, quantita_stock, prezzo_acquisto, da_prezzare)
-                        VALUES (:barcode, :espansione, :nome, :condizione, :prezzo, 1, :prezzo_acquisto, true)
+                        VALUES (:barcode, :espansione, :nome, :condizione, :prezzo, 1, :prezzo_acquisto, 'Si')
                     """)
                     insert_stock_query.bindValue(":barcode", barcode)
                     insert_stock_query.bindValue(":espansione", espansione)
@@ -223,7 +228,7 @@ class AcquistiTabController(QObject):
         msg.setWindowTitle(title)
         msg.setText(text)
         msg.setIcon(icon)
-        msg.setWindowIcon(QtGui.QIcon("icons/logo_kingdom_cards.png"))
+        msg.setWindowIcon(QtGui.QIcon(":/icons/logo_kingdom_cards.png"))
         for button in buttons:
             msg.addButton(button)
         return msg

@@ -1119,6 +1119,12 @@ QDoubleSpinBox::up-arrow {
             <property name="editTriggers">
              <set>QAbstractItemView::NoEditTriggers</set>
             </property>
+            <property name="sortingEnabled">
+             <bool>true</bool>
+            </property>
+            <property name="cornerButtonEnabled">
+             <bool>false</bool>
+            </property>
            </widget>
           </item>
          </layout>

@@ -8,8 +8,8 @@ from PyQt5.QtSql import QSqlTableModel
 from .models.magazzino_model import MagazzinoModel
 from .models.delegates import YesNoDelegate, CondizioneComboBoxDelegate
 from PyQt5.QtWidgets import QStyledItemDelegate, QSpinBox
-from icons import icons_rc  # noqa: F401
-from config import main_db, backup_folder, cards_condizioni
+from icons import icons  # noqa: F401
+from config import main_db, backup_folder, cards_condizioni, get_resource_path, get_app_root
 import shutil
 
 
@@ -155,11 +155,12 @@ class MagazzinoTabController:
     def backup_database(self):
         try:
             date_now = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+            backup_dir = get_resource_path(backup_folder)
+            os.makedirs(backup_dir, exist_ok=True)
             shutil.copy(
-                os.path.join(os.path.dirname(__file__), main_db),
+                get_resource_path(main_db),
                 os.path.join(
-                    os.path.dirname(__file__),
-                    backup_folder,
+                    backup_dir,
                     f"backup_pokemon_cards_{date_now}.db",
                 ),
             )
@@ -172,9 +173,10 @@ class MagazzinoTabController:
             )
 
     def ripristina_backup(self):
+        backup_dir = get_resource_path(backup_folder)
         backup_files = [
             f
-            for f in os.listdir(os.path.join(os.path.dirname(__file__), backup_folder))
+            for f in os.listdir(backup_dir)
             if f.startswith("backup_pokemon_cards_") and f.endswith(".db")
         ]
         if not backup_files:
@@ -198,10 +200,8 @@ class MagazzinoTabController:
             return
         try:
             shutil.copy(
-                os.path.join(
-                    os.path.dirname(__file__), backup_folder, backup_to_restore
-                ),
-                os.path.join(os.path.dirname(__file__), main_db),
+                os.path.join(backup_dir, backup_to_restore),
+                get_resource_path(main_db),
             )
             self.model_magazzino.select()  # Ricarica i dati nel modello
             QMessageBox.information(
