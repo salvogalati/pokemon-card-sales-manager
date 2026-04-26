@@ -5,10 +5,11 @@ from PyQt5 import QtWidgets, QtGui
 from PyQt5 import QtSql
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtSql import QSqlTableModel
-from .models.magazzino_model import MagazzinoModel, YesNoDelegate
+from .models.magazzino_model import MagazzinoModel
+from .models.delegates import YesNoDelegate, CondizioneComboBoxDelegate
 from PyQt5.QtWidgets import QStyledItemDelegate, QSpinBox
 from icons import icons_rc  # noqa: F401
-from config import main_db, backup_folder
+from config import main_db, backup_folder, cards_condizioni
 import shutil
 
 
@@ -39,10 +40,14 @@ class MagazzinoTabController:
 
         self.ui.tableViewMagazzino.setModel(self.model_magazzino)
 
-        delegate = YesNoDelegate(self.ui.tableViewMagazzino)
+        delegateYesNo = YesNoDelegate(self.ui.tableViewMagazzino)
         # self.ui.tableViewMagazzino.setItemDelegateForColumn(self.model_magazzino.fieldIndex("prezzo"), SpinBoxDelegate())
         self.ui.tableViewMagazzino.setItemDelegateForColumn(
-            self.model_magazzino.fieldIndex("da_prezzare"), delegate
+            self.model_magazzino.fieldIndex("da_prezzare"), delegateYesNo
+        )
+        delegateCondizione = CondizioneComboBoxDelegate(self.ui.tableViewMagazzino)
+        self.ui.tableViewMagazzino.setItemDelegateForColumn(
+            self.model_magazzino.fieldIndex("condizione"), delegateCondizione
         )
         # query = QSqlQuery("SELECT DISTINCT condizione FROM stock")
 
@@ -51,7 +56,7 @@ class MagazzinoTabController:
         #     unique_values_condizione.append(query.value(0))
 
         self.ui.comboBoxCondizione.addItems(
-            ["", "Mint", "Near Mint", "Lightly Played", "Played", "Poor"]
+            [""] + cards_condizioni
         )
 
         self.ui.button_applica_filtro.clicked.connect(self.applica_filtro)

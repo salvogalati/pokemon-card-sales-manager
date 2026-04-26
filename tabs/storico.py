@@ -1,13 +1,12 @@
 from datetime import datetime
 import os
 
-from PyQt5 import QtWidgets, QtGui
-
 from PyQt5.QtSql import QSqlTableModel
 from .models.magazzino_model import MagazzinoModel
 from icons import icons_rc  # noqa: F401
+from config import cards_condizioni
 from utils import pulisci_testo, createMessageBox
-
+from .models.delegates import YesNoDelegate, CondizioneComboBoxDelegate
 
 class StoricoTabController:
     def __init__(self, ui):
@@ -21,7 +20,11 @@ class StoricoTabController:
 
         self.ui.tableViewStorico.setModel(self.model_magazzino)
         self.ui.comboBoxCondizione_Storico.addItems(
-            ["", "Mint", "Near Mint", "Lightly Played", "Played", "Poor"]
+            [""] + cards_condizioni
+        )
+        delegateCondizione = CondizioneComboBoxDelegate(self.ui.tableViewStorico)
+        self.ui.tableViewStorico.setItemDelegateForColumn(
+            self.model_magazzino.fieldIndex("condizione"), delegateCondizione
         )
         self.ui.comboBoxCondizione_Storico.currentTextChanged.connect(self.applica_filtri)
 
@@ -91,6 +94,11 @@ class StoricoTabController:
                        "date": field_mapping[button.text()]["date"]}
         self.model_magazzino.setTable(table_mapping.get(button.text()))
         self.model_magazzino.select()
+
+        delegateCondizione = CondizioneComboBoxDelegate(self.ui.tableViewStorico)
+        self.ui.tableViewStorico.setItemDelegateForColumn(
+            self.model_magazzino.fieldIndex("condizione"), delegateCondizione
+        )
 
         self.applica_filtri()
 
