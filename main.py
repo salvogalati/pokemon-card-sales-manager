@@ -4,6 +4,7 @@ from PyQt5 import QtWidgets, uic, QtSql
 from tabs.magazzino import MagazzinoTabController
 from tabs.acquisti import AcquistiTabController
 from tabs.vendite import VenditeTabController
+from tabs.storico import StoricoTabController
 from config import main_db, card_db
 
 
@@ -31,6 +32,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.tab_magazzino_controller = MagazzinoTabController(self)
         self.tabAcquisti = AcquistiTabController(self)
         self.tabVendite = VenditeTabController(self)
+        self.tabStorico = StoricoTabController(self)
+
 
 
 if __name__ == "__main__":

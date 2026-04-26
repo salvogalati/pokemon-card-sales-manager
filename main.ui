@@ -27,7 +27,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tabVendite">
        <attribute name="title">
@@ -573,7 +573,7 @@ QSpinBox::drop:hover {
 }
 
 QComboBox::down-arrow {
-    image: url(C:/Users/Salvo/Documents/Coding/pokemon-card-sales-manager/Demo_PyQt/icons/icons-arrow-combox.png);
+    image:url(:/icons/icons-arrow-combox.png);
     width: 10px;
     height: 10px;
 }
@@ -648,13 +648,13 @@ QSpinBox::down-button {
 }
 
 QSpinBox::down-arrow {
-    image: url(C:/Users/Salvo/Documents/Coding/pokemon-card-sales-manager/Demo_PyQt/icons/icons-arrow-combox.png);
+    image: url(:/icons/icons-arrow-combox.png);
     width: 10px;
     height: 10px;
 }
 
 QSpinBox::up-arrow {
-    image: url(C:/Users/Salvo/Documents/Coding/pokemon-card-sales-manager/Demo_PyQt/icons/icons-arrow-up.png);
+    image: url(:/icons/icons-arrow-up.png);
     width: 10px;
     height: 10px;
 }</string>
@@ -973,6 +973,154 @@ QDoubleSpinBox::up-arrow {
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="tabStorico">
+       <attribute name="title">
+        <string>Storico</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_5">
+        <item row="0" column="0">
+         <layout class="QVBoxLayout" name="verticalLayout_17">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_7">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_16">
+              <item>
+               <widget class="QRadioButton" name="radioButton">
+                <property name="text">
+                 <string>Vendite</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">buttonGroupStorico</string>
+                </attribute>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="radioButton_2">
+                <property name="text">
+                 <string>Acquisti</string>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">buttonGroupStorico</string>
+                </attribute>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="lineEditStoricoSearch">
+              <property name="placeholderText">
+               <string>Cerca</string>
+              </property>
+              <property name="clearButtonEnabled">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_13">
+              <item>
+               <widget class="QLabel" name="label_12">
+                <property name="text">
+                 <string>Prezzo Min | Max</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_5">
+                <item>
+                 <widget class="QDoubleSpinBox" name="doubleSpinBoxMinStorico">
+                  <property name="maximum">
+                   <double>10000.989999999999782</double>
+                  </property>
+                  <property name="singleStep">
+                   <double>0.010000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QDoubleSpinBox" name="doubleSpinBoxMaxStorico">
+                  <property name="maximum">
+                   <double>10000.000000000000000</double>
+                  </property>
+                  <property name="singleStep">
+                   <double>0.100000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>10000.000000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_14">
+              <item>
+               <widget class="QLabel" name="label_13">
+                <property name="text">
+                 <string>Condizione</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="comboBoxCondizione_Storico"/>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_15">
+              <item>
+               <widget class="QLabel" name="label_14">
+                <property name="text">
+                 <string>Data Da | A</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_6">
+                <item>
+                 <widget class="QDateTimeEdit" name="dateTimeEditStorico_Da">
+                  <property name="currentSection">
+                   <enum>QDateTimeEdit::DaySection</enum>
+                  </property>
+                  <property name="calendarPopup">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QDateTimeEdit" name="dateTimeEditStorico_A">
+                  <property name="calendarPopup">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QTableView" name="tableViewStorico"/>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -993,4 +1141,7 @@ QDoubleSpinBox::up-arrow {
   <include location="icons/icons.qrc"/>
  </resources>
  <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroupStorico"/>
+ </buttongroups>
 </ui>
