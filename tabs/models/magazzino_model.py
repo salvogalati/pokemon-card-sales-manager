@@ -44,7 +44,8 @@ class MagazzinoModel(QSqlTableModel):
                 if value == "Si":
                     return QColor("#e7f34b")
                 else:
-                    print(index.row(), value)
+                    pass
+                    #print(index.row(), value)
 
         return super().data(index, role)
 
