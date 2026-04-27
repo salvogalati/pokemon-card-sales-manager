@@ -30,6 +30,10 @@
        <number>0</number>
       </property>
       <widget class="QWidget" name="tabVendite">
+       <attribute name="icon">
+        <iconset resource="icons/icons.qrc">
+         <normaloff>:/icons/icons-carrello.png</normaloff>:/icons/icons-carrello.png</iconset>
+       </attribute>
        <attribute name="title">
         <string>Vendite</string>
        </attribute>
@@ -189,6 +193,11 @@
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
+                <property name="font">
+                 <font>
+                  <pointsize>11</pointsize>
+                 </font>
+                </property>
                 <property name="text">
                  <string>Concludi vendita</string>
                 </property>
@@ -257,6 +266,10 @@
        </layout>
       </widget>
       <widget class="QWidget" name="tabAcquisti">
+       <attribute name="icon">
+        <iconset resource="icons/icons.qrc">
+         <normaloff>:/icons/icons-acquisti.png</normaloff>:/icons/icons-acquisti.png</iconset>
+       </attribute>
        <attribute name="title">
         <string>Acquisti</string>
        </attribute>
@@ -412,6 +425,10 @@
        </layout>
       </widget>
       <widget class="QWidget" name="tabMagazzino">
+       <attribute name="icon">
+        <iconset resource="icons/icons.qrc">
+         <normaloff>:/icons/icons-magazzino.png</normaloff>:/icons/icons-magazzino.png</iconset>
+       </attribute>
        <attribute name="title">
         <string>Magazzino</string>
        </attribute>
@@ -976,6 +993,10 @@ QDoubleSpinBox::up-arrow {
        </layout>
       </widget>
       <widget class="QWidget" name="tabStorico">
+       <attribute name="icon">
+        <iconset resource="icons/icons.qrc">
+         <normaloff>:/icons/icons-storico.png</normaloff>:/icons/icons-storico.png</iconset>
+       </attribute>
        <attribute name="title">
         <string>Storico</string>
        </attribute>

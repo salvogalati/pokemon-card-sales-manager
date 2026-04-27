@@ -1,5 +1,9 @@
 <RCC>
   <qresource prefix="icons">
+    <file>icons-storico.png</file>
+    <file>icons-acquisti.png</file>
+    <file>icons-carrello.png</file>
+    <file>icons-magazzino.png</file>
     <file>icon-barcode.png</file>
     <file>icons8-più-40.png</file>
     <file>icons-arrow-combox.png</file>
