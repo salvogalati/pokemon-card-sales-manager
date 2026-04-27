@@ -27,7 +27,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tabVendite">
        <attribute name="title">
@@ -751,16 +751,17 @@ QDoubleSpinBox::down-button {
 }
 
 QDoubleSpinBox::down-arrow {
-    image: url(C:/Users/Salvo/Documents/Coding/pokemon-card-sales-manager/Demo_PyQt/icons/icons-arrow-combox.png);
+    image: url(:/icons/icons-arrow-combox.png);
     width: 10px;
     height: 10px;
 }
 
 QDoubleSpinBox::up-arrow {
-    image: url(C:/Users/Salvo/Documents/Coding/pokemon-card-sales-manager/Demo_PyQt/icons/icons-arrow-up.png);
+    image: url(:/icons/icons-arrow-up.png);
     width: 10px;
     height: 10px;
-}</string>
+}
+</string>
                 </property>
                </widget>
                <widget class="QDoubleSpinBox" name="doubleSpinBoxMagazzinoPrezzoMax">
@@ -801,16 +802,17 @@ QDoubleSpinBox::down-button {
 }
 
 QDoubleSpinBox::down-arrow {
-    image: url(C:/Users/Salvo/Documents/Coding/pokemon-card-sales-manager/Demo_PyQt/icons/icons-arrow-combox.png);
+    image: url(:/icons/icons-arrow-combox.png);
     width: 10px;
     height: 10px;
 }
 
 QDoubleSpinBox::up-arrow {
-    image: url(C:/Users/Salvo/Documents/Coding/pokemon-card-sales-manager/Demo_PyQt/icons/icons-arrow-up.png);
+    image: url(:/icons/icons-arrow-up.png);
     width: 10px;
     height: 10px;
-}</string>
+}
+</string>
                 </property>
                 <property name="maximum">
                  <double>100000.000000000000000</double>
@@ -986,6 +988,11 @@ QDoubleSpinBox::up-arrow {
              <layout class="QVBoxLayout" name="verticalLayout_16">
               <item>
                <widget class="QRadioButton" name="radioButton">
+                <property name="font">
+                 <font>
+                  <pointsize>11</pointsize>
+                 </font>
+                </property>
                 <property name="text">
                  <string>Vendite</string>
                 </property>
@@ -999,6 +1006,11 @@ QDoubleSpinBox::up-arrow {
               </item>
               <item>
                <widget class="QRadioButton" name="radioButton_2">
+                <property name="font">
+                 <font>
+                  <pointsize>11</pointsize>
+                 </font>
+                </property>
                 <property name="text">
                  <string>Acquisti</string>
                 </property>
@@ -1023,6 +1035,11 @@ QDoubleSpinBox::up-arrow {
              <layout class="QVBoxLayout" name="verticalLayout_13">
               <item>
                <widget class="QLabel" name="label_12">
+                <property name="font">
+                 <font>
+                  <pointsize>11</pointsize>
+                 </font>
+                </property>
                 <property name="text">
                  <string>Prezzo Min | Max</string>
                 </property>
@@ -1035,6 +1052,11 @@ QDoubleSpinBox::up-arrow {
                <layout class="QHBoxLayout" name="horizontalLayout_5">
                 <item>
                  <widget class="QDoubleSpinBox" name="doubleSpinBoxMinStorico">
+                  <property name="font">
+                   <font>
+                    <pointsize>10</pointsize>
+                   </font>
+                  </property>
                   <property name="maximum">
                    <double>10000.989999999999782</double>
                   </property>
@@ -1045,6 +1067,11 @@ QDoubleSpinBox::up-arrow {
                 </item>
                 <item>
                  <widget class="QDoubleSpinBox" name="doubleSpinBoxMaxStorico">
+                  <property name="font">
+                   <font>
+                    <pointsize>10</pointsize>
+                   </font>
+                  </property>
                   <property name="maximum">
                    <double>10000.000000000000000</double>
                   </property>
@@ -1064,6 +1091,11 @@ QDoubleSpinBox::up-arrow {
              <layout class="QVBoxLayout" name="verticalLayout_14">
               <item>
                <widget class="QLabel" name="label_13">
+                <property name="font">
+                 <font>
+                  <pointsize>11</pointsize>
+                 </font>
+                </property>
                 <property name="text">
                  <string>Condizione</string>
                 </property>
@@ -1073,7 +1105,13 @@ QDoubleSpinBox::up-arrow {
                </widget>
               </item>
               <item>
-               <widget class="QComboBox" name="comboBoxCondizione_Storico"/>
+               <widget class="QComboBox" name="comboBoxCondizione_Storico">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>
@@ -1081,6 +1119,11 @@ QDoubleSpinBox::up-arrow {
              <layout class="QVBoxLayout" name="verticalLayout_15">
               <item>
                <widget class="QLabel" name="label_14">
+                <property name="font">
+                 <font>
+                  <pointsize>11</pointsize>
+                 </font>
+                </property>
                 <property name="text">
                  <string>Data Da | A</string>
                 </property>
@@ -1093,6 +1136,11 @@ QDoubleSpinBox::up-arrow {
                <layout class="QHBoxLayout" name="horizontalLayout_6">
                 <item>
                  <widget class="QDateTimeEdit" name="dateTimeEditStorico_Da">
+                  <property name="font">
+                   <font>
+                    <pointsize>10</pointsize>
+                   </font>
+                  </property>
                   <property name="currentSection">
                    <enum>QDateTimeEdit::DaySection</enum>
                   </property>
@@ -1103,6 +1151,11 @@ QDoubleSpinBox::up-arrow {
                 </item>
                 <item>
                  <widget class="QDateTimeEdit" name="dateTimeEditStorico_A">
+                  <property name="font">
+                   <font>
+                    <pointsize>10</pointsize>
+                   </font>
+                  </property>
                   <property name="calendarPopup">
                    <bool>true</bool>
                   </property>
