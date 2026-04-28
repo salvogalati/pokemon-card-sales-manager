@@ -27,7 +27,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tabVendite">
        <attribute name="icon">
@@ -70,6 +70,9 @@
           </item>
           <item>
            <widget class="QTableView" name="tableStock">
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
             <property name="editTriggers">
              <set>QAbstractItemView::NoEditTriggers</set>
             </property>
@@ -136,8 +139,18 @@
           </item>
           <item>
            <widget class="QTableWidget" name="tableWidget_carrello">
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
             <property name="editTriggers">
              <set>QAbstractItemView::NoEditTriggers</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="Line" name="line">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
             </property>
            </widget>
           </item>
@@ -308,6 +321,13 @@
            <widget class="QTableWidget" name="tableWidgetAcquisti">
             <property name="editTriggers">
              <set>QAbstractItemView::DoubleClicked</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="Line" name="line_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
             </property>
            </widget>
           </item>
@@ -564,6 +584,11 @@
                 <height>16777215</height>
                </size>
               </property>
+              <property name="font">
+               <font>
+                <pointsize>10</pointsize>
+               </font>
+              </property>
               <property name="styleSheet">
                <string notr="true">QComboBox {
     border: 1px solid gray;
@@ -633,6 +658,11 @@ QComboBox QAbstractItemView {
                 <width>270</width>
                 <height>16777215</height>
                </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>10</pointsize>
+               </font>
               </property>
               <property name="styleSheet">
                <string notr="true">QSpinBox {
@@ -737,6 +767,11 @@ QSpinBox::up-arrow {
                   <height>16777215</height>
                  </size>
                 </property>
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
                 <property name="styleSheet">
                  <string notr="true">QDoubleSpinBox {
     border: 1px solid gray;
@@ -787,6 +822,11 @@ QDoubleSpinBox::up-arrow {
                   <width>150</width>
                   <height>16777215</height>
                  </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
                 </property>
                 <property name="styleSheet">
                  <string notr="true">QDoubleSpinBox {
@@ -969,6 +1009,9 @@ QDoubleSpinBox::up-arrow {
             </property>
             <property name="sortingEnabled">
              <bool>true</bool>
+            </property>
+            <property name="cornerButtonEnabled">
+             <bool>false</bool>
             </property>
            </widget>
           </item>
@@ -1208,16 +1251,6 @@ QDoubleSpinBox::up-arrow {
      </widget>
     </item>
    </layout>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>754</width>
-     <height>18</height>
-    </rect>
-   </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
