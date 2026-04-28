@@ -1,6 +1,7 @@
 from PyQt5.QtSql import QSqlTableModel
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
+from config import card_condizioni_colors
 
 
 
@@ -46,6 +47,10 @@ class MagazzinoModel(QSqlTableModel):
                 else:
                     pass
                     #print(index.row(), value)
+        if index.column() == self.fieldIndex("condizione"):
+            color = card_condizioni_colors.get(value, None)
+            if role == Qt.BackgroundRole:
+                return QColor(color)
 
         return super().data(index, role)
 

@@ -6,6 +6,7 @@ from PyQt5 import QtSql
 from PyQt5 import QtCore
 from PyQt5.QtCore import QObject, Qt
 from utils import pulisci_testo, createMessageBox
+from .models.card_database_model import CardDatabaseModel
 
 from icons import icons  # noqa: F401
 
@@ -17,7 +18,8 @@ class VenditeTabController(QObject):
 
         db_main = QtSql.QSqlDatabase.database("main_connection")
         self.db_main = db_main  # Assign the main database connection to self.db_main
-        self.model = QtSql.QSqlTableModel(None, self.db_main)
+        #self.model = QtSql.QSqlTableModel(None, self.db_main)
+        self.model = CardDatabaseModel(db_main)
         self.model.setTable("stock")  # <-- cambia con la tua tabella
         self.model.select()
 

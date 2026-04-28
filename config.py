@@ -8,7 +8,16 @@ stock_table = "stock"
 sales_table = "sales"
 purchase_table = "purchases"
 
-cards_condizioni = ["Mint", "Near Mint", "Excellent", "Good", "Played"]
+cards_condizioni = ["Mint", "Near Mint", "Excellent", "Good", "Light Played", "Played", "Poor"]
+card_condizioni_colors = {
+    "Mint": "#3CC6C6",
+    "Near Mint": "#8BC34A",
+    "Excellent": "#7AA42D",
+    "Good": "#FFEB3B",
+    "Light Played": "#FFC107",
+    "Played": "#D44ED2",
+    "Poor": "#FF5722"
+}
 
 backup_folder = "backups"
 
