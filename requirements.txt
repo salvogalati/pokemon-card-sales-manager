@@ -1,0 +1,5 @@
+PyQt5>=5.15,<6
+pandas>=2.0,<3
+
+# Optional: needed only if you build the desktop executable from main.spec
+pyinstaller>=6,<7
