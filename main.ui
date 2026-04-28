@@ -27,7 +27,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tabVendite">
        <attribute name="icon">
@@ -213,6 +213,10 @@
                 </property>
                 <property name="text">
                  <string>Concludi vendita</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="icons/icons.qrc">
+                  <normaloff>:/icons/icons-euro.png</normaloff>:/icons/icons-euro.png</iconset>
                 </property>
                </widget>
               </item>
@@ -401,12 +405,20 @@
                 <property name="text">
                  <string>Salva bozza</string>
                 </property>
+                <property name="icon">
+                 <iconset resource="icons/icons.qrc">
+                  <normaloff>:/icons/icons-bozza.png</normaloff>:/icons/icons-bozza.png</iconset>
+                </property>
                </widget>
               </item>
               <item>
                <widget class="QPushButton" name="buttonApriBozzaAcquisti">
                 <property name="text">
                  <string>Apri bozza</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="icons/icons.qrc">
+                  <normaloff>:/icons/icons-listabozze.png</normaloff>:/icons/icons-listabozze.png</iconset>
                 </property>
                </widget>
               </item>
@@ -417,6 +429,10 @@
                 </property>
                 <property name="text">
                  <string>Completa acquisto</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="icons/icons.qrc">
+                  <normaloff>:/icons/icons-euro.png</normaloff>:/icons/icons-euro.png</iconset>
                 </property>
                </widget>
               </item>

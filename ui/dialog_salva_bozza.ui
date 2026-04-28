@@ -58,6 +58,10 @@
        <property name="text">
         <string>Salva</string>
        </property>
+       <property name="icon">
+        <iconset resource="../icons/icons.qrc">
+         <normaloff>:/icons/icons-salva.png</normaloff>:/icons/icons-salva.png</iconset>
+       </property>
       </widget>
      </item>
      <item>
