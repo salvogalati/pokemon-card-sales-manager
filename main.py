@@ -34,6 +34,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.tabVendite = VenditeTabController(self)
         self.tabStorico = StoricoTabController(self)
 
+        self.adjustSize()
+
 
 
 if __name__ == "__main__":
