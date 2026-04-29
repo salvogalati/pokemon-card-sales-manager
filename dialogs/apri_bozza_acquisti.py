@@ -2,6 +2,8 @@ from PyQt5 import QtWidgets, uic, QtSql
 from PyQt5 import QtCore
 from config import get_resource_path
 from utils import createMessageBox
+import os
+import sys
 
 class ApriBozzaAcquistiDialog(QtWidgets.QDialog):
     def __init__(self, data, parent=None):
@@ -9,7 +11,7 @@ class ApriBozzaAcquistiDialog(QtWidgets.QDialog):
         self.data = data
 
         # Carica il file .ui
-        uic.loadUi(get_resource_path("ui/dialog_bozze_acquisti.ui"), self)
+        uic.loadUi(get_resource_path(os.path.join(sys._MEIPASS, "ui", "dialog_bozze_acquisti.ui")), self)
 
         self.main_db = parent.db_main
         self.model = QtSql.QSqlTableModel(self, self.main_db)

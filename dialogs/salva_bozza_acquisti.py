@@ -1,6 +1,8 @@
 import json
+import os
+import sys
 from PyQt5 import QtWidgets, uic, QtSql
-from config import main_db, card_db, get_resource_path
+from config import get_resource_path
 from utils import createMessageBox
 
 
@@ -10,7 +12,7 @@ class SalvaBozzaAcquistiDialog(QtWidgets.QDialog):
         self.data = data
 
         # Carica il file .ui
-        uic.loadUi(get_resource_path("ui/dialog_salva_bozza.ui"), self)
+        uic.loadUi(get_resource_path(os.path.join(sys._MEIPASS, "ui", "dialog_salva_bozza.ui")), self)
 
         self.main_db = parent.db_main
 
