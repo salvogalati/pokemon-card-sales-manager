@@ -8,6 +8,8 @@ stock_table = "stock"
 sales_table = "sales"
 purchase_table = "purchases"
 
+database_table = "DatabaseCards"
+
 cards_condizioni = ["Mint", "Near Mint", "Excellent", "Good", "Light Played", "Played", "Poor"]
 card_condizioni_colors = {
     "Mint": "#3CC6C6",
