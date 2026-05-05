@@ -27,7 +27,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="tabVendite">
        <attribute name="icon">
@@ -109,57 +109,51 @@
          </spacer>
         </item>
         <item row="0" column="2">
-         <layout class="QVBoxLayout" name="verticalLayout_4">
+         <layout class="QVBoxLayout" name="verticalLayout_22">
           <item>
-           <widget class="QSplitter" name="splitter">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <widget class="QLabel" name="label_2">
-             <property name="font">
-              <font>
-               <pointsize>17</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>Carrello</string>
-             </property>
-            </widget>
-            <widget class="QPushButton" name="button_svuota_carrello">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string>Svuota</string>
-             </property>
-            </widget>
-           </widget>
+           <layout class="QVBoxLayout" name="verticalLayout_4">
+            <item>
+             <widget class="QSplitter" name="splitter">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <widget class="QLabel" name="label_2">
+               <property name="font">
+                <font>
+                 <pointsize>17</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string>Carrello</string>
+               </property>
+              </widget>
+              <widget class="QPushButton" name="button_svuota_carrello">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>Svuota</string>
+               </property>
+              </widget>
+             </widget>
+            </item>
+            <item>
+             <widget class="QTableWidget" name="tableWidget_carrello">
+              <property name="styleSheet">
+               <string notr="true"/>
+              </property>
+              <property name="editTriggers">
+               <set>QAbstractItemView::NoEditTriggers</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
           <item>
-           <widget class="QTableWidget" name="tableWidget_carrello">
-            <property name="styleSheet">
-             <string notr="true"/>
-            </property>
-            <property name="editTriggers">
-             <set>QAbstractItemView::NoEditTriggers</set>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="Line" name="line">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QSplitter" name="splitter_2">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <widget class="QWidget" name="layoutWidget">
+           <layout class="QHBoxLayout" name="horizontalLayout_8">
+            <item>
              <layout class="QVBoxLayout" name="verticalLayout_3">
               <item>
                <widget class="QLabel" name="label_totale_carrello_testo">
@@ -183,7 +177,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string>Sconto (€)</string>
+                 <string>Prezzo finale</string>
                 </property>
                </widget>
               </item>
@@ -221,8 +215,8 @@
                </widget>
               </item>
              </layout>
-            </widget>
-            <widget class="QWidget" name="layoutWidget">
+            </item>
+            <item>
              <layout class="QVBoxLayout" name="verticalLayout_2">
               <item>
                <widget class="QLabel" name="label_totale_carrello">
@@ -246,6 +240,12 @@
                <widget class="QLineEdit" name="sconto_input">
                 <property name="enabled">
                  <bool>false</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
                 </property>
                 <property name="font">
                  <font>
@@ -274,11 +274,34 @@
                 </property>
                </widget>
               </item>
+              <item>
+               <spacer name="verticalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Minimum</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
              </layout>
-            </widget>
-           </widget>
+            </item>
+           </layout>
           </item>
          </layout>
+        </item>
+        <item row="1" column="2">
+         <widget class="Line" name="line">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -1046,6 +1069,13 @@ QDoubleSpinBox::up-arrow {
              </widget>
             </item>
             <item>
+             <widget class="QLineEdit" name="lineEditSearchMagazzino">
+              <property name="placeholderText">
+               <string>Cerca</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <spacer name="horizontalSpacer_2">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -1311,6 +1341,51 @@ QDoubleSpinBox::up-arrow {
             </property>
             <property name="cornerButtonEnabled">
              <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tabDatabase">
+       <attribute name="title">
+        <string>Database</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_6">
+        <item row="0" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout_11">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_23">
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_10">
+              <item>
+               <widget class="QLineEdit" name="lineEditSearchDatabase"/>
+              </item>
+              <item>
+               <widget class="QPushButton" name="buttonAggiungiCartaDatabase">
+                <property name="text">
+                 <string>Aggiungi Carta</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QTableView" name="tableViewDatabase"/>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QLabel" name="labelCartaImmagineDatabase">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Immagine Carta Selezionata</string>
             </property>
            </widget>
           </item>
