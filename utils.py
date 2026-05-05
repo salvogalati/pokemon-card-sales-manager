@@ -18,3 +18,10 @@ def createMessageBox(title, text, icon=QtWidgets.QMessageBox.Information, button
     for button in buttons:
         msg.addButton(button)
     return msg
+
+def get_column_index(table, column_name):
+    for i in range(table.columnCount()):
+        header = table.horizontalHeaderItem(i)
+        if header and header.text() == column_name:
+            return i
+    return -1
