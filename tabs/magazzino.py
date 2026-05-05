@@ -6,13 +6,14 @@ from PyQt5 import QtSql
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtSql import QSqlTableModel
 
-from utils import pulisci_testo
+from utils import pulisci_testo, createMessageBox
 from .models.magazzino_model import MagazzinoModel
 from .models.delegates import YesNoDelegate, CondizioneComboBoxDelegate
 from PyQt5.QtWidgets import QStyledItemDelegate, QSpinBox
 from icons import icons  # noqa: F401
 from config import main_db, backup_folder, cards_condizioni, get_resource_path, get_app_root
 import shutil
+
 
 
 class SpinBoxDelegate(QStyledItemDelegate):
@@ -151,7 +152,7 @@ class MagazzinoTabController:
         self.model_magazzino.setFilter("")
 
     def salva_modifiche(self):
-        msg = self.createMessageBox(
+        msg = createMessageBox(
             "Conferma Salvataggio",
             "Sei sicuro di voler salvare le modifiche al magazzino?",
             QtWidgets.QMessageBox.Question,
@@ -209,7 +210,7 @@ class MagazzinoTabController:
         data_backup = backup_to_restore.replace("backup_pokemon_cards_", "").replace(
             ".db", ""
         )
-        msg = self.createMessageBox(
+        msg = createMessageBox(
             "Conferma Ripristino",
             f"Sei sicuro di voler ripristinare il database dal backup più recente effettuato il {data_backup}?",
             QtWidgets.QMessageBox.Warning,
@@ -234,15 +235,3 @@ class MagazzinoTabController:
                 "Errore Ripristino",
                 f"Errore durante il ripristino del database\nERRORE: {str(e)}",
             )
-
-    def createMessageBox(
-        self, title, text, icon=QtWidgets.QMessageBox.Information, buttons=[]
-    ):
-        msg = QtWidgets.QMessageBox()
-        msg.setWindowTitle(title)
-        msg.setText(text)
-        msg.setIcon(icon)
-        msg.setWindowIcon(QtGui.QIcon("icons/logo_kingdom_cards.png"))
-        for button in buttons:
-            msg.addButton(button)
-        return msg
