@@ -48,7 +48,8 @@ class StoricoTabController:
             if testo:
                 t = pulisci_testo(testo)
                 filtri.append(f"""
-                (espansione LIKE '%{t}%'
+                (espansione_id LIKE '%{t}%'
+                OR espansione_nome LIKE '%{t}%'
                 OR nome LIKE '%{t}%'
                 OR barcode LIKE '%{t}%')
                 """)
