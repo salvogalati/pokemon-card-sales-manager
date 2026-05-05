@@ -240,7 +240,7 @@ class AcquistiTabController(QObject):
 
         except Exception as e:
             self.db_main.rollback()
-            msg = self.createMessageBox(
+            msg = createMessageBox(
                 "Errore",
                 f"Errore durante l'acquisto:\n{str(e)}",
                 QtWidgets.QMessageBox.Critical,
@@ -253,7 +253,7 @@ class AcquistiTabController(QObject):
 
         self.model_card_database.select()
 
-        msg = self.createMessageBox(
+        msg = createMessageBox(
             "Acquisto completato",
             "L'acquisto è stato registrato con successo!",
             QtWidgets.QMessageBox.Information,
