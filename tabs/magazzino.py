@@ -104,11 +104,11 @@ class MagazzinoTabController:
 
         if filtro_nome.strip():
             nome = escape_sql(filtro_nome)
-            condizioni.append(f"nome LIKE '%{nome}%'")
+            condizioni.append(f"name LIKE '%{nome}%'")
 
         if filtro_espansione.strip():
             esp = escape_sql(filtro_espansione)
-            condizioni.append(f"espansione LIKE '%{esp}%'")
+            condizioni.append(f"espansione_id LIKE '%{esp}%' OR espansione_nome LIKE '%{esp}%'")
 
         if filtro_qty > 0:
             condizioni.append(f"quantita_stock >= {filtro_qty}")
@@ -133,8 +133,9 @@ class MagazzinoTabController:
         testo_sicuro = pulisci_testo(testo)
 
         filtro = f"""
-        espansione LIKE '%{testo_sicuro}%'
-        OR nome LIKE '%{testo_sicuro}%'
+        espansione_id LIKE '%{testo_sicuro}%'
+        OR espansione_nome LIKE '%{testo_sicuro}%'
+        OR name LIKE '%{testo_sicuro}%'
         OR barcode LIKE '%{testo_sicuro}%'
         OR condizione LIKE '%{testo_sicuro}%'
         """
