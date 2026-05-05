@@ -5,6 +5,8 @@ from PyQt5 import QtWidgets, QtGui
 from PyQt5 import QtSql
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtSql import QSqlTableModel
+
+from utils import pulisci_testo
 from .models.magazzino_model import MagazzinoModel
 from .models.delegates import YesNoDelegate, CondizioneComboBoxDelegate
 from PyQt5.QtWidgets import QStyledItemDelegate, QSpinBox
@@ -64,6 +66,8 @@ class MagazzinoTabController:
         self.ui.buttonMagazzinoSave.clicked.connect(self.salva_modifiche)
         self.ui.buttonMagazzinoRipristina.clicked.connect(self.ripristina_backup)
 
+        self.ui.lineEditSearchMagazzino.textChanged.connect(self.filtra_tabella_search)
+
     def applica_filtro(self):
         filtro_nome = self.ui.lineEditMagazzinoFiltroNome.text()
         filtro_espansione = self.ui.lineEditMagazzinoFiltroEspansione.text()
@@ -119,6 +123,23 @@ class MagazzinoTabController:
             condizioni.append(f"prezzo <= {filtro_prezzo_max}")
 
         return " AND ".join(condizioni)
+
+    def filtra_tabella_search(self, testo):
+        if not testo:
+            self.model_magazzino.setFilter("")
+            self.model_magazzino.select()
+            return
+        testo_sicuro = pulisci_testo(testo)
+
+        filtro = f"""
+        espansione LIKE '%{testo_sicuro}%'
+        OR nome LIKE '%{testo_sicuro}%'
+        OR barcode LIKE '%{testo_sicuro}%'
+        OR condizione LIKE '%{testo_sicuro}%'
+        """
+
+        self.model_magazzino.setFilter(filtro)
+        self.model_magazzino.select()
 
     def resetta_filtro(self):
         self.ui.lineEditMagazzinoFiltroNome.clear()
