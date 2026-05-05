@@ -11,7 +11,7 @@ from .models.delegates import CondizioneComboBoxDelegate
 from dialogs.apri_bozza_acquisti import ApriBozzaAcquistiDialog
 from dialogs.salva_bozza_acquisti import SalvaBozzaAcquistiDialog   
 from utils import createMessageBox
-
+from config import stock_table
 from icons import icons  # noqa: F401
 
 
@@ -25,7 +25,7 @@ class AcquistiTabController(QObject):
         self.db_main = db_main  # Assign the main database connection to self.db_main
         self.db = db_cards  # Assign the database connection to self.db
         self.model_card_database = CardDatabaseModel(db_cards)
-        self.model_card_database.setTable("stock")
+        self.model_card_database.setTable(stock_table)
         self.model_card_database.select()
         self.ui.tableDatabaseAcquisti.setModel(self.model_card_database)
         self.ui.tableDatabaseAcquisti.doubleClicked.connect(

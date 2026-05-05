@@ -1,4 +1,3 @@
-from datetime import datetime
 import traceback
 
 from PyQt5 import QtWidgets, QtGui
@@ -7,7 +6,7 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import QObject, Qt
 from utils import pulisci_testo, createMessageBox
 from .models.card_database_model import CardDatabaseModel
-
+from config import stock_table
 from icons import icons  # noqa: F401
 
 
@@ -20,7 +19,7 @@ class VenditeTabController(QObject):
         self.db_main = db_main  # Assign the main database connection to self.db_main
         #self.model = QtSql.QSqlTableModel(None, self.db_main)
         self.model = CardDatabaseModel(db_main)
-        self.model.setTable("stock")  # <-- cambia con la tua tabella
+        self.model.setTable(stock_table)  # <-- cambia con la tua tabella
         self.model.setFilter("quantita_stock > 0")
         self.model.select()
 

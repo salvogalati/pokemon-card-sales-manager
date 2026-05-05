@@ -11,7 +11,7 @@ from .models.magazzino_model import MagazzinoModel
 from .models.delegates import YesNoDelegate, CondizioneComboBoxDelegate
 from PyQt5.QtWidgets import QStyledItemDelegate, QSpinBox
 from icons import icons  # noqa: F401
-from config import main_db, backup_folder, cards_condizioni, get_resource_path, get_app_root
+from config import main_db, backup_folder, cards_condizioni, get_resource_path, stock_table
 import shutil
 
 
@@ -38,7 +38,7 @@ class MagazzinoTabController:
         db = QtSql.QSqlDatabase.database("main_connection")
         self.model_magazzino = MagazzinoModel(db)
         self.model_magazzino.setEditStrategy(QSqlTableModel.OnManualSubmit)
-        self.model_magazzino.setTable("stock")
+        self.model_magazzino.setTable(stock_table)
         self.model_magazzino.select()
 
         self.ui.tableViewMagazzino.setModel(self.model_magazzino)
