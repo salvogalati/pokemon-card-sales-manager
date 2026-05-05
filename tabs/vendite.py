@@ -21,6 +21,7 @@ class VenditeTabController(QObject):
         #self.model = QtSql.QSqlTableModel(None, self.db_main)
         self.model = CardDatabaseModel(db_main)
         self.model.setTable("stock")  # <-- cambia con la tua tabella
+        self.model.setFilter("quantita_stock > 0")
         self.model.select()
 
         # Collega alla tabella
@@ -73,6 +74,8 @@ class VenditeTabController(QObject):
         espansione LIKE '%{testo_sicuro}%'
         OR nome LIKE '%{testo_sicuro}%'
         OR barcode LIKE '%{testo_sicuro}%'
+        OR condizione LIKE '%{testo_sicuro}%'
+        AND quantita_stock > 0
         """
 
         self.model.setFilter(filtro)
@@ -221,11 +224,10 @@ class VenditeTabController(QObject):
 
     def applica_sconto(self, testo):
         try:
-            sconto = float(testo.replace(",", "."))
+            totale_scontato = float(testo.replace(",", "."))
         except ValueError:
-            sconto = 0.0
+            totale_scontato = 0.0
         totale = float(self.ui.label_totale_carrello.text().replace(" €", ""))
-        totale_scontato = totale - sconto
         # sconto_per_riga = sconto / self.ui.tableWidget_carrello.rowCount()
         self.ui.label_totale_dapagare.setText(f"{totale_scontato:.2f} €")
 
@@ -239,7 +241,7 @@ class VenditeTabController(QObject):
                     prezzo = float(prezzo_item.text())
                     if totale > 0:
                         prezzo_scontato = (
-                            prezzo - (prezzo / totale) * sconto
+                            prezzo - (prezzo / totale) * (totale - totale_scontato)
                         )  # sconto proporzionale
                         # prezzo_scontato = prezzo - sconto_per_riga # sconto uniforme
                         prezzo_scontato_item.setText(f"{prezzo_scontato:.2f}")
