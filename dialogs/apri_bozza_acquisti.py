@@ -11,7 +11,7 @@ class ApriBozzaAcquistiDialog(QtWidgets.QDialog):
         self.data = data
 
         # Carica il file .ui
-        uic.loadUi(get_resource_path(os.path.join(sys._MEIPASS, "ui", "dialog_bozze_acquisti.ui")), self)
+        uic.loadUi(get_resource_path(os.path.join("ui", "dialog_bozze_acquisti.ui")), self)
 
         self.main_db = parent.db_main
         self.model = QtSql.QSqlTableModel(self, self.main_db)
