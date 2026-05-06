@@ -1,8 +1,6 @@
 from datetime import datetime
-import os
 
 from PyQt5.QtSql import QSqlTableModel
-from PyQt5.QtCore import QSize
 from .models.magazzino_model import MagazzinoModel
 from icons import icons  # noqa: F401
 from config import cards_condizioni

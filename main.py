@@ -1,5 +1,4 @@
 import sys
-import os
 import traceback
 from PyQt5 import QtWidgets, uic, QtSql
 from tabs.magazzino import MagazzinoTabController
@@ -74,7 +73,7 @@ def show_exception_box(exc_type, exc_value, exc_traceback):
             dlg.exec_()
         else:
             print(msg)
-    except:
+    except Exception:
         print(msg)
 
 

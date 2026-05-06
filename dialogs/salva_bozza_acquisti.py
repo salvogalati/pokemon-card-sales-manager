@@ -1,6 +1,5 @@
 import json
 import os
-import sys
 from PyQt5 import QtWidgets, uic, QtSql
 from config import get_resource_path
 from utils import createMessageBox

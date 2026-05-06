@@ -1,7 +1,7 @@
 from PyQt5.QtSql import QSqlTableModel
-from config import card_condizioni_colors, card_condizioni_icons
+from config import card_condizioni_icons
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QColor, QIcon
+from PyQt5.QtGui import QIcon
 from icons import icons  # noqa: F401
 
 
@@ -17,7 +17,7 @@ class CardDatabaseModel(QSqlTableModel):
         if role == Qt.TextAlignmentRole:
             return Qt.AlignCenter
         if index.column() == self.fieldIndex("condizione"):
-            color = card_condizioni_colors.get(value, None)
+            # color = card_condizioni_colors.get(value, None)
             # if role == Qt.BackgroundRole:
             #     return QColor(color)
             # if role == Qt.DisplayRole:

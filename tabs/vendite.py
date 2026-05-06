@@ -3,7 +3,7 @@ import traceback
 from PyQt5 import QtWidgets, QtGui
 from PyQt5 import QtSql
 from PyQt5 import QtCore
-from PyQt5.QtCore import QObject, Qt, QSize
+from PyQt5.QtCore import QObject, Qt
 from tabs.models.delegates import CenterIconDelegate
 from utils import pulisci_testo, createMessageBox
 from .models.card_database_model import CardDatabaseModel
