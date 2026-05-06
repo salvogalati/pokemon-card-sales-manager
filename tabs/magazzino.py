@@ -185,9 +185,9 @@ class MagazzinoTabController:
             )
         if self.model_magazzino.tableName() == unpriced_table:
             self.sposta_carte_prezzate()
-            QMessageBox.information(
-                self.ui, "Successo", "Modifiche salvate con successo!"
-            )
+        QMessageBox.information(
+            self.ui, "Successo", "Modifiche salvate con successo!"
+        )
 
     def sposta_carte_prezzate(self):
         db = QtSql.QSqlDatabase.database("main_connection")
@@ -315,6 +315,7 @@ class MagazzinoTabController:
                 self.ui, "Nessun Backup", "Non sono stati trovati file di backup."
             )
             return
+        backup_files.sort()
         backup_to_restore = backup_files[-1]  # Prendi l'ultimo backup creato
         data_backup = backup_to_restore.replace("backup_pokemon_cards_", "").replace(
             ".db", ""
