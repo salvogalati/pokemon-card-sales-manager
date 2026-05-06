@@ -222,35 +222,37 @@ class AcquistiTabController(QObject):
                 if not insert_query.exec_():
                     raise Exception(insert_query.lastError().text())
 
-                update_query = QtSql.QSqlQuery(self.db_main)
-                update_query.prepare(f"""
-                    UPDATE {stock_table}
-                    SET quantita_stock = quantita_stock + 1
-                    WHERE barcode = :barcode
-                """)
-                update_query.bindValue(":prezzo", row_data["Prezzo acquisto"])
-                update_query.bindValue(":barcode", barcode)
-                if not update_query.exec_():
-                    raise Exception(update_query.lastError().text())
+                # Logica per aggiornare lo stock: se la carta esiste già
+                # update_query = QtSql.QSqlQuery(self.db_main)
+                # update_query.prepare(f"""
+                #     UPDATE {stock_table}
+                #     SET quantita_stock = quantita_stock + 1
+                #     WHERE barcode = :barcode
+                # """)
+                # update_query.bindValue(":prezzo", row_data["Prezzo acquisto"])
+                # update_query.bindValue(":barcode", barcode)
+                # if not update_query.exec_():
+                #     raise Exception(update_query.lastError().text())
 
-                if update_query.numRowsAffected() == 0:
-                    insert_stock_query = QtSql.QSqlQuery(self.db_main)
-                    insert_stock_query.prepare(f"""
-                        INSERT INTO {unpriced_table} (barcode, id, espansione_id, espansione_nome, name, condizione, prezzo, quantita_stock, prezzo_acquisto, da_prezzare)
-                        VALUES (:barcode, :id, :espansione_id, :espansione_nome, :name, :condizione, :prezzo, 1, :prezzo_acquisto, 'Si')
-                    """)
-                    insert_stock_query.bindValue(":barcode", barcode)
-                    insert_stock_query.bindValue(":id", row_data["ID"])
-                    insert_stock_query.bindValue(":espansione_id", row_data["ID Espansione"])
-                    insert_stock_query.bindValue(":espansione_nome", row_data["Nome Espansione"])
-                    insert_stock_query.bindValue(":name", row_data["Nome"])
-                    insert_stock_query.bindValue(":condizione", row_data["Condizione"])
-                    insert_stock_query.bindValue(":prezzo", float(row_data["Prezzo acquisto"]))
-                    insert_stock_query.bindValue(
-                        ":prezzo_acquisto", float(row_data["Prezzo acquisto"])
-                    )
-                    if not insert_stock_query.exec_():
-                        raise Exception(insert_stock_query.lastError().text())
+                # if update_query.numRowsAffected() == 0:
+
+                insert_stock_query = QtSql.QSqlQuery(self.db_main)
+                insert_stock_query.prepare(f"""
+                    INSERT INTO {unpriced_table} (barcode, id, espansione_id, espansione_nome, name, condizione, prezzo, quantita_stock, prezzo_acquisto, da_prezzare)
+                    VALUES (:barcode, :id, :espansione_id, :espansione_nome, :name, :condizione, :prezzo, 1, :prezzo_acquisto, 'Si')
+                """)
+                insert_stock_query.bindValue(":barcode", barcode)
+                insert_stock_query.bindValue(":id", row_data["ID"])
+                insert_stock_query.bindValue(":espansione_id", row_data["ID Espansione"])
+                insert_stock_query.bindValue(":espansione_nome", row_data["Nome Espansione"])
+                insert_stock_query.bindValue(":name", row_data["Nome"])
+                insert_stock_query.bindValue(":condizione", row_data["Condizione"])
+                insert_stock_query.bindValue(":prezzo", float(row_data["Prezzo acquisto"]))
+                insert_stock_query.bindValue(
+                    ":prezzo_acquisto", float(row_data["Prezzo acquisto"])
+                )
+                if not insert_stock_query.exec_():
+                    raise Exception(insert_stock_query.lastError().text())
 
             self.db_main.commit()
             self.ui.lineEditTotaleDaPagareAcquisti.setText("")
