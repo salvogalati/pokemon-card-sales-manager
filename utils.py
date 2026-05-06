@@ -1,3 +1,4 @@
+import hashlib
 import re
 from PyQt5 import QtWidgets, QtGui
 from config import get_resource_path
@@ -25,3 +26,16 @@ def get_column_index(table, column_name):
         if header and header.text() == column_name:
             return i
     return -1
+
+def generate_barcode(nome, espansione, condizione):
+    def clean(s):
+        return re.sub(r"[^A-Z0-9]", "", s.upper())
+
+    # parte leggibile
+    base = f"{clean(nome)[:4]}-{clean(espansione)[:3]}-{clean(condizione)[:2]}"
+
+    # hash deterministico
+    raw = f"{nome}|{espansione}|{condizione}".upper()
+    short_hash = hashlib.md5(raw.encode()).hexdigest()[:6].upper()
+
+    return f"{base}-{short_hash}"
