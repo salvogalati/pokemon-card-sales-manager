@@ -117,9 +117,7 @@ class VenditeTabController(QObject):
         prezzo_stock = self.model.data(self.model.index(row, self.model.fieldIndex("prezzo")))
         quantita_stock = self.model.data(self.model.index(row, self.model.fieldIndex("quantita_stock")))
         stock_disponibile = int(quantita_stock)
-
         quantita_nel_carrello = 0
-
         for i in range(self.ui.tableWidget_carrello.rowCount()):
             if self.ui.tableWidget_carrello.item(i, 0).text() == str(barcode):
                 quantita_nel_carrello += 1
