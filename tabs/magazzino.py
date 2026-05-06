@@ -8,12 +8,22 @@ from PyQt5.QtSql import QSqlTableModel
 
 from utils import pulisci_testo, createMessageBox
 from .models.magazzino_model import MagazzinoModel
-from .models.delegates import CenterIconDelegate, YesNoDelegate, CondizioneComboBoxDelegate
+from .models.delegates import (
+    CenterIconDelegate,
+    YesNoDelegate,
+    CondizioneComboBoxDelegate,
+)
 from PyQt5.QtWidgets import QStyledItemDelegate, QSpinBox
 from icons import icons  # noqa: F401
-from config import main_db, backup_folder, cards_condizioni, get_resource_path, stock_table, unpriced_table
+from config import (
+    main_db,
+    backup_folder,
+    cards_condizioni,
+    get_resource_path,
+    stock_table,
+    unpriced_table,
+)
 import shutil
-
 
 
 class SpinBoxDelegate(QStyledItemDelegate):
@@ -49,11 +59,11 @@ class MagazzinoTabController:
             self.model_magazzino.fieldIndex("condizione"), delegateCondizione
         )
 
-        self.ui.tableViewMagazzino.setItemDelegateForColumn(self.model_magazzino.fieldIndex("condizione"), CenterIconDelegate())
-        #self.ui.tableViewMagazzino.setIconSize(QSize(60, 60))
-        self.ui.comboBoxCondizione.addItems(
-            [""] + cards_condizioni
+        self.ui.tableViewMagazzino.setItemDelegateForColumn(
+            self.model_magazzino.fieldIndex("condizione"), CenterIconDelegate()
         )
+        # self.ui.tableViewMagazzino.setIconSize(QSize(60, 60))
+        self.ui.comboBoxCondizione.addItems([""] + cards_condizioni)
 
         self.ui.button_applica_filtro.clicked.connect(self.applica_filtro)
         self.ui.button_resetta_filtro.clicked.connect(self.resetta_filtro)
@@ -74,15 +84,17 @@ class MagazzinoTabController:
         self.ui.tableViewMagazzino.setItemDelegateForColumn(
             self.model_magazzino.fieldIndex("condizione"), delegateCondizione
         )
-        
+
         if button.text() == "Da prezzare":
             delegateYesNo = YesNoDelegate(self.ui.tableViewMagazzino)
             self.ui.tableViewMagazzino.setItemDelegateForColumn(
                 self.model_magazzino.fieldIndex("da_prezzare"), delegateYesNo
             )
-        self.ui.tableViewMagazzino.setItemDelegateForColumn(self.model_magazzino.fieldIndex("condizione"), CenterIconDelegate())
+        self.ui.tableViewMagazzino.setItemDelegateForColumn(
+            self.model_magazzino.fieldIndex("condizione"), CenterIconDelegate()
+        )
 
-        #self.applica_filtro()
+        # self.applica_filtro()
         self.resetta_filtro()
 
     def applica_filtro(self):
@@ -124,7 +136,9 @@ class MagazzinoTabController:
 
         if filtro_espansione.strip():
             esp = escape_sql(filtro_espansione)
-            condizioni.append(f"espansione_id LIKE '%{esp}%' OR espansione_nome LIKE '%{esp}%'")
+            condizioni.append(
+                f"espansione_id LIKE '%{esp}%' OR espansione_nome LIKE '%{esp}%'"
+            )
 
         if filtro_qty > 0:
             condizioni.append(f"quantita_stock >= {filtro_qty}")
@@ -188,21 +202,21 @@ class MagazzinoTabController:
             )
         if self.model_magazzino.tableName() == unpriced_table:
             self.sposta_carte_prezzate()
-        QMessageBox.information(
-            self.ui, "Successo", "Modifiche salvate con successo!"
-        )
+        QMessageBox.information(self.ui, "Successo", "Modifiche salvate con successo!")
 
     def sposta_carte_prezzate(self):
         db = QtSql.QSqlDatabase.database("main_connection")
 
         if not db.transaction():
-            QMessageBox.critical(self.ui, "Errore", "Impossibile iniziare la transazione")
+            QMessageBox.critical(
+                self.ui, "Errore", "Impossibile iniziare la transazione"
+            )
             return
 
         query = QtSql.QSqlQuery(db)
 
         try:
-            chiave = "barcode" 
+            chiave = "barcode"
 
             # 1. UPDATE (merge su stock già esistente)
             update_sql = f"""
@@ -284,7 +298,9 @@ class MagazzinoTabController:
 
         except Exception as e:
             db.rollback()
-            QMessageBox.critical(self.ui, "Errore", f"Errore nello spostamento:\n{str(e)}")
+            QMessageBox.critical(
+                self.ui, "Errore", f"Errore nello spostamento:\n{str(e)}"
+            )
 
     def backup_database(self):
         try:
@@ -348,4 +364,3 @@ class MagazzinoTabController:
                 "Errore Ripristino",
                 f"Errore durante il ripristino del database\nERRORE: {str(e)}",
             )
-

@@ -39,6 +39,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.adjustSize()
 
+
 class ErrorDialog(QtWidgets.QDialog):
     def __init__(self, error_text, parent=None):
         super().__init__(parent)
@@ -57,9 +58,11 @@ class ErrorDialog(QtWidgets.QDialog):
         btn.clicked.connect(self.close)
         layout.addWidget(btn)
 
+
 def qt_exception_hook(type, value, tb):
     sys.__excepthook__(type, value, tb)
     show_exception_box(type, value, tb)
+
 
 def show_exception_box(exc_type, exc_value, exc_traceback):
     msg = "".join(traceback.format_exception(exc_type, exc_value, exc_traceback))

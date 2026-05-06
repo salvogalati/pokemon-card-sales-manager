@@ -3,6 +3,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
 from config import cards_condizioni
 
+
 class YesNoDelegate(QItemDelegate):
     def createEditor(self, parent, option, index):
         combo = QComboBox(parent)
@@ -20,6 +21,7 @@ class YesNoDelegate(QItemDelegate):
     def updateEditorGeometry(self, editor, option, index):
         editor.setGeometry(option.rect)
 
+
 class CondizioneComboBoxDelegate(QItemDelegate):
     def createEditor(self, parent, option, index):
         combo = QComboBox(parent)
@@ -36,6 +38,7 @@ class CondizioneComboBoxDelegate(QItemDelegate):
 
     def updateEditorGeometry(self, editor, option, index):
         editor.setGeometry(option.rect)
+
 
 class CenterIconDelegate(QStyledItemDelegate):
     def paint(self, painter, option, index):

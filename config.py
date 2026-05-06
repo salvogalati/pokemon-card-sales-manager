@@ -11,7 +11,15 @@ unpriced_table = "unpriced_cards"
 
 database_table = "DatabaseCards"
 
-cards_condizioni = ["Mint", "Near Mint", "Excellent", "Good", "Light Played", "Played", "Poor"]
+cards_condizioni = [
+    "Mint",
+    "Near Mint",
+    "Excellent",
+    "Good",
+    "Light Played",
+    "Played",
+    "Poor",
+]
 card_condizioni_colors = {
     "Mint": "#3CC6C6",
     "Near Mint": "#8BC34A",
@@ -19,7 +27,7 @@ card_condizioni_colors = {
     "Good": "#FFEB3B",
     "Light Played": "#FFC107",
     "Played": "#D44ED2",
-    "Poor": "#FF5722"
+    "Poor": "#FF5722",
 }
 card_condizioni_icons = {
     "Mint": ":/condizioni/condizioni/Mint.png",
@@ -28,7 +36,7 @@ card_condizioni_icons = {
     "Good": ":/condizioni/condizioni/Good.png",
     "Light Played": ":/condizioni/condizioni/Light Played.png",
     "Played": ":/condizioni/condizioni/Played.png",
-    "Poor": ":/condizioni/condizioni/Poor.png"
+    "Poor": ":/condizioni/condizioni/Poor.png",
 }
 
 backup_folder = "backups"
@@ -38,13 +46,13 @@ def get_resource_path(filename):
     """
     Ritorna il percorso corretto della risorsa sia in sviluppo che nel bundle PyInstaller.
     """
-    if getattr(sys, 'frozen', False):
+    if getattr(sys, "frozen", False):
         # Siamo dentro il bundle PyInstaller
         base_path = sys._MEIPASS
     else:
         # Siamo in sviluppo - ritorna la directory principale dell'applicazione
         base_path = os.path.dirname(os.path.abspath(__file__))
-    
+
     return os.path.join(base_path, filename)
 
 
@@ -52,7 +60,7 @@ def get_app_root():
     """
     Ritorna la directory principale dell'applicazione.
     """
-    if getattr(sys, 'frozen', False):
+    if getattr(sys, "frozen", False):
         return sys._MEIPASS
     else:
         return os.path.dirname(os.path.abspath(__file__))

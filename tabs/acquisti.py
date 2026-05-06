@@ -8,8 +8,8 @@ from PyQt5.QtCore import QObject, Qt
 from .models.card_database_model import CardDatabaseModel
 from .models.delegates import CondizioneComboBoxDelegate
 from dialogs.apri_bozza_acquisti import ApriBozzaAcquistiDialog
-from dialogs.salva_bozza_acquisti import SalvaBozzaAcquistiDialog   
-from utils import createMessageBox,get_column_index, generate_barcode
+from dialogs.salva_bozza_acquisti import SalvaBozzaAcquistiDialog
+from utils import createMessageBox, get_column_index, generate_barcode
 from config import database_table, purchase_table, unpriced_table
 from icons import icons  # noqa: F401
 
@@ -34,17 +34,23 @@ class AcquistiTabController(QObject):
         )
         self.ui.tableDatabaseAcquisti.hideColumn(5)
 
-
         self.ui.lineEditCercaAcquisti.textChanged.connect(self.filtra_tabella)
 
         self.ui.tableWidgetAcquisti.setColumnCount(8)
         self.ui.tableWidgetAcquisti.setHorizontalHeaderLabels(
-            ["ID", "ID Espansione", "Nome Espansione", "Nome", "Condizione", "Prezzo valutazione", "Prezzo acquisto", ""]
+            [
+                "ID",
+                "ID Espansione",
+                "Nome Espansione",
+                "Nome",
+                "Condizione",
+                "Prezzo valutazione",
+                "Prezzo acquisto",
+                "",
+            ]
         )
         delegateCondizione = CondizioneComboBoxDelegate(self.ui.tableWidgetAcquisti)
-        self.ui.tableWidgetAcquisti.setItemDelegateForColumn(
-           4, delegateCondizione
-        )
+        self.ui.tableWidgetAcquisti.setItemDelegateForColumn(4, delegateCondizione)
 
         self.ui.tableWidgetAcquisti.itemChanged.connect(self.valida_prezzo)
 
@@ -90,13 +96,14 @@ class AcquistiTabController(QObject):
         prezzo_item_stima = QtWidgets.QTableWidgetItem(str(0))
         prezzo_item_acquisto = QtWidgets.QTableWidgetItem(str(0))
 
-
         # Nome NON editabile
         nome_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
         prezzo_item_acquisto.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
 
         # Prezzo editabile
-        prezzo_item_stima.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable)
+        prezzo_item_stima.setFlags(
+            Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable
+        )
 
         self.ui.tableWidgetAcquisti.setItem(row_pos, 0, id_item)
         self.ui.tableWidgetAcquisti.setItem(row_pos, 1, espansione_id_item)
@@ -116,7 +123,9 @@ class AcquistiTabController(QObject):
 
     def aggiorna_totale(self, totale_da_pagare=None):
         totale = 0.0
-        index_prezzo = get_column_index(self.ui.tableWidgetAcquisti, "Prezzo valutazione")
+        index_prezzo = get_column_index(
+            self.ui.tableWidgetAcquisti, "Prezzo valutazione"
+        )
         for row in range(self.ui.tableWidgetAcquisti.rowCount()):
             prezzo_item = self.ui.tableWidgetAcquisti.item(row, index_prezzo)
             if prezzo_item:
@@ -130,7 +139,7 @@ class AcquistiTabController(QObject):
             self.ui.lineEditTotaleDaPagareAcquisti.setText(f"{totale_da_pagare:.2f}")
         else:
             pass
-            #self.ui.lineEditTotaleDaPagareAcquisti.setText(f"{totale:.2f}")
+            # self.ui.lineEditTotaleDaPagareAcquisti.setText(f"{totale:.2f}")
 
         if self.ui.tableWidgetAcquisti.rowCount() > 0:
             self.ui.buttonSvuotaAcquisti.setEnabled(True)
@@ -142,8 +151,12 @@ class AcquistiTabController(QObject):
             self.ui.buttonSalvaBozzaAcquisti.setEnabled(False)
 
     def valida_prezzo(self, item):
-        index_prezzo = get_column_index(self.ui.tableWidgetAcquisti, "Prezzo valutazione")
-        index_acquisto = get_column_index(self.ui.tableWidgetAcquisti, "Prezzo acquisto")
+        index_prezzo = get_column_index(
+            self.ui.tableWidgetAcquisti, "Prezzo valutazione"
+        )
+        index_acquisto = get_column_index(
+            self.ui.tableWidgetAcquisti, "Prezzo acquisto"
+        )
         if item.column() in [index_prezzo, index_acquisto]:  # Colonna del prezzo
             try:
                 prezzo = float(item.text())
@@ -164,8 +177,12 @@ class AcquistiTabController(QObject):
             print("Totale da pagare non valido. Deve essere un numero.")
             return
         self.ui.tableWidgetAcquisti.blockSignals(True)
-        index_prezzo = get_column_index(self.ui.tableWidgetAcquisti, "Prezzo valutazione")
-        index_acquisto = get_column_index(self.ui.tableWidgetAcquisti, "Prezzo acquisto")
+        index_prezzo = get_column_index(
+            self.ui.tableWidgetAcquisti, "Prezzo valutazione"
+        )
+        index_acquisto = get_column_index(
+            self.ui.tableWidgetAcquisti, "Prezzo acquisto"
+        )
 
         for row in range(self.ui.tableWidgetAcquisti.rowCount()):
             prezzo_item = self.ui.tableWidgetAcquisti.item(row, index_prezzo)
@@ -173,7 +190,10 @@ class AcquistiTabController(QObject):
             try:
                 if prezzo_item and prezzo_acquisto_item:
                     prezzo_stima = float(prezzo_item.text())
-                    prezzo_acquisto = prezzo_stima * (totale_da_pagare / float(self.ui.labelTotaleAcquisti.text().replace("€", "")))
+                    prezzo_acquisto = prezzo_stima * (
+                        totale_da_pagare
+                        / float(self.ui.labelTotaleAcquisti.text().replace("€", ""))
+                    )
                     prezzo_acquisto_item.setText(f"{prezzo_acquisto:.2f}")
             except ValueError:
                 print("Errore nel calcolo del prezzo di acquisto.")
@@ -205,15 +225,18 @@ class AcquistiTabController(QObject):
                 for col in range(self.ui.tableWidgetAcquisti.columnCount()):
                     item = self.ui.tableWidgetAcquisti.item(row, col)
                     if item:
-                        header = self.ui.tableWidgetAcquisti.horizontalHeaderItem(col).text()
+                        header = self.ui.tableWidgetAcquisti.horizontalHeaderItem(
+                            col
+                        ).text()
                         row_data[header] = item.text()
-                barcode = generate_barcode(row_data["Nome"], row_data["ID Espansione"], row_data["Condizione"])
+                barcode = generate_barcode(
+                    row_data["Nome"], row_data["ID Espansione"], row_data["Condizione"]
+                )
                 acquisto_date = QtCore.QDateTime.currentDateTime().toString(
                     "yyyy-MM-dd HH:mm:ss"
                 )
                 print(row_data)
-                #return
-
+                # return
 
                 insert_query = QtSql.QSqlQuery(self.db_main)
                 insert_query.prepare(f"""
@@ -251,11 +274,17 @@ class AcquistiTabController(QObject):
                 """)
                 insert_stock_query.bindValue(":barcode", barcode)
                 insert_stock_query.bindValue(":id", row_data["ID"])
-                insert_stock_query.bindValue(":espansione_id", row_data["ID Espansione"])
-                insert_stock_query.bindValue(":espansione_nome", row_data["Nome Espansione"])
+                insert_stock_query.bindValue(
+                    ":espansione_id", row_data["ID Espansione"]
+                )
+                insert_stock_query.bindValue(
+                    ":espansione_nome", row_data["Nome Espansione"]
+                )
                 insert_stock_query.bindValue(":name", row_data["Nome"])
                 insert_stock_query.bindValue(":condizione", row_data["Condizione"])
-                insert_stock_query.bindValue(":prezzo", float(row_data["Prezzo acquisto"]))
+                insert_stock_query.bindValue(
+                    ":prezzo", float(row_data["Prezzo acquisto"])
+                )
                 insert_stock_query.bindValue(
                     ":prezzo_acquisto", float(row_data["Prezzo acquisto"])
                 )
@@ -292,23 +321,48 @@ class AcquistiTabController(QObject):
         if self.ui.tableWidgetAcquisti.rowCount() == 0:
             msg = createMessageBox("Errore", "La lista acquisti è vuota.")
             msg.exec_()
-            return 
+            return
         data = []
         for row in range(self.ui.tableWidgetAcquisti.rowCount()):
-            data.append({
-                "id": self.ui.tableWidgetAcquisti.item(row, get_column_index(self.ui.tableWidgetAcquisti, "ID")).text(),
-                "espansione_id": self.ui.tableWidgetAcquisti.item(row, get_column_index(self.ui.tableWidgetAcquisti, "ID Espansione")).text(),
-                "espansione_nome": self.ui.tableWidgetAcquisti.item(row, get_column_index(self.ui.tableWidgetAcquisti, "Nome Espansione")).text(),
-                "nome": self.ui.tableWidgetAcquisti.item(row, get_column_index(self.ui.tableWidgetAcquisti, "Nome")).text(),
-                "condizione": self.ui.tableWidgetAcquisti.item(row, get_column_index(self.ui.tableWidgetAcquisti, "Condizione")).text(),
-                "prezzo_valutazione": self.ui.tableWidgetAcquisti.item(row, get_column_index(self.ui.tableWidgetAcquisti, "Prezzo valutazione")).text(),
-                "prezzo_acquisto": self.ui.tableWidgetAcquisti.item(row, get_column_index(self.ui.tableWidgetAcquisti, "Prezzo acquisto")).text()
-            })
+            data.append(
+                {
+                    "id": self.ui.tableWidgetAcquisti.item(
+                        row, get_column_index(self.ui.tableWidgetAcquisti, "ID")
+                    ).text(),
+                    "espansione_id": self.ui.tableWidgetAcquisti.item(
+                        row,
+                        get_column_index(self.ui.tableWidgetAcquisti, "ID Espansione"),
+                    ).text(),
+                    "espansione_nome": self.ui.tableWidgetAcquisti.item(
+                        row,
+                        get_column_index(
+                            self.ui.tableWidgetAcquisti, "Nome Espansione"
+                        ),
+                    ).text(),
+                    "nome": self.ui.tableWidgetAcquisti.item(
+                        row, get_column_index(self.ui.tableWidgetAcquisti, "Nome")
+                    ).text(),
+                    "condizione": self.ui.tableWidgetAcquisti.item(
+                        row, get_column_index(self.ui.tableWidgetAcquisti, "Condizione")
+                    ).text(),
+                    "prezzo_valutazione": self.ui.tableWidgetAcquisti.item(
+                        row,
+                        get_column_index(
+                            self.ui.tableWidgetAcquisti, "Prezzo valutazione"
+                        ),
+                    ).text(),
+                    "prezzo_acquisto": self.ui.tableWidgetAcquisti.item(
+                        row,
+                        get_column_index(
+                            self.ui.tableWidgetAcquisti, "Prezzo acquisto"
+                        ),
+                    ).text(),
+                }
+            )
 
         data_json = json.dumps(data)
         dialog = SalvaBozzaAcquistiDialog(data_json, parent=self)
         dialog.exec_()
-
 
     def apri_bozza_acquisti(self):
         dialog = ApriBozzaAcquistiDialog(None, parent=self)
@@ -323,21 +377,32 @@ class AcquistiTabController(QObject):
             self.svuota_lista_acquisti()
             self.ui.tableWidgetAcquisti.blockSignals(True)
             for item in data:
-
                 row_pos = self.ui.tableWidgetAcquisti.rowCount()
                 self.ui.tableWidgetAcquisti.insertRow(row_pos)
                 id_item = QtWidgets.QTableWidgetItem(str(item.get("id", "")))
-                espansione_id_item = QtWidgets.QTableWidgetItem(str(item.get("espansione_id", "")))
-                espansione_nome_item = QtWidgets.QTableWidgetItem(str(item.get("espansione_nome", "")))
+                espansione_id_item = QtWidgets.QTableWidgetItem(
+                    str(item.get("espansione_id", ""))
+                )
+                espansione_nome_item = QtWidgets.QTableWidgetItem(
+                    str(item.get("espansione_nome", ""))
+                )
                 nome_item = QtWidgets.QTableWidgetItem(str(item.get("nome", "")))
-                condizione_item = QtWidgets.QTableWidgetItem(str(item.get("condizione", "Mint")))
-                prezzo_item_valutazione = QtWidgets.QTableWidgetItem(str(item.get("prezzo_valutazione", "0")))
-                prezzo_item_acquisto = QtWidgets.QTableWidgetItem(str(item.get("prezzo_acquisto", "0")))
+                condizione_item = QtWidgets.QTableWidgetItem(
+                    str(item.get("condizione", "Mint"))
+                )
+                prezzo_item_valutazione = QtWidgets.QTableWidgetItem(
+                    str(item.get("prezzo_valutazione", "0"))
+                )
+                prezzo_item_acquisto = QtWidgets.QTableWidgetItem(
+                    str(item.get("prezzo_acquisto", "0"))
+                )
 
                 nome_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
                 prezzo_item_acquisto.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
 
-                prezzo_item_valutazione.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable)
+                prezzo_item_valutazione.setFlags(
+                    Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable
+                )
 
                 self.ui.tableWidgetAcquisti.setItem(row_pos, 0, id_item)
                 self.ui.tableWidgetAcquisti.setItem(row_pos, 1, espansione_id_item)
@@ -355,5 +420,3 @@ class AcquistiTabController(QObject):
                 self.ui.tableWidgetAcquisti.setCellWidget(row_pos, 7, btn)
             self.ui.tableWidgetAcquisti.blockSignals(True)
             self.aggiorna_totale(totale_da_pagare=float(dialog.totale))
-                
-
