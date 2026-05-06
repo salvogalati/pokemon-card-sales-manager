@@ -11,7 +11,7 @@ from .models.delegates import CondizioneComboBoxDelegate
 from dialogs.apri_bozza_acquisti import ApriBozzaAcquistiDialog
 from dialogs.salva_bozza_acquisti import SalvaBozzaAcquistiDialog   
 from utils import createMessageBox,get_column_index
-from config import database_table
+from config import database_table,stock_table, purchase_table, unpriced_table
 from icons import icons  # noqa: F401
 
 
@@ -208,8 +208,8 @@ class AcquistiTabController(QObject):
                 )
 
                 insert_query = QtSql.QSqlQuery(self.db_main)
-                insert_query.prepare("""
-                    INSERT INTO purchase (barcode, espansione_id, espansione_nome, nome, condizione, prezzo_acquisto, purchase_date)
+                insert_query.prepare(f"""
+                    INSERT INTO {purchase_table} (barcode, espansione_id, espansione_nome, nome, condizione, prezzo_acquisto, purchase_date)
                     VALUES (:barcode, :espansione_id, :espansione_nome, :nome, :condizione, :prezzo, :data)
                 """)
                 insert_query.bindValue(":barcode", barcode)
@@ -223,10 +223,9 @@ class AcquistiTabController(QObject):
                     raise Exception(insert_query.lastError().text())
 
                 update_query = QtSql.QSqlQuery(self.db_main)
-                update_query.prepare("""
-                    UPDATE stock
-                    SET quantita_stock = quantita_stock + 1,
-                        prezzo = :prezzo
+                update_query.prepare(f"""
+                    UPDATE {stock_table}
+                    SET quantita_stock = quantita_stock + 1
                     WHERE barcode = :barcode
                 """)
                 update_query.bindValue(":prezzo", row_data["Prezzo acquisto"])
@@ -236,9 +235,9 @@ class AcquistiTabController(QObject):
 
                 if update_query.numRowsAffected() == 0:
                     insert_stock_query = QtSql.QSqlQuery(self.db_main)
-                    insert_stock_query.prepare("""
-                        INSERT INTO stock (barcode, id, espansione_id, espansione_nome, name, condizione, prezzo, quantita_stock, prezzo_acquisto)
-                        VALUES (:barcode, :id, :espansione_id, :espansione_nome, :name, :condizione, :prezzo, 1, :prezzo_acquisto)
+                    insert_stock_query.prepare(f"""
+                        INSERT INTO {unpriced_table} (barcode, id, espansione_id, espansione_nome, name, condizione, prezzo, quantita_stock, prezzo_acquisto, da_prezzare)
+                        VALUES (:barcode, :id, :espansione_id, :espansione_nome, :name, :condizione, :prezzo, 1, :prezzo_acquisto, 'Si')
                     """)
                     insert_stock_query.bindValue(":barcode", barcode)
                     insert_stock_query.bindValue(":id", row_data["ID"])
@@ -254,6 +253,7 @@ class AcquistiTabController(QObject):
                         raise Exception(insert_stock_query.lastError().text())
 
             self.db_main.commit()
+            self.ui.lineEditTotaleDaPagareAcquisti.setText("")
 
         except Exception as e:
             self.db_main.rollback()

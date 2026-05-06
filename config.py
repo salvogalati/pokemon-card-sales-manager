@@ -7,6 +7,7 @@ card_db = "card_database.db"
 stock_table = "stock"
 sales_table = "sales"
 purchase_table = "purchases"
+unpriced_table = "unpriced_cards"
 
 database_table = "DatabaseCards"
 

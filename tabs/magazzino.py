@@ -12,7 +12,7 @@ from .models.magazzino_model import MagazzinoModel
 from .models.delegates import YesNoDelegate, CondizioneComboBoxDelegate
 from PyQt5.QtWidgets import QStyledItemDelegate, QSpinBox
 from icons import icons  # noqa: F401
-from config import main_db, backup_folder, cards_condizioni, get_resource_path, stock_table
+from config import main_db, backup_folder, cards_condizioni, get_resource_path, stock_table, unpriced_table
 import shutil
 
 
@@ -44,22 +44,12 @@ class MagazzinoTabController:
 
         self.ui.tableViewMagazzino.setModel(self.model_magazzino)
 
-        delegateYesNo = YesNoDelegate(self.ui.tableViewMagazzino)
         # self.ui.tableViewMagazzino.setItemDelegateForColumn(self.model_magazzino.fieldIndex("prezzo"), SpinBoxDelegate())
-        self.ui.tableViewMagazzino.setItemDelegateForColumn(
-            self.model_magazzino.fieldIndex("da_prezzare"), delegateYesNo
-        )
         delegateCondizione = CondizioneComboBoxDelegate(self.ui.tableViewMagazzino)
         self.ui.tableViewMagazzino.setItemDelegateForColumn(
             self.model_magazzino.fieldIndex("condizione"), delegateCondizione
         )
         self.ui.tableViewMagazzino.setIconSize(QSize(60, 60))
-        # query = QSqlQuery("SELECT DISTINCT condizione FROM stock")
-
-        # unique_values_condizione = []
-        # while query.next():
-        #     unique_values_condizione.append(query.value(0))
-
         self.ui.comboBoxCondizione.addItems(
             [""] + cards_condizioni
         )
@@ -70,6 +60,27 @@ class MagazzinoTabController:
         self.ui.buttonMagazzinoRipristina.clicked.connect(self.ripristina_backup)
 
         self.ui.lineEditSearchMagazzino.textChanged.connect(self.filtra_tabella_search)
+
+        self.ui.buttonGroupMagazzino.buttonClicked.connect(self.on_magazzino_changed)
+
+    def on_magazzino_changed(self, button):
+        table_mapping = {"Prezzati": stock_table, "Da prezzare": unpriced_table}
+
+        self.model_magazzino.setTable(table_mapping.get(button.text()))
+        self.model_magazzino.select()
+
+        delegateCondizione = CondizioneComboBoxDelegate(self.ui.tableViewMagazzino)
+        self.ui.tableViewMagazzino.setItemDelegateForColumn(
+            self.model_magazzino.fieldIndex("condizione"), delegateCondizione
+        )
+        if button.text() == "Da prezzare":
+            delegateYesNo = YesNoDelegate(self.ui.tableViewMagazzino)
+            self.ui.tableViewMagazzino.setItemDelegateForColumn(
+                self.model_magazzino.fieldIndex("da_prezzare"), delegateYesNo
+            )
+            
+        #self.applica_filtro()
+        self.resetta_filtro()
 
     def applica_filtro(self):
         filtro_nome = self.ui.lineEditMagazzinoFiltroNome.text()
@@ -166,16 +177,67 @@ class MagazzinoTabController:
             return
 
         self.backup_database()
-        if self.model_magazzino.submitAll():
-            QMessageBox.information(
-                self.ui, "Successo", "Modifiche salvate con successo!"
-            )
-        else:
+        if not self.model_magazzino.submitAll():
             QMessageBox.critical(
                 self.ui,
                 "Errore",
                 f"Errore durante il salvataggio: {self.model_magazzino.lastError().text()}",
             )
+        if self.model_magazzino.tableName() == unpriced_table:
+            self.sposta_carte_prezzate()
+            QMessageBox.information(
+                self.ui, "Successo", "Modifiche salvate con successo!"
+            )
+
+    def sposta_carte_prezzate(self):
+        db = QtSql.QSqlDatabase.database("main_connection")
+
+        if not db.transaction():
+            QMessageBox.critical(self.ui, "Errore", "Impossibile iniziare la transazione")
+            return
+
+        query = QtSql.QSqlQuery(db)
+
+        try:
+            # 1. Recupera colonne della tabella unpriced
+            record = self.model_magazzino.record()
+            colonne = [
+                record.fieldName(i)
+                for i in range(record.count())
+                if record.fieldName(i) != "da_prezzare"
+            ]
+
+            colonne_str = ", ".join(colonne)
+
+            # 2. INSERT in stock
+            insert_sql = f"""
+            INSERT INTO {stock_table} ({colonne_str})
+            SELECT {colonne_str}
+            FROM {unpriced_table}
+            WHERE da_prezzare = 'No'
+            """
+
+            if not query.exec_(insert_sql):
+                raise Exception(query.lastError().text())
+
+            # 3. DELETE da unpriced
+            delete_sql = f"""
+            DELETE FROM {unpriced_table}
+            WHERE da_prezzare = 'No'
+            """
+
+            if not query.exec_(delete_sql):
+                raise Exception(query.lastError().text())
+
+            if not db.commit():
+                raise Exception("Commit fallito")
+
+            # refresh modello
+            self.model_magazzino.select()
+
+        except Exception as e:
+            db.rollback()
+            QMessageBox.critical(self.ui, "Errore", f"Errore nello spostamento:\n{str(e)}")
 
     def backup_database(self):
         try:
@@ -238,3 +300,4 @@ class MagazzinoTabController:
                 "Errore Ripristino",
                 f"Errore durante il ripristino del database\nERRORE: {str(e)}",
             )
+
