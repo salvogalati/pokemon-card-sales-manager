@@ -7,7 +7,7 @@ from .models.magazzino_model import MagazzinoModel
 from icons import icons  # noqa: F401
 from config import cards_condizioni
 from utils import pulisci_testo, createMessageBox
-from .models.delegates import CondizioneComboBoxDelegate
+from .models.delegates import CenterIconDelegate, CondizioneComboBoxDelegate
 
 class StoricoTabController:
     def __init__(self, ui):
@@ -27,7 +27,7 @@ class StoricoTabController:
         self.ui.tableViewStorico.setItemDelegateForColumn(
             self.model_magazzino.fieldIndex("condizione"), delegateCondizione
         )
-        self.ui.tableViewStorico.setIconSize(QSize(60, 60))
+        self.ui.tableViewStorico.setItemDelegateForColumn(self.model_magazzino.fieldIndex("condizione"), CenterIconDelegate())
         self.ui.comboBoxCondizione_Storico.currentTextChanged.connect(self.applica_filtri)
 
         self.ui.lineEditStoricoSearch.textChanged.connect(self.applica_filtri)
@@ -102,6 +102,8 @@ class StoricoTabController:
         self.ui.tableViewStorico.setItemDelegateForColumn(
             self.model_magazzino.fieldIndex("condizione"), delegateCondizione
         )
+        self.ui.tableViewStorico.setItemDelegateForColumn(self.model_magazzino.fieldIndex("condizione"), CenterIconDelegate())
+        
 
         self.applica_filtri()
 

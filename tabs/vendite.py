@@ -4,6 +4,7 @@ from PyQt5 import QtWidgets, QtGui
 from PyQt5 import QtSql
 from PyQt5 import QtCore
 from PyQt5.QtCore import QObject, Qt, QSize
+from tabs.models.delegates import CenterIconDelegate
 from utils import pulisci_testo, createMessageBox
 from .models.card_database_model import CardDatabaseModel
 from config import stock_table
@@ -29,7 +30,7 @@ class VenditeTabController(QObject):
         self.ui.tableStock.hideColumn(self.model.fieldIndex("prezzo_acquisto"))
         self.ui.tableStock.hideColumn(self.model.fieldIndex("id"))
         self.ui.tableStock.activated.connect(self.aggiungi_al_carrello)
-        self.ui.tableStock.setIconSize(QSize(60, 60))
+        self.ui.tableStock.setItemDelegateForColumn(self.model.fieldIndex("condizione"), CenterIconDelegate())
         # self.ui.tableStock.doubleClicked.connect(self.aggiungi_al_carrello)
 
         # Collegamento ricerca live
@@ -310,6 +311,16 @@ class VenditeTabController(QObject):
                 update_query.addBindValue(barcode)
                 if not update_query.exec_():
                     raise Exception(update_query.lastError().text())
+                
+                # DELETE se stock = 0
+                delete_query = QtSql.QSqlQuery(self.db_main)
+                delete_query.prepare(
+                    "DELETE FROM stock WHERE barcode = ? AND quantita_stock <= 0"
+                )
+                delete_query.addBindValue(barcode)
+
+                if not delete_query.exec_():
+                    raise Exception(delete_query.lastError().text())
 
             self.db_main.commit()
 

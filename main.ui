@@ -27,7 +27,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tabVendite">
        <attribute name="icon">
@@ -146,6 +146,9 @@
               </property>
               <property name="editTriggers">
                <set>QAbstractItemView::NoEditTriggers</set>
+              </property>
+              <property name="selectionMode">
+               <enum>QAbstractItemView::SingleSelection</enum>
               </property>
              </widget>
             </item>
@@ -1077,6 +1080,11 @@ QDoubleSpinBox::up-arrow {
             </item>
             <item>
              <widget class="QRadioButton" name="radioButton_3">
+              <property name="font">
+               <font>
+                <pointsize>11</pointsize>
+               </font>
+              </property>
               <property name="text">
                <string>Prezzati</string>
               </property>
@@ -1090,6 +1098,11 @@ QDoubleSpinBox::up-arrow {
             </item>
             <item>
              <widget class="QRadioButton" name="radioButton_4">
+              <property name="font">
+               <font>
+                <pointsize>11</pointsize>
+               </font>
+              </property>
               <property name="text">
                <string>Da prezzare</string>
               </property>

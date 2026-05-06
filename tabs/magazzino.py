@@ -9,7 +9,7 @@ from PyQt5.QtCore import QSize
 
 from utils import pulisci_testo, createMessageBox
 from .models.magazzino_model import MagazzinoModel
-from .models.delegates import YesNoDelegate, CondizioneComboBoxDelegate
+from .models.delegates import CenterIconDelegate, YesNoDelegate, CondizioneComboBoxDelegate
 from PyQt5.QtWidgets import QStyledItemDelegate, QSpinBox
 from icons import icons  # noqa: F401
 from config import main_db, backup_folder, cards_condizioni, get_resource_path, stock_table, unpriced_table
@@ -49,7 +49,9 @@ class MagazzinoTabController:
         self.ui.tableViewMagazzino.setItemDelegateForColumn(
             self.model_magazzino.fieldIndex("condizione"), delegateCondizione
         )
-        self.ui.tableViewMagazzino.setIconSize(QSize(60, 60))
+
+        self.ui.tableViewMagazzino.setItemDelegateForColumn(self.model_magazzino.fieldIndex("condizione"), CenterIconDelegate())
+        #self.ui.tableViewMagazzino.setIconSize(QSize(60, 60))
         self.ui.comboBoxCondizione.addItems(
             [""] + cards_condizioni
         )
