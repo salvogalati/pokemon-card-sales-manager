@@ -19,8 +19,8 @@ class CardDatabaseModel(QSqlTableModel):
             color = card_condizioni_colors.get(value, None)
             # if role == Qt.BackgroundRole:
             #     return QColor(color)
-            if role == Qt.DisplayRole:
-                 return None 
+            #if role == Qt.DisplayRole:
+            #     return "CIAO" 
             if role == Qt.DecorationRole:
                 icon_path = card_condizioni_icons.get(value, None)
                 if icon_path:
