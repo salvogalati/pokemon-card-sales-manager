@@ -6,6 +6,7 @@ from tabs.magazzino import MagazzinoTabController
 from tabs.acquisti import AcquistiTabController
 from tabs.vendite import VenditeTabController
 from tabs.storico import StoricoTabController
+from tabs.database import DatabaseTabController
 from config import main_db, card_db, get_resource_path
 
 
@@ -34,6 +35,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.tabAcquisti = AcquistiTabController(self)
         self.tabVendite = VenditeTabController(self)
         self.tabStorico = StoricoTabController(self)
+        self.tabDatabase = DatabaseTabController(self)
 
         self.adjustSize()
 
