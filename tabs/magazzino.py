@@ -78,7 +78,7 @@ class MagazzinoTabController:
             self.ui.tableViewMagazzino.setItemDelegateForColumn(
                 self.model_magazzino.fieldIndex("da_prezzare"), delegateYesNo
             )
-            
+
         #self.applica_filtro()
         self.resetta_filtro()
 
@@ -199,22 +199,67 @@ class MagazzinoTabController:
         query = QtSql.QSqlQuery(db)
 
         try:
-            # 1. Recupera colonne della tabella unpriced
-            record = self.model_magazzino.record()
-            colonne = [
-                record.fieldName(i)
-                for i in range(record.count())
-                if record.fieldName(i) != "da_prezzare"
-            ]
+            chiave = "barcode" 
 
-            colonne_str = ", ".join(colonne)
+            # 1. UPDATE (merge su stock già esistente)
+            update_sql = f"""
+            UPDATE {stock_table}
+            SET
+                quantita_stock = quantita_stock + (
+                    SELECT quantita_stock FROM {unpriced_table}
+                    WHERE {unpriced_table}.{chiave} = {stock_table}.{chiave}
+                    AND da_prezzare = 'No'
+                ),
 
-            # 2. INSERT in stock
+                prezzo = (
+                    SELECT prezzo FROM {unpriced_table}
+                    WHERE {unpriced_table}.{chiave} = {stock_table}.{chiave}
+                    AND da_prezzare = 'No'
+                ),
+
+                prezzo_acquisto = ROUND(
+                    (
+                        (prezzo_acquisto * quantita_stock) +
+                        (
+                            (SELECT prezzo_acquisto FROM {unpriced_table}
+                            WHERE {unpriced_table}.{chiave} = {stock_table}.{chiave}
+                            AND da_prezzare = 'No')
+                            *
+                            (SELECT quantita_stock FROM {unpriced_table}
+                            WHERE {unpriced_table}.{chiave} = {stock_table}.{chiave}
+                            AND da_prezzare = 'No')
+                        )
+                    )
+                    /
+                    (
+                        quantita_stock +
+                        (SELECT quantita_stock FROM {unpriced_table}
+                        WHERE {unpriced_table}.{chiave} = {stock_table}.{chiave}
+                        AND da_prezzare = 'No')
+                    ),
+                2
+                )
+
+            WHERE EXISTS (
+                SELECT 1 FROM {unpriced_table}
+                WHERE {unpriced_table}.{chiave} = {stock_table}.{chiave}
+                AND da_prezzare = 'No'
+            )
+            """
+
+            if not query.exec_(update_sql):
+                raise Exception(query.lastError().text())
+
+            # 2. INSERT (solo nuove carte)
             insert_sql = f"""
-            INSERT INTO {stock_table} ({colonne_str})
-            SELECT {colonne_str}
-            FROM {unpriced_table}
+            INSERT INTO {stock_table} (name, espansione_id, espansione_nome, quantita_stock, condizione, prezzo, prezzo_acquisto, barcode)
+            SELECT name, espansione_id, espansione_nome, quantita_stock, condizione, prezzo, prezzo_acquisto, barcode
+            FROM {unpriced_table} u
             WHERE da_prezzare = 'No'
+            AND NOT EXISTS (
+                SELECT 1 FROM {stock_table} s
+                WHERE s.{chiave} = u.{chiave}
+            )
             """
 
             if not query.exec_(insert_sql):
@@ -232,7 +277,6 @@ class MagazzinoTabController:
             if not db.commit():
                 raise Exception("Commit fallito")
 
-            # refresh modello
             self.model_magazzino.select()
 
         except Exception as e:
