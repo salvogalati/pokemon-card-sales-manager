@@ -1,5 +1,8 @@
 <RCC>
   <qresource prefix="icons">
+    <file>icons-restore.png</file>
+    <file>icons-database.png</file>
+    <file>icon-pokedex.png</file>
     <file>icons-euro.png</file>
     <file>icons-bozza.png</file>
     <file>icons-listabozze.png</file>
@@ -17,6 +20,9 @@
     <file>logo_kingdom_cards.png</file>
     <file>trash-2.svg</file>
     <file>icons-filter.png</file>
+  </qresource>
+  <qresource prefix="images">
+    <file>../images/Pokemon-TCG-retro-carta.png</file>
   </qresource>
   <qresource prefix="condizioni">
     <file>condizioni/Excellent.png</file>
