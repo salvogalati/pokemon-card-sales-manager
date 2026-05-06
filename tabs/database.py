@@ -59,8 +59,7 @@ class DatabaseTabController(QObject):
 
         image_url = self.model_card_database.data(index)
         if not image_url:
-            url = "https://www.affaridanerd.it/wp-content/uploads/2023/12/Pokemon-TCG-retro-carta.png"
-            pixmap = self.load_image(url)
+            pixmap = self.load_image(":/images/images/Pokemon-TCG-retro-carta.png", local_path= True)
             if pixmap:
                 self.ui.labelCartaImmagineDatabase.setPixmap(
                     pixmap.scaled(
@@ -82,7 +81,11 @@ class DatabaseTabController(QObject):
                 )
             )
 
-    def load_image(self, url):
+    def load_image(self, url, local_path=None):
+        if local_path:
+            pixmap = QPixmap(url)
+            if not pixmap.isNull():
+                return pixmap
         try:
             response = requests.get(url, timeout=5)
             response.raise_for_status()
@@ -92,7 +95,8 @@ class DatabaseTabController(QObject):
             return image
 
         except Exception:
-            return None
+            print(f"Errore durante il caricamento dell'immagine da {url}")
+            return QPixmap(":/images/images/Pokemon-TCG-retro-carta.png")
 
     def apri_dialog_aggiungi_carta(self):
         dialog = AggiungiCartaDatabaseDialog({}, self.ui)
