@@ -1,4 +1,3 @@
-from datetime import datetime
 import json
 
 from PyQt5 import QtWidgets, QtGui
@@ -10,9 +9,11 @@ from .models.card_database_model import CardDatabaseModel
 from .models.delegates import CondizioneComboBoxDelegate
 from dialogs.apri_bozza_acquisti import ApriBozzaAcquistiDialog
 from dialogs.salva_bozza_acquisti import SalvaBozzaAcquistiDialog   
-from utils import createMessageBox,get_column_index
-from config import database_table,stock_table, purchase_table, unpriced_table
+from utils import createMessageBox,get_column_index, generate_barcode
+from config import database_table, purchase_table, unpriced_table
 from icons import icons  # noqa: F401
+
+import traceback
 
 
 class AcquistiTabController(QObject):
@@ -202,7 +203,7 @@ class AcquistiTabController(QObject):
                     if item:
                         header = self.ui.tableWidgetAcquisti.horizontalHeaderItem(col).text()
                         row_data[header] = item.text()
-                barcode = self.generate_barcode(row_data["Nome"], row_data["ID Espansione"], row_data["Condizione"])
+                barcode = generate_barcode(row_data["Nome"], row_data["ID Espansione"], row_data["Condizione"])
                 acquisto_date = QtCore.QDateTime.currentDateTime().toString(
                     "yyyy-MM-dd HH:mm:ss"
                 )
@@ -265,7 +266,6 @@ class AcquistiTabController(QObject):
                 QtWidgets.QMessageBox.Critical,
             )
             msg.exec_()
-            import traceback
 
             traceback.print_exc()
             return
@@ -354,10 +354,4 @@ class AcquistiTabController(QObject):
             self.ui.tableWidgetAcquisti.blockSignals(True)
             self.aggiorna_totale(totale_da_pagare=float(dialog.totale))
                 
-
-    @staticmethod
-    def generate_barcode(name, expansion, condition):
-        # Semplice generatore di barcode basato su nome ed espansione
-        base = f"{name}-{expansion}-{condition}"
-        return base.upper()
 
