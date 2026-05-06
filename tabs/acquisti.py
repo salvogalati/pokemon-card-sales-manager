@@ -65,7 +65,10 @@ class AcquistiTabController(QObject):
         if not testo:
             self.model_card_database.setFilter("")
         else:
-            filtro = f"nome LIKE '%{testo}%' OR espansione LIKE '%{testo}%'"
+            filtro = f"""name LIKE '%{testo}%'
+            OR id LIKE '%{testo}%'
+            OR espansione_nome LIKE '%{testo}%'
+            OR espansione_id LIKE '%{testo}%'"""
             self.model_card_database.setFilter(filtro)
 
     def aggiungi_a_lista_acquisti(self, index):
@@ -187,6 +190,7 @@ class AcquistiTabController(QObject):
 
     def svuota_lista_acquisti(self):
         self.ui.tableWidgetAcquisti.setRowCount(0)
+        self.ui.lineEditTotaleDaPagareAcquisti.setText("")
         self.aggiorna_totale()
 
     def completa_acquisti(self):
@@ -207,6 +211,9 @@ class AcquistiTabController(QObject):
                 acquisto_date = QtCore.QDateTime.currentDateTime().toString(
                     "yyyy-MM-dd HH:mm:ss"
                 )
+                print(row_data)
+                #return
+
 
                 insert_query = QtSql.QSqlQuery(self.db_main)
                 insert_query.prepare(f"""
@@ -288,23 +295,20 @@ class AcquistiTabController(QObject):
             return 
         data = []
         for row in range(self.ui.tableWidgetAcquisti.rowCount()):
-            espansione_id = self.ui.tableWidgetAcquisti.item(row, 0).text()
-            espansione_nome = self.ui.tableWidgetAcquisti.item(row, 1).text()
-            nome = self.ui.tableWidgetAcquisti.item(row, 2).text()
-            condizione = self.ui.tableWidgetAcquisti.item(row, 3).text()
-            prezzo_valutazione = self.ui.tableWidgetAcquisti.item(row, 4).text()
-            prezzo_acquisto = self.ui.tableWidgetAcquisti.item(row, 5).text()
             data.append({
-                "espansione_id": espansione_id,
-                "espansione_nome": espansione_nome,
-                "nome": nome,
-                "condizione": condizione,
-                "prezzo_valutazione": prezzo_valutazione,
-                "prezzo_acquisto": prezzo_acquisto
+                "id": self.ui.tableWidgetAcquisti.item(row, get_column_index(self.ui.tableWidgetAcquisti, "ID")).text(),
+                "espansione_id": self.ui.tableWidgetAcquisti.item(row, get_column_index(self.ui.tableWidgetAcquisti, "ID Espansione")).text(),
+                "espansione_nome": self.ui.tableWidgetAcquisti.item(row, get_column_index(self.ui.tableWidgetAcquisti, "Nome Espansione")).text(),
+                "nome": self.ui.tableWidgetAcquisti.item(row, get_column_index(self.ui.tableWidgetAcquisti, "Nome")).text(),
+                "condizione": self.ui.tableWidgetAcquisti.item(row, get_column_index(self.ui.tableWidgetAcquisti, "Condizione")).text(),
+                "prezzo_valutazione": self.ui.tableWidgetAcquisti.item(row, get_column_index(self.ui.tableWidgetAcquisti, "Prezzo valutazione")).text(),
+                "prezzo_acquisto": self.ui.tableWidgetAcquisti.item(row, get_column_index(self.ui.tableWidgetAcquisti, "Prezzo acquisto")).text()
             })
+
         data_json = json.dumps(data)
         dialog = SalvaBozzaAcquistiDialog(data_json, parent=self)
         dialog.exec_()
+
 
     def apri_bozza_acquisti(self):
         dialog = ApriBozzaAcquistiDialog(None, parent=self)
@@ -319,38 +323,36 @@ class AcquistiTabController(QObject):
             self.svuota_lista_acquisti()
             self.ui.tableWidgetAcquisti.blockSignals(True)
             for item in data:
-                espansione_id = item.get("espansione_id", "")
-                espansione_nome = item.get("espansione_nome", "")
-                nome = item.get("nome", "")
-                condizione = item.get("condizione", "Mint")
-                prezzo_valutazione = item.get("prezzo_valutazione", "0")
-                prezzo_acquisto = item.get("prezzo_acquisto", "0")
 
                 row_pos = self.ui.tableWidgetAcquisti.rowCount()
                 self.ui.tableWidgetAcquisti.insertRow(row_pos)
-                espansione_item = QtWidgets.QTableWidgetItem(str(espansione_nome))
-                nome_item = QtWidgets.QTableWidgetItem(str(nome))
-                condizione_item = QtWidgets.QTableWidgetItem(str(condizione))
-                prezzo_item_valutazione = QtWidgets.QTableWidgetItem(str(prezzo_valutazione))
-                prezzo_item_acquisto = QtWidgets.QTableWidgetItem(str(prezzo_acquisto))
+                id_item = QtWidgets.QTableWidgetItem(str(item.get("id", "")))
+                espansione_id_item = QtWidgets.QTableWidgetItem(str(item.get("espansione_id", "")))
+                espansione_nome_item = QtWidgets.QTableWidgetItem(str(item.get("espansione_nome", "")))
+                nome_item = QtWidgets.QTableWidgetItem(str(item.get("nome", "")))
+                condizione_item = QtWidgets.QTableWidgetItem(str(item.get("condizione", "Mint")))
+                prezzo_item_valutazione = QtWidgets.QTableWidgetItem(str(item.get("prezzo_valutazione", "0")))
+                prezzo_item_acquisto = QtWidgets.QTableWidgetItem(str(item.get("prezzo_acquisto", "0")))
 
                 nome_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
                 prezzo_item_acquisto.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
 
                 prezzo_item_valutazione.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable)
 
-                self.ui.tableWidgetAcquisti.setItem(row_pos, 0, espansione_item)
-                self.ui.tableWidgetAcquisti.setItem(row_pos, 1, nome_item)
-                self.ui.tableWidgetAcquisti.setItem(row_pos, 2, condizione_item)
-                self.ui.tableWidgetAcquisti.setItem(row_pos, 3, prezzo_item_valutazione)
-                self.ui.tableWidgetAcquisti.setItem(row_pos, 4, prezzo_item_acquisto)
+                self.ui.tableWidgetAcquisti.setItem(row_pos, 0, id_item)
+                self.ui.tableWidgetAcquisti.setItem(row_pos, 1, espansione_id_item)
+                self.ui.tableWidgetAcquisti.setItem(row_pos, 2, espansione_nome_item)
+                self.ui.tableWidgetAcquisti.setItem(row_pos, 3, nome_item)
+                self.ui.tableWidgetAcquisti.setItem(row_pos, 4, condizione_item)
+                self.ui.tableWidgetAcquisti.setItem(row_pos, 5, prezzo_item_valutazione)
+                self.ui.tableWidgetAcquisti.setItem(row_pos, 6, prezzo_item_acquisto)
 
                 btn = QtWidgets.QPushButton("")
                 btn.setIcon(QtGui.QIcon(":/icons/trash-2.svg"))
                 btn.setToolTip("Rimuovi dal carrello")
                 btn.clicked.connect(self.rimuovi_riga_button)
 
-                self.ui.tableWidgetAcquisti.setCellWidget(row_pos, 5, btn)
+                self.ui.tableWidgetAcquisti.setCellWidget(row_pos, 7, btn)
             self.ui.tableWidgetAcquisti.blockSignals(True)
             self.aggiorna_totale(totale_da_pagare=float(dialog.totale))
                 
