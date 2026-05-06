@@ -41,4 +41,6 @@ class SalvaBozzaAcquistiDialog(QtWidgets.QDialog):
             msg = createMessageBox("Errore", "Errore durante il salvataggio della bozza.")
             msg.exec_()
         else:
+            msg = createMessageBox("Successo", "Bozza salvata con successo!")
+            msg.exec_()
             self.accept()

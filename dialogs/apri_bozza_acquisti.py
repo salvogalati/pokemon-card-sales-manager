@@ -3,7 +3,6 @@ from PyQt5 import QtCore
 from config import get_resource_path
 from utils import createMessageBox
 import os
-import sys
 
 class ApriBozzaAcquistiDialog(QtWidgets.QDialog):
     def __init__(self, data, parent=None):
@@ -62,6 +61,14 @@ class ApriBozzaAcquistiDialog(QtWidgets.QDialog):
             return
         selected_row = selected_indexes[0].row()
         record_id = self.model.record(selected_row).value("draft_purchase_id")
+        msg_confirm = createMessageBox(
+            "Conferma Cancellazione",
+            "Sei sicuro di voler cancellare questa bozza? Questa azione non può essere annullata.",
+            QtWidgets.QMessageBox.Warning,
+            buttons=[QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No]
+        )
+        if msg_confirm.exec_() != QtWidgets.QMessageBox.Yes:
+            return
         query = QtSql.QSqlQuery(self.main_db)
         query.prepare("DELETE FROM draft_purchase WHERE draft_purchase_id = ?")
         query.addBindValue(record_id)
