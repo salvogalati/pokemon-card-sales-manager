@@ -1,10 +1,11 @@
 from datetime import datetime
 import os
 
-from PyQt5 import QtWidgets, QtGui
+from PyQt5 import QtWidgets
 from PyQt5 import QtSql
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtSql import QSqlTableModel
+from PyQt5.QtCore import QSize
 
 from utils import pulisci_testo, createMessageBox
 from .models.magazzino_model import MagazzinoModel
@@ -52,6 +53,7 @@ class MagazzinoTabController:
         self.ui.tableViewMagazzino.setItemDelegateForColumn(
             self.model_magazzino.fieldIndex("condizione"), delegateCondizione
         )
+        self.ui.tableViewMagazzino.setIconSize(QSize(60, 60))
         # query = QSqlQuery("SELECT DISTINCT condizione FROM stock")
 
         # unique_values_condizione = []

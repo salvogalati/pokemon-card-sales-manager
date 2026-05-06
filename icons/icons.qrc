@@ -18,4 +18,13 @@
     <file>trash-2.svg</file>
     <file>icons-filter.png</file>
   </qresource>
+  <qresource prefix="condizioni">
+    <file>condizioni/Excellent.png</file>
+    <file>condizioni/Good.png</file>
+    <file>condizioni/Light Played.png</file>
+    <file>condizioni/Mint.png</file>
+    <file>condizioni/Near Mint.png</file>
+    <file>condizioni/Played.png</file>
+    <file>condizioni/Poor.png</file>
+  </qresource>
 </RCC>

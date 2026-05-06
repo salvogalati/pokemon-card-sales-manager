@@ -20,6 +20,15 @@ card_condizioni_colors = {
     "Played": "#D44ED2",
     "Poor": "#FF5722"
 }
+card_condizioni_icons = {
+    "Mint": ":/condizioni/condizioni/Mint.png",
+    "Near Mint": ":/condizioni/condizioni/Near Mint.png",
+    "Excellent": ":/condizioni/condizioni/Excellent.png",
+    "Good": ":/condizioni/condizioni/Good.png",
+    "Light Played": ":/condizioni/condizioni/Light Played.png",
+    "Played": ":/condizioni/condizioni/Played.png",
+    "Poor": ":/condizioni/condizioni/Poor.png"
+}
 
 backup_folder = "backups"
 

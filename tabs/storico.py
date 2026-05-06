@@ -2,11 +2,12 @@ from datetime import datetime
 import os
 
 from PyQt5.QtSql import QSqlTableModel
+from PyQt5.QtCore import QSize
 from .models.magazzino_model import MagazzinoModel
 from icons import icons  # noqa: F401
 from config import cards_condizioni
 from utils import pulisci_testo, createMessageBox
-from .models.delegates import YesNoDelegate, CondizioneComboBoxDelegate
+from .models.delegates import CondizioneComboBoxDelegate
 
 class StoricoTabController:
     def __init__(self, ui):
@@ -26,6 +27,7 @@ class StoricoTabController:
         self.ui.tableViewStorico.setItemDelegateForColumn(
             self.model_magazzino.fieldIndex("condizione"), delegateCondizione
         )
+        self.ui.tableViewStorico.setIconSize(QSize(60, 60))
         self.ui.comboBoxCondizione_Storico.currentTextChanged.connect(self.applica_filtri)
 
         self.ui.lineEditStoricoSearch.textChanged.connect(self.applica_filtri)

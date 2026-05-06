@@ -3,7 +3,7 @@ import traceback
 from PyQt5 import QtWidgets, QtGui
 from PyQt5 import QtSql
 from PyQt5 import QtCore
-from PyQt5.QtCore import QObject, Qt
+from PyQt5.QtCore import QObject, Qt, QSize
 from utils import pulisci_testo, createMessageBox
 from .models.card_database_model import CardDatabaseModel
 from config import stock_table
@@ -29,6 +29,7 @@ class VenditeTabController(QObject):
         self.ui.tableStock.hideColumn(self.model.fieldIndex("prezzo_acquisto"))
         self.ui.tableStock.hideColumn(self.model.fieldIndex("id"))
         self.ui.tableStock.activated.connect(self.aggiungi_al_carrello)
+        self.ui.tableStock.setIconSize(QSize(60, 60))
         # self.ui.tableStock.doubleClicked.connect(self.aggiungi_al_carrello)
 
         # Collegamento ricerca live
