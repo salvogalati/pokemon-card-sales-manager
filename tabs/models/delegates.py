@@ -39,6 +39,31 @@ class CondizioneComboBoxDelegate(QItemDelegate):
     def updateEditorGeometry(self, editor, option, index):
         editor.setGeometry(option.rect)
 
+    def paint(self, painter, option, index):
+        option = option.__class__(option)  # copia sicura
+
+        icon = index.data(Qt.DecorationRole)
+        text = index.data(Qt.DisplayRole)
+
+        painter.save()
+
+        rect = option.rect
+
+        # centro area
+        center_x = rect.x() + rect.width() // 2
+        center_y = rect.y() + rect.height() // 2
+
+        # disegna icona centrata
+        if isinstance(icon, QIcon):
+            pixmap = icon.pixmap(60, 60)
+            x = center_x - pixmap.width() // 2
+            y = center_y - pixmap.height() // 2
+            painter.drawPixmap(x, y, pixmap)
+        else:
+            # fallback testo centrato
+            painter.drawText(rect, Qt.AlignCenter, str(text))
+
+        painter.restore()
 
 class CenterIconDelegate(QStyledItemDelegate):
     def paint(self, painter, option, index):

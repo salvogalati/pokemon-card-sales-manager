@@ -53,6 +53,7 @@ def get_resource_path(filename):
         # Siamo in sviluppo - ritorna la directory principale dell'applicazione
         base_path = os.path.dirname(os.path.abspath(__file__))
 
+    print(f"Resource path for {filename}: {os.path.join(base_path, filename)}")
     return os.path.join(base_path, filename)
 
 

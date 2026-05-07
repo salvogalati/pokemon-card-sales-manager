@@ -59,10 +59,6 @@ class MagazzinoTabController:
             self.model_magazzino.fieldIndex("condizione"), delegateCondizione
         )
 
-        self.ui.tableViewMagazzino.setItemDelegateForColumn(
-            self.model_magazzino.fieldIndex("condizione"), CenterIconDelegate()
-        )
-        # self.ui.tableViewMagazzino.setIconSize(QSize(60, 60))
         self.ui.comboBoxCondizione.addItems([""] + cards_condizioni)
 
         self.ui.button_applica_filtro.clicked.connect(self.applica_filtro)
@@ -90,9 +86,6 @@ class MagazzinoTabController:
             self.ui.tableViewMagazzino.setItemDelegateForColumn(
                 self.model_magazzino.fieldIndex("da_prezzare"), delegateYesNo
             )
-        self.ui.tableViewMagazzino.setItemDelegateForColumn(
-            self.model_magazzino.fieldIndex("condizione"), CenterIconDelegate()
-        )
 
         # self.applica_filtro()
         self.resetta_filtro()
@@ -269,8 +262,8 @@ class MagazzinoTabController:
 
             # 2. INSERT (solo nuove carte)
             insert_sql = f"""
-            INSERT INTO {stock_table} (name, espansione_id, espansione_nome, quantita_stock, condizione, prezzo, prezzo_acquisto, barcode)
-            SELECT name, espansione_id, espansione_nome, quantita_stock, condizione, prezzo, prezzo_acquisto, barcode
+            INSERT INTO {stock_table} (name,id, espansione_id, espansione_nome, quantita_stock, condizione, prezzo, prezzo_acquisto, barcode)
+            SELECT name, id, espansione_id, espansione_nome, quantita_stock, condizione, prezzo, prezzo_acquisto, barcode
             FROM {unpriced_table} u
             WHERE da_prezzare = 'No'
             AND NOT EXISTS (

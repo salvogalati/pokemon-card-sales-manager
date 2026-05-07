@@ -235,7 +235,6 @@ class AcquistiTabController(QObject):
                 acquisto_date = QtCore.QDateTime.currentDateTime().toString(
                     "yyyy-MM-dd HH:mm:ss"
                 )
-                print(row_data)
                 # return
 
                 insert_query = QtSql.QSqlQuery(self.db_main)
@@ -273,6 +272,7 @@ class AcquistiTabController(QObject):
                     VALUES (:barcode, :id, :espansione_id, :espansione_nome, :name, :condizione, :prezzo, 1, :prezzo_acquisto, 'Si')
                 """)
                 insert_stock_query.bindValue(":barcode", barcode)
+                #print(row_data["ID"])
                 insert_stock_query.bindValue(":id", row_data["ID"])
                 insert_stock_query.bindValue(
                     ":espansione_id", row_data["ID Espansione"]
