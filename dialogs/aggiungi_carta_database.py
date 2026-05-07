@@ -4,14 +4,16 @@ from utils import createMessageBox
 import os
 import traceback
 
+
 class AggiungiCartaDatabaseDialog(QtWidgets.QDialog):
     def __init__(self, data, parent=None):
         super().__init__()
         self.data = data
         self.db_cards = QtSql.QSqlDatabase.database("card_db_connection")
         # Carica il file .ui
-        uic.loadUi(get_resource_path(os.path.join("ui", "dialog_aggiungi_carta.ui")), self)
-
+        uic.loadUi(
+            get_resource_path(os.path.join("ui", "dialog_aggiungi_carta.ui")), self
+        )
 
     def accept(self):
         card_data = {
@@ -20,9 +22,12 @@ class AggiungiCartaDatabaseDialog(QtWidgets.QDialog):
             "espansione_id": self.lineEditEspansioneID.text().strip(),
             "espansione_nome": self.lineEditEspansioneNome.text().strip(),
             "image": self.lineEditImageURL.text().strip(),
-            "pricing_cardmarket": self.doubleSpinBox.value()}
+            "pricing_cardmarket": self.doubleSpinBox.value(),
+        }
         if not all(list(card_data.values())):
-            msg = createMessageBox("Errore", "Compila tutti i campi prima di aggiungere la carta.")
+            msg = createMessageBox(
+                "Errore", "Compila tutti i campi prima di aggiungere la carta."
+            )
             msg.exec_()
             return
         try:
@@ -37,13 +42,20 @@ class AggiungiCartaDatabaseDialog(QtWidgets.QDialog):
             insert_query.bindValue(":espansione_id", card_data["espansione_id"])
             insert_query.bindValue(":espansione_nome", card_data["espansione_nome"])
             insert_query.bindValue(":image", card_data["image"])
-            insert_query.bindValue(":pricing_cardmarket_low", card_data["pricing_cardmarket"])
+            insert_query.bindValue(
+                ":pricing_cardmarket_low", card_data["pricing_cardmarket"]
+            )
             if not insert_query.exec_():
-                msg = createMessageBox("Errore", f"Errore durante l'inserimento della carta: {insert_query.lastError().text()}")
+                msg = createMessageBox(
+                    "Errore",
+                    f"Errore durante l'inserimento della carta: {insert_query.lastError().text()}",
+                )
                 msg.exec_()
                 return
             self.db_cards.commit()
-            msg = createMessageBox("Successo", "Carta aggiunta con successo al database!")
+            msg = createMessageBox(
+                "Successo", "Carta aggiunta con successo al database!"
+            )
             msg.exec_()
         except Exception as e:
             self.db_cards.rollback()

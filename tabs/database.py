@@ -1,4 +1,3 @@
-
 import traceback
 
 from PyQt5 import QtSql, QtWidgets
@@ -25,11 +24,17 @@ class DatabaseTabController(QObject):
         self.model_card_database.select()
         self.ui.tableViewDatabase.setModel(self.model_card_database)
 
-        self.ui.tableViewDatabase.selectionModel().selectionChanged.connect(self.on_row_changed)
+        self.ui.tableViewDatabase.selectionModel().selectionChanged.connect(
+            self.on_row_changed
+        )
 
         self.ui.lineEditSearchDatabase.textChanged.connect(self.filtra_tabella)
-        self.ui.buttonAggiungiCartaDatabase.clicked.connect(self.apri_dialog_aggiungi_carta)
-        self.ui.buttonRimuoviCartaDatabase.clicked.connect(self.rimuovi_carta_selezionata)
+        self.ui.buttonAggiungiCartaDatabase.clicked.connect(
+            self.apri_dialog_aggiungi_carta
+        )
+        self.ui.buttonRimuoviCartaDatabase.clicked.connect(
+            self.rimuovi_carta_selezionata
+        )
 
     def filtra_tabella(self, testo):
         testo = pulisci_testo(testo)
@@ -54,17 +59,16 @@ class DatabaseTabController(QObject):
 
         image_url = self.model_card_database.data(index)
         if not image_url:
-             url = "https://www.affaridanerd.it/wp-content/uploads/2023/12/Pokemon-TCG-retro-carta.png"
-             pixmap = self.load_image(url)
-             if pixmap:
-                 self.ui.labelCartaImmagineDatabase.setPixmap(
-                     pixmap.scaled(
-                         self.ui.labelCartaImmagineDatabase.size(),
-                         Qt.KeepAspectRatio,
-                         Qt.SmoothTransformation
-                     )
-                 )
-             return
+            pixmap = self.load_image(":/images/images/Pokemon-TCG-retro-carta.png", local_path= True)
+            if pixmap:
+                self.ui.labelCartaImmagineDatabase.setPixmap(
+                    pixmap.scaled(
+                        self.ui.labelCartaImmagineDatabase.size(),
+                        Qt.KeepAspectRatio,
+                        Qt.SmoothTransformation,
+                    )
+                )
+            return
 
         pixmap = self.load_image(image_url + "/high.png")
 
@@ -73,11 +77,15 @@ class DatabaseTabController(QObject):
                 pixmap.scaled(
                     self.ui.labelCartaImmagineDatabase.size(),
                     Qt.KeepAspectRatio,
-                    Qt.SmoothTransformation
+                    Qt.SmoothTransformation,
                 )
             )
 
-    def load_image(self, url):
+    def load_image(self, url, local_path=None):
+        if local_path:
+            pixmap = QPixmap(url)
+            if not pixmap.isNull():
+                return pixmap
         try:
             response = requests.get(url, timeout=5)
             response.raise_for_status()
@@ -87,8 +95,9 @@ class DatabaseTabController(QObject):
             return image
 
         except Exception:
-            return None
-        
+            print(f"Errore durante il caricamento dell'immagine da {url}")
+            return QPixmap(":/images/images/Pokemon-TCG-retro-carta.png")
+
     def apri_dialog_aggiungi_carta(self):
         dialog = AggiungiCartaDatabaseDialog({}, self.ui)
         if dialog.exec_():
@@ -102,14 +111,19 @@ class DatabaseTabController(QObject):
             msg.exec_()
             return
         selected_row = list(rows)[0]
-        card_id_index = self.model_card_database.index(selected_row, self.model_card_database.fieldIndex("id"))
+        card_id_index = self.model_card_database.index(
+            selected_row, self.model_card_database.fieldIndex("id")
+        )
         card_id = self.model_card_database.data(card_id_index)
 
         confirm_msg = createMessageBox(
             "Conferma Rimozione",
             f"Sei sicuro di voler rimuovere la carta con ID '{card_id}' dal database?",
             QtWidgets.QMessageBox.Warning,
-            [QtWidgets.QMessageBox.StandardButton.Yes, QtWidgets.QMessageBox.StandardButton.No],
+            [
+                QtWidgets.QMessageBox.StandardButton.Yes,
+                QtWidgets.QMessageBox.StandardButton.No,
+            ],
         )
         risposta = confirm_msg.exec_()
         if risposta == QtWidgets.QMessageBox.StandardButton.No:
@@ -122,12 +136,14 @@ class DatabaseTabController(QObject):
                 msg = createMessageBox(
                     "Errore",
                     f"Errore durante la rimozione della carta: {delete_query.lastError().text()}",
-                    QtWidgets.QMessageBox.Critical
+                    QtWidgets.QMessageBox.Critical,
                 )
                 msg.exec_()
                 return
             self.model_card_database.select()
-            msg = createMessageBox("Successo", "Carta rimossa con successo dal database!")
+            msg = createMessageBox(
+                "Successo", "Carta rimossa con successo dal database!"
+            )
             msg.exec_()
         except Exception as e:
             self.db.rollback()
@@ -139,5 +155,3 @@ class DatabaseTabController(QObject):
             msg.exec_()
             traceback.print_exc()
             return
-
-        

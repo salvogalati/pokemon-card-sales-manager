@@ -4,13 +4,16 @@ from config import get_resource_path
 from utils import createMessageBox
 import os
 
+
 class ApriBozzaAcquistiDialog(QtWidgets.QDialog):
     def __init__(self, data, parent=None):
         super().__init__()
         self.data = data
 
         # Carica il file .ui
-        uic.loadUi(get_resource_path(os.path.join("ui", "dialog_bozze_acquisti.ui")), self)
+        uic.loadUi(
+            get_resource_path(os.path.join("ui", "dialog_bozze_acquisti.ui")), self
+        )
 
         self.main_db = parent.db_main
         self.model = QtSql.QSqlTableModel(self, self.main_db)
@@ -18,18 +21,17 @@ class ApriBozzaAcquistiDialog(QtWidgets.QDialog):
         self.model.setEditStrategy(QtSql.QSqlTableModel.OnManualSubmit)
         self.model.select()
         self.tableViewBozzeAcquisti.setModel(self.model)
-        
+
         self.tableViewBozzeAcquisti.hideColumn(0)
         self.tableViewBozzeAcquisti.hideColumn(4)
 
         # Modifica nomi colonne visivamente (senza modificare il database)
-        colonne = ["ID", "Nome Cliente", "Numero Oggetti", "Totale", "Oggetti"]  
+        colonne = ["ID", "Nome Cliente", "Numero Oggetti", "Totale", "Oggetti"]
         for i, col_name in enumerate(colonne):
             self.model.setHeaderData(i, QtCore.Qt.Horizontal, col_name)
-        
+
         self.lineEditSearchBozzeAcquisti.textChanged.connect(self.filter_bozze)
         self.buttonCancellaBozza.clicked.connect(self.cancella_bozza)
-
 
     def accept(self):
         selected_indexes = self.tableViewBozzeAcquisti.selectionModel().selectedRows()
@@ -52,7 +54,6 @@ class ApriBozzaAcquistiDialog(QtWidgets.QDialog):
         self.model.setFilter(filter_str)
         self.model.select()
 
-
     def cancella_bozza(self):
         selected_indexes = self.tableViewBozzeAcquisti.selectionModel().selectedRows()
         if not selected_indexes:
@@ -65,7 +66,7 @@ class ApriBozzaAcquistiDialog(QtWidgets.QDialog):
             "Conferma Cancellazione",
             "Sei sicuro di voler cancellare questa bozza? Questa azione non può essere annullata.",
             QtWidgets.QMessageBox.Warning,
-            buttons=[QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No]
+            buttons=[QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No],
         )
         if msg_confirm.exec_() != QtWidgets.QMessageBox.Yes:
             return
@@ -73,7 +74,11 @@ class ApriBozzaAcquistiDialog(QtWidgets.QDialog):
         query.prepare("DELETE FROM draft_purchase WHERE draft_purchase_id = ?")
         query.addBindValue(record_id)
         if not query.exec_():
-            print("Errore durante la cancellazione della bozza:", query.lastError().text())
-            msg = createMessageBox("Errore", "Errore durante la cancellazione della bozza.")
+            print(
+                "Errore durante la cancellazione della bozza:", query.lastError().text()
+            )
+            msg = createMessageBox(
+                "Errore", "Errore durante la cancellazione della bozza."
+            )
             msg.exec_()
         self.model.select()

@@ -1,13 +1,12 @@
 from datetime import datetime
-import os
 
 from PyQt5.QtSql import QSqlTableModel
-from PyQt5.QtCore import QSize
 from .models.magazzino_model import MagazzinoModel
 from icons import icons  # noqa: F401
 from config import cards_condizioni
 from utils import pulisci_testo, createMessageBox
 from .models.delegates import CenterIconDelegate, CondizioneComboBoxDelegate
+
 
 class StoricoTabController:
     def __init__(self, ui):
@@ -20,15 +19,17 @@ class StoricoTabController:
         self.model_magazzino.select()
 
         self.ui.tableViewStorico.setModel(self.model_magazzino)
-        self.ui.comboBoxCondizione_Storico.addItems(
-            [""] + cards_condizioni
-        )
+        self.ui.comboBoxCondizione_Storico.addItems([""] + cards_condizioni)
         delegateCondizione = CondizioneComboBoxDelegate(self.ui.tableViewStorico)
         self.ui.tableViewStorico.setItemDelegateForColumn(
             self.model_magazzino.fieldIndex("condizione"), delegateCondizione
         )
-        self.ui.tableViewStorico.setItemDelegateForColumn(self.model_magazzino.fieldIndex("condizione"), CenterIconDelegate())
-        self.ui.comboBoxCondizione_Storico.currentTextChanged.connect(self.applica_filtri)
+        self.ui.tableViewStorico.setItemDelegateForColumn(
+            self.model_magazzino.fieldIndex("condizione"), CenterIconDelegate()
+        )
+        self.ui.comboBoxCondizione_Storico.currentTextChanged.connect(
+            self.applica_filtri
+        )
 
         self.ui.lineEditStoricoSearch.textChanged.connect(self.applica_filtri)
 
@@ -87,14 +88,17 @@ class StoricoTabController:
             msg = createMessageBox("Errore", f"Si è verificato un errore: {str(e)}")
             msg.exec_()
 
-
     def on_storico_changed(self, button):
         table_mapping = {"Vendite": "sales", "Acquisti": "purchase"}
-        field_mapping = {"Vendite": {"prezzo": "prezzo_vendita", "date": "sell_date"},
-                         "Acquisti": {"prezzo": "prezzo_acquisto", "date": "purchase_date"}}
+        field_mapping = {
+            "Vendite": {"prezzo": "prezzo_vendita", "date": "sell_date"},
+            "Acquisti": {"prezzo": "prezzo_acquisto", "date": "purchase_date"},
+        }
 
-        self.fields = {"prezzo": field_mapping[button.text()]["prezzo"],
-                       "date": field_mapping[button.text()]["date"]}
+        self.fields = {
+            "prezzo": field_mapping[button.text()]["prezzo"],
+            "date": field_mapping[button.text()]["date"],
+        }
         self.model_magazzino.setTable(table_mapping.get(button.text()))
         self.model_magazzino.select()
 
@@ -102,8 +106,9 @@ class StoricoTabController:
         self.ui.tableViewStorico.setItemDelegateForColumn(
             self.model_magazzino.fieldIndex("condizione"), delegateCondizione
         )
-        self.ui.tableViewStorico.setItemDelegateForColumn(self.model_magazzino.fieldIndex("condizione"), CenterIconDelegate())
-        
+        self.ui.tableViewStorico.setItemDelegateForColumn(
+            self.model_magazzino.fieldIndex("condizione"), CenterIconDelegate()
+        )
 
         self.applica_filtri()
 

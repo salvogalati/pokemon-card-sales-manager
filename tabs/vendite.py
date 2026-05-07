@@ -3,7 +3,7 @@ import traceback
 from PyQt5 import QtWidgets, QtGui
 from PyQt5 import QtSql
 from PyQt5 import QtCore
-from PyQt5.QtCore import QObject, Qt, QSize
+from PyQt5.QtCore import QObject, Qt
 from tabs.models.delegates import CenterIconDelegate
 from utils import pulisci_testo, createMessageBox
 from .models.card_database_model import CardDatabaseModel
@@ -19,10 +19,10 @@ class VenditeTabController(QObject):
 
         db_main = QtSql.QSqlDatabase.database("main_connection")
         self.db_main = db_main  # Assign the main database connection to self.db_main
-        #self.model = QtSql.QSqlTableModel(None, self.db_main)
+        # self.model = QtSql.QSqlTableModel(None, self.db_main)
         self.model = CardDatabaseModel(db_main)
         self.model.setTable(stock_table)  # <-- cambia con la tua tabella
-        #self.model.setFilter("quantita_stock > 0")
+        # self.model.setFilter("quantita_stock > 0")
         self.model.select()
 
         # Collega alla tabella
@@ -30,7 +30,9 @@ class VenditeTabController(QObject):
         self.ui.tableStock.hideColumn(self.model.fieldIndex("prezzo_acquisto"))
         self.ui.tableStock.hideColumn(self.model.fieldIndex("id"))
         self.ui.tableStock.activated.connect(self.aggiungi_al_carrello)
-        self.ui.tableStock.setItemDelegateForColumn(self.model.fieldIndex("condizione"), CenterIconDelegate())
+        self.ui.tableStock.setItemDelegateForColumn(
+            self.model.fieldIndex("condizione"), CenterIconDelegate()
+        )
         # self.ui.tableStock.doubleClicked.connect(self.aggiungi_al_carrello)
 
         # Collegamento ricerca live
@@ -109,13 +111,25 @@ class VenditeTabController(QObject):
             return
 
         row = index.row()
-        barcode = self.model.data(self.model.index(row, self.model.fieldIndex("barcode")))
-        espansione_id = self.model.data(self.model.index(row, self.model.fieldIndex("espansione_id")))
-        espansione_nome = self.model.data(self.model.index(row, self.model.fieldIndex("espansione_nome")))
+        barcode = self.model.data(
+            self.model.index(row, self.model.fieldIndex("barcode"))
+        )
+        espansione_id = self.model.data(
+            self.model.index(row, self.model.fieldIndex("espansione_id"))
+        )
+        espansione_nome = self.model.data(
+            self.model.index(row, self.model.fieldIndex("espansione_nome"))
+        )
         nome = self.model.data(self.model.index(row, self.model.fieldIndex("name")))
-        condizione = self.model.data(self.model.index(row, self.model.fieldIndex("condizione")))
-        prezzo_stock = self.model.data(self.model.index(row, self.model.fieldIndex("prezzo")))
-        quantita_stock = self.model.data(self.model.index(row, self.model.fieldIndex("quantita_stock")))
+        condizione = self.model.data(
+            self.model.index(row, self.model.fieldIndex("condizione"))
+        )
+        prezzo_stock = self.model.data(
+            self.model.index(row, self.model.fieldIndex("prezzo"))
+        )
+        quantita_stock = self.model.data(
+            self.model.index(row, self.model.fieldIndex("quantita_stock"))
+        )
         stock_disponibile = int(quantita_stock)
         quantita_nel_carrello = 0
         for i in range(self.ui.tableWidget_carrello.rowCount()):
@@ -194,8 +208,12 @@ class VenditeTabController(QObject):
         totale = 0.0
 
         for row in range(self.ui.tableWidget_carrello.rowCount()):
-            index_prezzo = get_column_index(self.ui.tableWidget_carrello, "Prezzo di vendita")
-            item = self.ui.tableWidget_carrello.item(row, index_prezzo)  # colonna prezzo
+            index_prezzo = get_column_index(
+                self.ui.tableWidget_carrello, "Prezzo di vendita"
+            )
+            item = self.ui.tableWidget_carrello.item(
+                row, index_prezzo
+            )  # colonna prezzo
             if item is not None:
                 try:
                     prezzo = float(item.text())
@@ -222,22 +240,29 @@ class VenditeTabController(QObject):
             totale_scontato = float(testo.replace(",", "."))
         except ValueError:
             totale_scontato = 0.0
-        if totale_scontato <= 0: return
+        if totale_scontato <= 0:
+            return
         totale = float(self.ui.label_totale_carrello.text().replace(" €", ""))
         # sconto_per_riga = sconto / self.ui.tableWidget_carrello.rowCount()
         self.ui.label_totale_dapagare.setText(f"{totale_scontato:.2f} €")
 
         for row in range(self.ui.tableWidget_carrello.rowCount()):
-            index_prezzo_stock = get_column_index(self.ui.tableWidget_carrello, "Prezzo stock")
-            index_prezzo_scontato = get_column_index(self.ui.tableWidget_carrello, "Prezzo di vendita")
+            index_prezzo_stock = get_column_index(
+                self.ui.tableWidget_carrello, "Prezzo stock"
+            )
+            index_prezzo_scontato = get_column_index(
+                self.ui.tableWidget_carrello, "Prezzo di vendita"
+            )
             prezzo_item = self.ui.tableWidget_carrello.item(row, index_prezzo_stock)
-            prezzo_scontato_item = self.ui.tableWidget_carrello.item(row, index_prezzo_scontato)
+            prezzo_scontato_item = self.ui.tableWidget_carrello.item(
+                row, index_prezzo_scontato
+            )
             if prezzo_item is not None and prezzo_scontato_item is not None:
                 try:
                     prezzo = float(prezzo_item.text())
                     if totale > 0:
-                        prezzo_scontato = (
-                            prezzo - (prezzo / totale) * (totale - totale_scontato)
+                        prezzo_scontato = prezzo - (prezzo / totale) * (
+                            totale - totale_scontato
                         )  # sconto proporzionale
                         # prezzo_scontato = prezzo - sconto_per_riga # sconto uniforme
                         prezzo_scontato_item.setText(f"{prezzo_scontato:.2f}")
@@ -272,13 +297,36 @@ class VenditeTabController(QObject):
 
         try:
             for row in range(self.ui.tableWidget_carrello.rowCount()):
-                barcode = self.ui.tableWidget_carrello.item(row, get_column_index(self.ui.tableWidget_carrello, "Barcode")).text()
-                espansione_nome = self.ui.tableWidget_carrello.item(row, get_column_index(self.ui.tableWidget_carrello, "Nome Espansione")).text()
-                espansione_id = self.ui.tableWidget_carrello.item(row, get_column_index(self.ui.tableWidget_carrello, "ID Espansione")).text()
-                nome = self.ui.tableWidget_carrello.item(row, get_column_index(self.ui.tableWidget_carrello, "Nome")).text()
-                condizione = self.ui.tableWidget_carrello.item(row, get_column_index(self.ui.tableWidget_carrello, "Condizione")).text()
-                prezzo_stock = float(self.ui.tableWidget_carrello.item(row, get_column_index(self.ui.tableWidget_carrello, "Prezzo stock")).text())
-                prezzo_vendita = float(self.ui.tableWidget_carrello.item(row, get_column_index(self.ui.tableWidget_carrello, "Prezzo di vendita")).text())
+                barcode = self.ui.tableWidget_carrello.item(
+                    row, get_column_index(self.ui.tableWidget_carrello, "Barcode")
+                ).text()
+                espansione_nome = self.ui.tableWidget_carrello.item(
+                    row,
+                    get_column_index(self.ui.tableWidget_carrello, "Nome Espansione"),
+                ).text()
+                espansione_id = self.ui.tableWidget_carrello.item(
+                    row, get_column_index(self.ui.tableWidget_carrello, "ID Espansione")
+                ).text()
+                nome = self.ui.tableWidget_carrello.item(
+                    row, get_column_index(self.ui.tableWidget_carrello, "Nome")
+                ).text()
+                condizione = self.ui.tableWidget_carrello.item(
+                    row, get_column_index(self.ui.tableWidget_carrello, "Condizione")
+                ).text()
+                prezzo_stock = float(
+                    self.ui.tableWidget_carrello.item(
+                        row,
+                        get_column_index(self.ui.tableWidget_carrello, "Prezzo stock"),
+                    ).text()
+                )
+                prezzo_vendita = float(
+                    self.ui.tableWidget_carrello.item(
+                        row,
+                        get_column_index(
+                            self.ui.tableWidget_carrello, "Prezzo di vendita"
+                        ),
+                    ).text()
+                )
                 sell_date = QtCore.QDateTime.currentDateTime().toString(
                     "yyyy-MM-dd HH:mm:ss"
                 )
@@ -309,7 +357,7 @@ class VenditeTabController(QObject):
                 update_query.addBindValue(barcode)
                 if not update_query.exec_():
                     raise Exception(update_query.lastError().text())
-                
+
                 # DELETE se stock = 0
                 delete_query = QtSql.QSqlQuery(self.db_main)
                 delete_query.prepare(

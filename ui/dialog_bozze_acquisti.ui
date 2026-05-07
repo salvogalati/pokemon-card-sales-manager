@@ -24,26 +24,6 @@
     <normaloff>:/icons/logo_kingdom_cards.png</normaloff>:/icons/logo_kingdom_cards.png</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <widget class="QLineEdit" name="lineEditSearchBozzeAcquisti">
-     <property name="text">
-      <string/>
-     </property>
-     <property name="placeholderText">
-      <string>Cerca</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QPushButton" name="buttonCancellaBozza">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="text">
-      <string>  Cancella bozza  </string>
-     </property>
-    </widget>
-   </item>
    <item row="1" column="0" colspan="2">
     <widget class="QTableView" name="tableViewBozzeAcquisti">
      <property name="sizePolicy">
@@ -63,13 +43,40 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="0">
+   <item row="2" column="0" colspan="2">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons">
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+     <property name="centerButtons">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QPushButton" name="buttonCancellaBozza">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="text">
+      <string>  Cancella bozza  </string>
+     </property>
+     <property name="icon">
+      <iconset resource="../icons/icons.qrc">
+       <normaloff>:/icons/trash-2.svg</normaloff>:/icons/trash-2.svg</iconset>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLineEdit" name="lineEditSearchBozzeAcquisti">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="placeholderText">
+      <string>Cerca</string>
      </property>
     </widget>
    </item>

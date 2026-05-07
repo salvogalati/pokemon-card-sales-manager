@@ -1,6 +1,5 @@
 import json
 import os
-import sys
 from PyQt5 import QtWidgets, uic, QtSql
 from config import get_resource_path
 from utils import createMessageBox
@@ -30,7 +29,9 @@ class SalvaBozzaAcquistiDialog(QtWidgets.QDialog):
         prezzo_totale = sum(float(item["prezzo_acquisto"]) for item in data)
         # Salva la bozza nel database
         query = QtSql.QSqlQuery(self.main_db)
-        query.prepare("INSERT INTO draft_purchase (nome_cliente, numero_oggetti, totale, oggetti) VALUES (:nome, :num, :tot, :ogg)")
+        query.prepare(
+            "INSERT INTO draft_purchase (nome_cliente, numero_oggetti, totale, oggetti) VALUES (:nome, :num, :tot, :ogg)"
+        )
         query.bindValue(":nome", nome_cliente)
         query.bindValue(":num", len(data))
         query.bindValue(":tot", prezzo_totale)
@@ -38,7 +39,9 @@ class SalvaBozzaAcquistiDialog(QtWidgets.QDialog):
         if not query.exec_():
             print("Errore durante l'inserimento della bozza:", query.lastError().text())
             print("Query:", query.executedQuery())
-            msg = createMessageBox("Errore", "Errore durante il salvataggio della bozza.")
+            msg = createMessageBox(
+                "Errore", "Errore durante il salvataggio della bozza."
+            )
             msg.exec_()
         else:
             msg = createMessageBox("Successo", "Bozza salvata con successo!")

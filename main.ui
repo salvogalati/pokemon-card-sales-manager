@@ -27,7 +27,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>4</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tabVendite">
        <attribute name="icon">
@@ -1056,6 +1056,10 @@ QDoubleSpinBox::up-arrow {
               <property name="text">
                <string>Salva modifiche</string>
               </property>
+              <property name="icon">
+               <iconset resource="icons/icons.qrc">
+                <normaloff>:/icons/icons-salva.png</normaloff>:/icons/icons-salva.png</iconset>
+              </property>
               <property name="default">
                <bool>false</bool>
               </property>
@@ -1067,7 +1071,11 @@ QDoubleSpinBox::up-arrow {
             <item>
              <widget class="QPushButton" name="buttonMagazzinoRipristina">
               <property name="text">
-               <string>Ripristina</string>
+               <string>Ripristina Backup</string>
+              </property>
+              <property name="icon">
+               <iconset resource="icons/icons.qrc">
+                <normaloff>:/icons/icons-restore.png</normaloff>:/icons/icons-restore.png</iconset>
               </property>
              </widget>
             </item>
@@ -1372,6 +1380,10 @@ QDoubleSpinBox::up-arrow {
        </layout>
       </widget>
       <widget class="QWidget" name="tabDatabase">
+       <attribute name="icon">
+        <iconset resource="icons/icons.qrc">
+         <normaloff>:/icons/icons-database.png</normaloff>:/icons/icons-database.png</iconset>
+       </attribute>
        <attribute name="title">
         <string>Database</string>
        </attribute>
@@ -1392,7 +1404,7 @@ QDoubleSpinBox::up-arrow {
               <item>
                <widget class="QPushButton" name="buttonAggiungiCartaDatabase">
                 <property name="text">
-                 <string>Aggiungi Carta</string>
+                 <string>Aggiungi </string>
                 </property>
                 <property name="icon">
                  <iconset resource="icons/icons.qrc">
@@ -1403,7 +1415,7 @@ QDoubleSpinBox::up-arrow {
               <item>
                <widget class="QPushButton" name="buttonRimuoviCartaDatabase">
                 <property name="text">
-                 <string>Rimuovi Carta</string>
+                 <string>Rimuovi </string>
                 </property>
                 <property name="icon">
                  <iconset resource="icons/icons.qrc">
@@ -1415,6 +1427,12 @@ QDoubleSpinBox::up-arrow {
             </item>
             <item>
              <widget class="QTableView" name="tableViewDatabase">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="editTriggers">
                <set>QAbstractItemView::NoEditTriggers</set>
               </property>
@@ -1428,13 +1446,28 @@ QDoubleSpinBox::up-arrow {
           <item>
            <widget class="QLabel" name="labelCartaImmagineDatabase">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>650</width>
+              <height>700</height>
+             </size>
+            </property>
             <property name="text">
-             <string>Immagine Carta Selezionata</string>
+             <string/>
+            </property>
+            <property name="scaledContents">
+             <bool>false</bool>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
