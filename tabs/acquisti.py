@@ -6,7 +6,7 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import QObject, Qt
 
 from .models.card_database_model import CardDatabaseModel
-from .models.delegates import CondizioneComboBoxDelegate
+from .models.delegates import CondizioneComboBoxDelegate, CondizioneComboBoxDelegate1
 from dialogs.apri_bozza_acquisti import ApriBozzaAcquistiDialog
 from dialogs.salva_bozza_acquisti import SalvaBozzaAcquistiDialog   
 from utils import createMessageBox,get_column_index, generate_barcode
@@ -41,7 +41,7 @@ class AcquistiTabController(QObject):
         self.ui.tableWidgetAcquisti.setHorizontalHeaderLabels(
             ["ID", "ID Espansione", "Nome Espansione", "Nome", "Condizione", "Prezzo valutazione", "Prezzo acquisto", ""]
         )
-        delegateCondizione = CondizioneComboBoxDelegate(self.ui.tableWidgetAcquisti)
+        delegateCondizione = CondizioneComboBoxDelegate1(self.ui.tableWidgetAcquisti)
         self.ui.tableWidgetAcquisti.setItemDelegateForColumn(
            4, delegateCondizione
         )
@@ -91,12 +91,14 @@ class AcquistiTabController(QObject):
         prezzo_item_acquisto = QtWidgets.QTableWidgetItem(str(0))
 
 
-        # Nome NON editabile
+        # Solo prezzo_item_acquisto editabile, tutti gli altri non editabili
+        id_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+        espansione_id_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+        espansione_nome_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
         nome_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        prezzo_item_acquisto.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-
-        # Prezzo editabile
-        prezzo_item_stima.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable)
+        
+        # Prezzo acquisto editabile
+        #prezzo_item_acquisto.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsEditable)
 
         self.ui.tableWidgetAcquisti.setItem(row_pos, 0, id_item)
         self.ui.tableWidgetAcquisti.setItem(row_pos, 1, espansione_id_item)
