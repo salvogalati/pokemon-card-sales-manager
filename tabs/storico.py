@@ -3,7 +3,7 @@ from datetime import datetime
 from PyQt5.QtSql import QSqlTableModel
 from .models.magazzino_model import MagazzinoModel
 from icons import icons  # noqa: F401
-from config import cards_condizioni
+from config import cards_condizioni, purchase_table, sales_table
 from utils import pulisci_testo, createMessageBox
 from .models.delegates import CenterIconDelegate, CondizioneComboBoxDelegate
 
@@ -15,7 +15,7 @@ class StoricoTabController:
 
         self.model_magazzino = MagazzinoModel(self.ui.db_main)
         self.model_magazzino.setEditStrategy(QSqlTableModel.OnManualSubmit)
-        self.model_magazzino.setTable("sales")
+        self.model_magazzino.setTable(sales_table)
         self.model_magazzino.select()
 
         self.ui.tableViewStorico.setModel(self.model_magazzino)
@@ -89,7 +89,7 @@ class StoricoTabController:
             msg.exec_()
 
     def on_storico_changed(self, button):
-        table_mapping = {"Vendite": "sales", "Acquisti": "purchase"}
+        table_mapping = {"Vendite": sales_table, "Acquisti": purchase_table}
         field_mapping = {
             "Vendite": {"prezzo": "prezzo_vendita", "date": "sell_date"},
             "Acquisti": {"prezzo": "prezzo_acquisto", "date": "purchase_date"},
@@ -101,7 +101,6 @@ class StoricoTabController:
         }
         self.model_magazzino.setTable(table_mapping.get(button.text()))
         self.model_magazzino.select()
-
         delegateCondizione = CondizioneComboBoxDelegate(self.ui.tableViewStorico)
         self.ui.tableViewStorico.setItemDelegateForColumn(
             self.model_magazzino.fieldIndex("condizione"), delegateCondizione

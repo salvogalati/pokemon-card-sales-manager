@@ -212,6 +212,7 @@ class AcquistiTabController(QObject):
     def svuota_lista_acquisti(self):
         self.ui.tableWidgetAcquisti.setRowCount(0)
         self.ui.lineEditTotaleDaPagareAcquisti.setText("")
+        
         self.aggiorna_totale()
 
     def completa_acquisti(self):

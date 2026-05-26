@@ -202,6 +202,7 @@ class VenditeTabController(QObject):
 
     def svuota_carrello(self):
         self.ui.tableWidget_carrello.setRowCount(0)
+        self.ui.sconto_input.setText("")
         self.aggiorna_totale()
 
     def aggiorna_totale(self):
