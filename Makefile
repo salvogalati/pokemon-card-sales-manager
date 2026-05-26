@@ -60,7 +60,7 @@ clean:
 	find . -type f -name ".coverage" -delete
 
 clean-build:
-	rm -rf build dist *.spec
+	rm -rf build dist
 
 # ===== Full reset =====
 reset: clean clean-build
