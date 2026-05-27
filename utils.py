@@ -43,10 +43,14 @@ def generate_barcode(nome, espansione, condizione):
     return f"{base}-{short_hash}"
 
 def auto_size_table_columns(table, padding=30):
+    fixed_widths = {"name": 200, "nome": 200, "id": 150}
     header = table.horizontalHeader()
     font_metrics = header.fontMetrics()
 
     for col in range(table.model().columnCount()):
         text = table.model().headerData(col, Qt.Horizontal)
-        width = font_metrics.horizontalAdvance(str(text)) + padding
+        if str(text).lower() in fixed_widths:
+            width = fixed_widths[str(text).lower()]
+        else:
+            width = font_metrics.horizontalAdvance(str(text)) + padding
         table.setColumnWidth(col, width)

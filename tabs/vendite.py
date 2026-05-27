@@ -27,8 +27,8 @@ class VenditeTabController(QObject):
 
         # Collega alla tabella
         self.ui.tableStock.setModel(self.model)
-        self.ui.tableStock.hideColumn(self.model.fieldIndex("prezzo_acquisto"))
-        self.ui.tableStock.hideColumn(self.model.fieldIndex("id"))
+        for col in ["barcode", "espansione_nome", "id"]:
+            self.ui.tableStock.hideColumn(self.model.fieldIndex(col))
         self.ui.tableStock.activated.connect(self.aggiungi_al_carrello)
         self.ui.tableStock.setItemDelegateForColumn(
             self.model.fieldIndex("condizione"), CenterIconDelegate()
