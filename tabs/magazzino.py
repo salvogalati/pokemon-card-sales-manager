@@ -44,6 +44,7 @@ class SpinBoxDelegate(QStyledItemDelegate):
 class MagazzinoTabController:
     def __init__(self, ui):
         self.ui = ui
+        self.current_filter = ""  # Memorizza il filtro da applica_filtro
 
         db = QtSql.QSqlDatabase.database("main_connection")
         self.model_magazzino = MagazzinoModel(db)
@@ -111,6 +112,7 @@ class MagazzinoTabController:
         )
         # ☻print(filtro_sql)
         self.model_magazzino.setFilter(filtro_sql)
+        self.current_filter = filtro_sql
 
     @staticmethod
     def check_filtri(
@@ -158,7 +160,7 @@ class MagazzinoTabController:
             return
         testo_sicuro = pulisci_testo(testo)
 
-        filtro = f"""
+        filtro_ricerca = f"""
         espansione_id LIKE '%{testo_sicuro}%'
         OR espansione_nome LIKE '%{testo_sicuro}%'
         OR name LIKE '%{testo_sicuro}%'
@@ -166,7 +168,11 @@ class MagazzinoTabController:
         OR condizione LIKE '%{testo_sicuro}%'
         """
 
-        self.model_magazzino.setFilter(filtro)
+        if self.current_filter:
+                filtro_combinato = f"({self.current_filter}) AND ({filtro_ricerca})"
+        else:
+            filtro_combinato = filtro_ricerca
+        self.model_magazzino.setFilter(filtro_combinato)
         self.model_magazzino.select()
 
     def resetta_filtro(self):
@@ -177,6 +183,7 @@ class MagazzinoTabController:
         self.ui.doubleSpinBoxMagazzinoPrezzoMin.setValue(0.0)
         self.ui.doubleSpinBoxMagazzinoPrezzoMax.setValue(0.0)
         self.model_magazzino.setFilter("")
+        self.current_filter = ""
 
     def salva_modifiche(self):
         msg = createMessageBox(
