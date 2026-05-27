@@ -41,8 +41,10 @@ class ApriBozzaAcquistiDialog(QtWidgets.QDialog):
             return
         selected_row = selected_indexes[0].row()
         oggetti_data = self.model.record(selected_row).value("oggetti")
+        nome_bozza = self.model.record(selected_row).value("nome_cliente")
         totale = self.model.record(selected_row).value("totale")
         self.data = oggetti_data
+        self.nome_bozza = nome_bozza
         self.totale = totale
         super().accept()
 

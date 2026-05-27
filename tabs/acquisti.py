@@ -20,6 +20,7 @@ class AcquistiTabController(QObject):
     def __init__(self, ui):
         super().__init__()
         self.ui = ui
+        self.bozza = None
 
         db_cards = QtSql.QSqlDatabase.database("card_db_connection")
         db_main = QtSql.QSqlDatabase.database("main_connection")
@@ -95,7 +96,7 @@ class AcquistiTabController(QObject):
         espansione_id_item = QtWidgets.QTableWidgetItem(str(espansione_id))
         espansione_nome_item = QtWidgets.QTableWidgetItem(str(espansione_nome))
         nome_item = QtWidgets.QTableWidgetItem(str(nome))
-        condizione_item = QtWidgets.QTableWidgetItem("Mint")
+        condizione_item = QtWidgets.QTableWidgetItem("Near Mint")
         prezzo_item_stima = QtWidgets.QTableWidgetItem(str(0))
         prezzo_item_acquisto = QtWidgets.QTableWidgetItem(str(0))
 
@@ -215,7 +216,7 @@ class AcquistiTabController(QObject):
     def svuota_lista_acquisti(self):
         self.ui.tableWidgetAcquisti.setRowCount(0)
         self.ui.lineEditTotaleDaPagareAcquisti.setText("")
-        
+        self.bozza = None
         self.aggiorna_totale()
 
     def completa_acquisti(self):
@@ -240,7 +241,6 @@ class AcquistiTabController(QObject):
                 acquisto_date = QtCore.QDateTime.currentDateTime().toString(
                     "yyyy-MM-dd HH:mm:ss"
                 )
-                # return
 
                 insert_query = QtSql.QSqlQuery(self.db_main)
                 insert_query.prepare(f"""
@@ -277,7 +277,6 @@ class AcquistiTabController(QObject):
                     VALUES (:barcode, :id, :espansione_id, :espansione_nome, :name, :condizione, :prezzo, 1, :prezzo_acquisto, 'Si')
                 """)
                 insert_stock_query.bindValue(":barcode", barcode)
-                #print(row_data["ID"])
                 insert_stock_query.bindValue(":id", row_data["ID"])
                 insert_stock_query.bindValue(
                     ":espansione_id", row_data["ID Espansione"]
@@ -298,6 +297,7 @@ class AcquistiTabController(QObject):
 
             self.db_main.commit()
             self.ui.lineEditTotaleDaPagareAcquisti.setText("")
+            self.bozza = None
 
         except Exception as e:
             self.db_main.rollback()
@@ -367,7 +367,16 @@ class AcquistiTabController(QObject):
 
         data_json = json.dumps(data)
         dialog = SalvaBozzaAcquistiDialog(data_json, parent=self)
-        dialog.exec_()
+        if self.bozza:
+            msg = createMessageBox(
+                "Bozza esistente", f"Stai modificando una bozza esistente. Vuoi sovrascrivere la bozza {self.bozza}?",
+                QtWidgets.QMessageBox.Warning, buttons=[QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No])
+            if msg.exec_() == QtWidgets.QMessageBox.Yes:
+                dialog.update_bozza(data=data_json,name=self.bozza)
+            else:
+                dialog.exec_()
+        else:
+            dialog.exec_()
 
     def apri_bozza_acquisti(self):
         dialog = ApriBozzaAcquistiDialog(None, parent=self)
@@ -378,6 +387,7 @@ class AcquistiTabController(QObject):
             except json.JSONDecodeError:
                 msg = createMessageBox("Errore", "Dati della bozza non validi.")
                 msg.exec_()
+                print(traceback.format_exc())
                 return
             self.svuota_lista_acquisti()
             self.ui.tableWidgetAcquisti.blockSignals(True)
@@ -425,3 +435,4 @@ class AcquistiTabController(QObject):
                 self.ui.tableWidgetAcquisti.setCellWidget(row_pos, 7, btn)
             self.ui.tableWidgetAcquisti.blockSignals(True)
             self.aggiorna_totale(totale_da_pagare=float(dialog.totale))
+            self.bozza = dialog.nome_bozza

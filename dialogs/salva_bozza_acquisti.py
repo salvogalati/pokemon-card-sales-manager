@@ -21,6 +21,7 @@ class SalvaBozzaAcquistiDialog(QtWidgets.QDialog):
 
     def salva_bozza(self):
         nome_cliente = self.lineEditNome.text().strip()
+
         data = json.loads(self.data)
         if not nome_cliente:
             msg = createMessageBox("Errore", "Il nome del cliente è obbligatorio.")
@@ -45,5 +46,32 @@ class SalvaBozzaAcquistiDialog(QtWidgets.QDialog):
             msg.exec_()
         else:
             msg = createMessageBox("Successo", "Bozza salvata con successo!")
+            msg.exec_()
+            self.accept()
+
+    def update_bozza(self, data, name):
+        data = json.loads(data)
+        prezzo_totale = sum(float(item["prezzo_acquisto"]) for item in data)
+        query = QtSql.QSqlQuery(self.main_db)
+        query.prepare(
+            "UPDATE draft_purchase SET nome_cliente = :nome, numero_oggetti = :num, totale = :tot, oggetti = :ogg WHERE nome_cliente = :nome"
+        )
+        query.bindValue(":nome", name)
+        query.bindValue(":num", len(data))
+        query.bindValue(":tot", prezzo_totale)
+        query.bindValue(":ogg", json.dumps(data))
+
+        if not query.exec_():
+            print("Errore durante l'aggiornamento della bozza:", query.lastError().text())
+            msg = createMessageBox("Errore", "Errore durante l'aggiornamento della bozza.",
+                                   icon=QtWidgets.QMessageBox.Critical)
+            msg.exec_()
+        elif query.numRowsAffected() == 0:
+            print(f"Nessuna bozza trovata con nome: {name}")
+            msg = createMessageBox("Errore", f"Nessuna bozza trovata con nome '{name}'.\
+                                    \nSalvataggio non completato", icon=QtWidgets.QMessageBox.Warning)
+            msg.exec_()
+        else:
+            msg = createMessageBox("Successo", "Bozza aggiornata con successo!")
             msg.exec_()
             self.accept()
