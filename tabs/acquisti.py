@@ -6,10 +6,10 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import QObject, Qt
 
 from .models.card_database_model import CardDatabaseModel
-from .models.delegates import CondizioneComboBoxDelegate, CondizioneComboBoxDelegate1
+from .models.delegates import CondizioneComboBoxDelegate1
 from dialogs.apri_bozza_acquisti import ApriBozzaAcquistiDialog
 from dialogs.salva_bozza_acquisti import SalvaBozzaAcquistiDialog
-from utils import createMessageBox, get_column_index, generate_barcode
+from utils import createMessageBox, get_column_index, generate_barcode, auto_size_table_columns
 from config import database_table, purchase_table, unpriced_table
 from icons import icons  # noqa: F401
 
@@ -66,6 +66,9 @@ class AcquistiTabController(QObject):
 
         self.ui.buttonSalvaBozzaAcquisti.clicked.connect(self.salva_bozza_acquisti)
         self.ui.buttonApriBozzaAcquisti.clicked.connect(self.apri_bozza_acquisti)
+
+        auto_size_table_columns(self.ui.tableDatabaseAcquisti, padding=30)
+        auto_size_table_columns(self.ui.tableWidgetAcquisti, padding=20)
 
     def filtra_tabella(self, testo):
         if not testo:

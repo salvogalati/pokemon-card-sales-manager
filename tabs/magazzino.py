@@ -6,7 +6,7 @@ from PyQt5 import QtSql
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtSql import QSqlTableModel
 
-from utils import pulisci_testo, createMessageBox
+from utils import pulisci_testo, createMessageBox, auto_size_table_columns
 from .models.magazzino_model import MagazzinoModel
 from .models.delegates import (
     CenterIconDelegate,
@@ -69,6 +69,9 @@ class MagazzinoTabController:
         self.ui.lineEditSearchMagazzino.textChanged.connect(self.filtra_tabella_search)
 
         self.ui.buttonGroupMagazzino.buttonClicked.connect(self.on_magazzino_changed)
+
+        auto_size_table_columns(self.ui.tableViewMagazzino, padding=30)
+
 
     def on_magazzino_changed(self, button):
         table_mapping = {"Prezzati": stock_table, "Da prezzare": unpriced_table}

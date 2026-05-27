@@ -4,7 +4,7 @@ from PyQt5.QtSql import QSqlTableModel
 from .models.magazzino_model import MagazzinoModel
 from icons import icons  # noqa: F401
 from config import cards_condizioni, purchase_table, sales_table
-from utils import pulisci_testo, createMessageBox
+from utils import pulisci_testo, createMessageBox, auto_size_table_columns
 from .models.delegates import CenterIconDelegate, CondizioneComboBoxDelegate
 
 
@@ -41,6 +41,8 @@ class StoricoTabController:
         self.ui.dateTimeEditStorico_A.setDateTime(datetime.now())
         self.ui.dateTimeEditStorico_A.dateTimeChanged.connect(self.on_date_changed)
         self.ui.dateTimeEditStorico_Da.dateTimeChanged.connect(self.on_date_changed)
+
+        auto_size_table_columns(self.ui.tableViewStorico, padding=30)
 
     def applica_filtri(self, *args):
         try:

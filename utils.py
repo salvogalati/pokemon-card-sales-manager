@@ -2,6 +2,7 @@ import hashlib
 import re
 from PyQt5 import QtWidgets, QtGui
 from config import get_resource_path
+from PyQt5.QtCore import Qt
 
 
 def pulisci_testo(testo):
@@ -40,3 +41,12 @@ def generate_barcode(nome, espansione, condizione):
     short_hash = hashlib.md5(raw.encode()).hexdigest()[:6].upper()
 
     return f"{base}-{short_hash}"
+
+def auto_size_table_columns(table, padding=30):
+    header = table.horizontalHeader()
+    font_metrics = header.fontMetrics()
+
+    for col in range(table.model().columnCount()):
+        text = table.model().headerData(col, Qt.Horizontal)
+        width = font_metrics.horizontalAdvance(str(text)) + padding
+        table.setColumnWidth(col, width)

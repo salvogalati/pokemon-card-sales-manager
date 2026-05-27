@@ -8,7 +8,7 @@ from tabs.models.delegates import CenterIconDelegate
 from utils import pulisci_testo, createMessageBox
 from .models.card_database_model import CardDatabaseModel
 from config import stock_table
-from utils import get_column_index
+from utils import get_column_index, auto_size_table_columns
 from icons import icons  # noqa: F401
 
 
@@ -33,6 +33,7 @@ class VenditeTabController(QObject):
         self.ui.tableStock.setItemDelegateForColumn(
             self.model.fieldIndex("condizione"), CenterIconDelegate()
         )
+
         # self.ui.tableStock.doubleClicked.connect(self.aggiungi_al_carrello)
 
         # Collegamento ricerca live
@@ -66,6 +67,10 @@ class VenditeTabController(QObject):
 
         self.ui.sconto_input.textChanged.connect(self.applica_sconto)
         self.ui.button_concludi_vendita.clicked.connect(self.concludi_vendita)
+
+        auto_size_table_columns(self.ui.tableStock, padding=30)
+        auto_size_table_columns(self.ui.tableWidget_carrello, padding=20)
+
 
     def filtra_tabella(self, testo):
         if not testo:

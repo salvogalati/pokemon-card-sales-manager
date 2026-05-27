@@ -7,7 +7,7 @@ import requests
 
 from .models.card_database_model import CardDatabaseModel
 from dialogs.aggiungi_carta_database import AggiungiCartaDatabaseDialog
-from utils import createMessageBox, pulisci_testo
+from utils import createMessageBox, pulisci_testo, auto_size_table_columns
 from config import database_table
 from icons import icons  # noqa: F401
 
@@ -35,6 +35,8 @@ class DatabaseTabController(QObject):
         self.ui.buttonRimuoviCartaDatabase.clicked.connect(
             self.rimuovi_carta_selezionata
         )
+
+        auto_size_table_columns(self.ui.tableViewDatabase, padding=30)
 
     def filtra_tabella(self, testo):
         testo = pulisci_testo(testo)
