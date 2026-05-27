@@ -32,6 +32,7 @@ class ApriBozzaAcquistiDialog(QtWidgets.QDialog):
 
         self.lineEditSearchBozzeAcquisti.textChanged.connect(self.filter_bozze)
         self.buttonCancellaBozza.clicked.connect(self.cancella_bozza)
+        self.buttonSvuotaBozze.clicked.connect(self.svuota_bozze)
 
     def accept(self):
         selected_indexes = self.tableViewBozzeAcquisti.selectionModel().selectedRows()
@@ -82,5 +83,21 @@ class ApriBozzaAcquistiDialog(QtWidgets.QDialog):
             msg = createMessageBox(
                 "Errore", "Errore durante la cancellazione della bozza."
             )
+            msg.exec_()
+        self.model.select()
+
+    def svuota_bozze(self):
+        msg_confirm = createMessageBox(
+            "Conferma Svuotamento",
+            "Sei sicuro di voler cancellare tutte le bozze? Questa azione non può essere annullata.",
+            QtWidgets.QMessageBox.Warning,
+            buttons=[QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No],
+        )
+        if msg_confirm.exec_() != QtWidgets.QMessageBox.Yes:
+            return
+        query = QtSql.QSqlQuery(self.main_db)
+        if not query.exec_("DELETE FROM draft_purchase"):
+            print("Errore durante lo svuotamento delle bozze:", query.lastError().text())
+            msg = createMessageBox("Errore", "Errore durante lo svuotamento delle bozze.")
             msg.exec_()
         self.model.select()
