@@ -27,7 +27,7 @@ class YesNoDelegate(QItemDelegate):
 class CondizioneComboBoxDelegate(QItemDelegate):
     def createEditor(self, parent, option, index):
         combo = QComboBox(parent)
-        combo.addItems(cards_condizioni)
+        combo.addItems(list(card_condizioni_icons.keys()))
         return combo
 
     def setEditorData(self, editor, index):
@@ -97,7 +97,7 @@ class CenterIconDelegate(QStyledItemDelegate):
 class CondizioneComboBoxDelegate1(QStyledItemDelegate):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.items = cards_condizioni
+        self.items = list(card_condizioni_icons.keys())
 
     def createEditor(self, parent, option, index):
         combo = QComboBox(parent)

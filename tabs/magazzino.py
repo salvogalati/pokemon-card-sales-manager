@@ -1,10 +1,12 @@
 from datetime import datetime
 import os
+import traceback
 
 from PyQt5 import QtWidgets
 from PyQt5 import QtSql
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtSql import QSqlTableModel
+from PyQt5.QtCore import Qt
 
 from utils import pulisci_testo, createMessageBox, auto_size_table_columns
 from .models.magazzino_model import MagazzinoModel
@@ -16,12 +18,12 @@ from .models.delegates import (
 from PyQt5.QtWidgets import QStyledItemDelegate, QSpinBox
 from icons import icons  # noqa: F401
 from config import (
-    main_db,
-    backup_folder,
-    cards_condizioni,
+    DBNames,
+    FolderNames,
+    FieldsEnum,
     get_resource_path,
-    stock_table,
-    unpriced_table,
+    DBTables,
+    card_condizioni_icons
 )
 import shutil
 
@@ -49,7 +51,7 @@ class MagazzinoTabController:
         db = QtSql.QSqlDatabase.database("main_connection")
         self.model_magazzino = MagazzinoModel(db)
         self.model_magazzino.setEditStrategy(QSqlTableModel.OnManualSubmit)
-        self.model_magazzino.setTable(stock_table)
+        self.model_magazzino.setTable(DBTables.STOCK.value)
         self.model_magazzino.select()
 
         self.ui.tableViewMagazzino.setModel(self.model_magazzino)
@@ -57,10 +59,18 @@ class MagazzinoTabController:
         # self.ui.tableViewMagazzino.setItemDelegateForColumn(self.model_magazzino.fieldIndex("prezzo"), SpinBoxDelegate())
         delegateCondizione = CondizioneComboBoxDelegate(self.ui.tableViewMagazzino)
         self.ui.tableViewMagazzino.setItemDelegateForColumn(
-            self.model_magazzino.fieldIndex("condizione"), delegateCondizione
+            self.model_magazzino.fieldIndex(FieldsEnum.Condizione.value), delegateCondizione
         )
+        for col in range(self.model_magazzino.columnCount()):
+            field_name = self.model_magazzino.headerData(col, Qt.Horizontal)
+            if field_name not in [e.value for e in FieldsEnum]:
+                pass
+                #elf.ui.tableViewMagazzino.hideColumn(col)
+            else:
+                field_name_ok = FieldsEnum(field_name).name.replace("_", " ")
+                self.model_magazzino.setHeaderData(col, Qt.Horizontal, field_name_ok)
 
-        self.ui.comboBoxCondizione.addItems([""] + cards_condizioni)
+        self.ui.comboBoxCondizione.addItems([""] + list(card_condizioni_icons.keys()))
 
         self.ui.button_applica_filtro.clicked.connect(self.applica_filtro)
         self.ui.button_resetta_filtro.clicked.connect(self.resetta_filtro)
@@ -75,21 +85,30 @@ class MagazzinoTabController:
 
 
     def on_magazzino_changed(self, button):
-        table_mapping = {"Prezzati": stock_table, "Da prezzare": unpriced_table}
+        table_mapping = {"Prezzati": DBTables.STOCK.value, "Da prezzare": DBTables.UNPRICED_CARDS.value}
 
         self.model_magazzino.setTable(table_mapping.get(button.text()))
         self.model_magazzino.select()
 
         delegateCondizione = CondizioneComboBoxDelegate(self.ui.tableViewMagazzino)
         self.ui.tableViewMagazzino.setItemDelegateForColumn(
-            self.model_magazzino.fieldIndex("condizione"), delegateCondizione
+            self.model_magazzino.fieldIndex(FieldsEnum.Condizione.value), delegateCondizione
         )
 
         if button.text() == "Da prezzare":
             delegateYesNo = YesNoDelegate(self.ui.tableViewMagazzino)
             self.ui.tableViewMagazzino.setItemDelegateForColumn(
-                self.model_magazzino.fieldIndex("da_prezzare"), delegateYesNo
+                self.model_magazzino.fieldIndex(FieldsEnum.Da_Prezzare.value), delegateYesNo
             )
+
+        for col in range(self.model_magazzino.columnCount()):
+            field_name = self.model_magazzino.headerData(col, Qt.Horizontal)
+            if field_name not in [e.value for e in FieldsEnum]:
+                pass
+                #elf.ui.tableViewMagazzino.hideColumn(col)
+            else:
+                field_name_ok = FieldsEnum(field_name).name.replace("_", " ")
+                self.model_magazzino.setHeaderData(col, Qt.Horizontal, field_name_ok)
 
         # self.applica_filtro()
         self.resetta_filtro()
@@ -110,7 +129,7 @@ class MagazzinoTabController:
             filtro_prezzo_min,
             filtro_prezzo_max,
         )
-        # ☻print(filtro_sql)
+        # print(filtro_sql)
         self.model_magazzino.setFilter(filtro_sql)
         self.current_filter = filtro_sql
 
@@ -130,26 +149,26 @@ class MagazzinoTabController:
 
         if filtro_nome.strip():
             nome = escape_sql(filtro_nome)
-            condizioni.append(f"name LIKE '%{nome}%'")
+            condizioni.append(f"{FieldsEnum.Nome.value} LIKE '%{nome}%'")
 
         if filtro_espansione.strip():
             esp = escape_sql(filtro_espansione)
             condizioni.append(
-                f"espansione_id LIKE '%{esp}%' OR espansione_nome LIKE '%{esp}%'"
+                f"{FieldsEnum.Espansione_ID.value} LIKE '%{esp}%' OR '{FieldsEnum.Espansione.value}' LIKE '%{esp}%'"
             )
 
         if filtro_qty > 0:
-            condizioni.append(f"quantita_stock >= {filtro_qty}")
+            condizioni.append(f"{FieldsEnum.Quantità.value} >= {filtro_qty}")
 
         if filtro_condizione:
             cond = escape_sql(filtro_condizione)
-            condizioni.append(f"condizione = '{cond}'")
+            condizioni.append(f"{FieldsEnum.Condizione.value} = '{cond}'")
 
         if filtro_prezzo_min > 0:
-            condizioni.append(f"prezzo >= {filtro_prezzo_min}")
+            condizioni.append(f"{FieldsEnum.Prezzo.value} >= {filtro_prezzo_min}")
 
         if filtro_prezzo_max > 0:
-            condizioni.append(f"prezzo <= {filtro_prezzo_max}")
+            condizioni.append(f"{FieldsEnum.Prezzo.value} <= {filtro_prezzo_max}")
 
         return " AND ".join(condizioni)
 
@@ -161,13 +180,12 @@ class MagazzinoTabController:
         testo_sicuro = pulisci_testo(testo)
 
         filtro_ricerca = f"""
-        espansione_id LIKE '%{testo_sicuro}%'
-        OR espansione_nome LIKE '%{testo_sicuro}%'
-        OR name LIKE '%{testo_sicuro}%'
-        OR barcode LIKE '%{testo_sicuro}%'
-        OR condizione LIKE '%{testo_sicuro}%'
+        {FieldsEnum.Espansione_ID.value} LIKE '%{testo_sicuro}%'
+        OR '{FieldsEnum.Espansione.value}' LIKE '%{testo_sicuro}%'
+        OR {FieldsEnum.Nome.value} LIKE '%{testo_sicuro}%'
+        OR {FieldsEnum.Barcode.value} LIKE '%{testo_sicuro}%'
+        OR {FieldsEnum.Condizione.value} LIKE '%{testo_sicuro}%'
         """
-
         if self.current_filter:
                 filtro_combinato = f"({self.current_filter}) AND ({filtro_ricerca})"
         else:
@@ -197,13 +215,21 @@ class MagazzinoTabController:
             return
 
         self.backup_database()
-        if not self.model_magazzino.submitAll():
+        self.ui.tableViewMagazzino.closeEditor(
+            self.ui.tableViewMagazzino.focusWidget(),
+            QtWidgets.QAbstractItemDelegate.NoHint
+        )
+
+        self.ui.tableViewMagazzino.clearFocus()
+        ok = self.model_magazzino.submitAll()
+        if not ok:
             QMessageBox.critical(
                 self.ui,
                 "Errore",
                 f"Errore durante il salvataggio: {self.model_magazzino.lastError().text()}",
             )
-        if self.model_magazzino.tableName() == unpriced_table:
+            return
+        if self.model_magazzino.tableName() == DBTables.UNPRICED_CARDS.value:
             self.sposta_carte_prezzate()
         QMessageBox.information(self.ui, "Successo", "Modifiche salvate con successo!")
 
@@ -219,51 +245,51 @@ class MagazzinoTabController:
         query = QtSql.QSqlQuery(db)
 
         try:
-            chiave = "barcode"
+            chiave = F"{FieldsEnum.Barcode.value}"  # Puoi modificare questa chiave se necessario
 
             # 1. UPDATE (merge su stock già esistente)
             update_sql = f"""
-            UPDATE {stock_table}
+            UPDATE {DBTables.STOCK.value}
             SET
-                quantita_stock = quantita_stock + (
-                    SELECT quantita_stock FROM {unpriced_table}
-                    WHERE {unpriced_table}.{chiave} = {stock_table}.{chiave}
-                    AND da_prezzare = 'No'
+                {FieldsEnum.Quantità.value} = {FieldsEnum.Quantità.value} + (
+                    SELECT {FieldsEnum.Quantità.value} FROM {DBTables.UNPRICED_CARDS.value}
+                    WHERE {DBTables.UNPRICED_CARDS.value}.{chiave} = {DBTables.STOCK.value}.{chiave}
+                    AND {FieldsEnum.Da_Prezzare.value} = 'No'
                 ),
 
-                prezzo = (
-                    SELECT prezzo FROM {unpriced_table}
-                    WHERE {unpriced_table}.{chiave} = {stock_table}.{chiave}
-                    AND da_prezzare = 'No'
+                {FieldsEnum.Prezzo.value} = (
+                    SELECT {FieldsEnum.Prezzo.value} FROM {DBTables.UNPRICED_CARDS.value}
+                    WHERE {DBTables.UNPRICED_CARDS.value}.{chiave} = {DBTables.STOCK.value}.{chiave}
+                    AND {FieldsEnum.Da_Prezzare.value} = 'No'
                 ),
 
-                prezzo_acquisto = ROUND(
+                {FieldsEnum.Prezzo_Acquisto.value} = ROUND(
                     (
-                        (prezzo_acquisto * quantita_stock) +
+                        ({FieldsEnum.Prezzo_Acquisto.value} * {FieldsEnum.Quantità.value}) +
                         (
-                            (SELECT prezzo_acquisto FROM {unpriced_table}
-                            WHERE {unpriced_table}.{chiave} = {stock_table}.{chiave}
-                            AND da_prezzare = 'No')
+                            (SELECT {FieldsEnum.Prezzo.value} FROM {DBTables.UNPRICED_CARDS.value}
+                            WHERE {DBTables.UNPRICED_CARDS.value}.{chiave} = {DBTables.STOCK.value}.{chiave}
+                            AND {FieldsEnum.Da_Prezzare.value} = 'No')
                             *
-                            (SELECT quantita_stock FROM {unpriced_table}
-                            WHERE {unpriced_table}.{chiave} = {stock_table}.{chiave}
-                            AND da_prezzare = 'No')
+                            (SELECT {FieldsEnum.Quantità.value} FROM {DBTables.UNPRICED_CARDS.value}
+                            WHERE {DBTables.UNPRICED_CARDS.value}.{chiave} = {DBTables.STOCK.value}.{chiave}
+                            AND {FieldsEnum.Da_Prezzare.value} = 'No')
                         )
                     )
                     /
                     (
-                        quantita_stock +
-                        (SELECT quantita_stock FROM {unpriced_table}
-                        WHERE {unpriced_table}.{chiave} = {stock_table}.{chiave}
-                        AND da_prezzare = 'No')
+                        {FieldsEnum.Quantità.value} +
+                        (SELECT {FieldsEnum.Quantità.value} FROM {DBTables.UNPRICED_CARDS.value}
+                        WHERE {DBTables.UNPRICED_CARDS.value}.{chiave} = {DBTables.STOCK.value}.{chiave}
+                        AND {FieldsEnum.Da_Prezzare.value} = 'No')
                     ),
                 2
                 )
 
             WHERE EXISTS (
-                SELECT 1 FROM {unpriced_table}
-                WHERE {unpriced_table}.{chiave} = {stock_table}.{chiave}
-                AND da_prezzare = 'No'
+                SELECT 1 FROM {DBTables.UNPRICED_CARDS.value}
+                WHERE {DBTables.UNPRICED_CARDS.value}.{chiave} = {DBTables.STOCK.value}.{chiave}
+                AND {FieldsEnum.Da_Prezzare.value} = 'No'
             )
             """
 
@@ -272,12 +298,12 @@ class MagazzinoTabController:
 
             # 2. INSERT (solo nuove carte)
             insert_sql = f"""
-            INSERT INTO {stock_table} (name,id, espansione_id, espansione_nome, quantita_stock, condizione, prezzo, prezzo_acquisto, barcode)
-            SELECT name, id, espansione_id, espansione_nome, quantita_stock, condizione, prezzo, prezzo_acquisto, barcode
-            FROM {unpriced_table} u
-            WHERE da_prezzare = 'No'
+            INSERT INTO {DBTables.STOCK.value} ({FieldsEnum.Nome.value}, {FieldsEnum.ID_Cardmarket.value}, {FieldsEnum.Espansione_ID.value}, {FieldsEnum.Prezzo_Acquisto.value}, {FieldsEnum.Quantità.value}, {FieldsEnum.Condizione.value}, {FieldsEnum.Prezzo.value}, {FieldsEnum.Prezzo_Acquisto.value}, {FieldsEnum.Barcode.value})
+            SELECT {FieldsEnum.Nome.value}, {FieldsEnum.ID_Carta.value}, {FieldsEnum.Espansione_ID.value}, {FieldsEnum.Prezzo_Acquisto.value}, {FieldsEnum.Quantità.value}, {FieldsEnum.Condizione.value}, {FieldsEnum.Prezzo.value}, {FieldsEnum.Prezzo_Acquisto.value}, {FieldsEnum.Barcode.value}
+            FROM {DBTables.UNPRICED_CARDS.value} u
+            WHERE {FieldsEnum.Da_Prezzare.value} = 'No'
             AND NOT EXISTS (
-                SELECT 1 FROM {stock_table} s
+                SELECT 1 FROM {DBTables.STOCK.value} s
                 WHERE s.{chiave} = u.{chiave}
             )
             """
@@ -287,8 +313,8 @@ class MagazzinoTabController:
 
             # 3. DELETE da unpriced
             delete_sql = f"""
-            DELETE FROM {unpriced_table}
-            WHERE da_prezzare = 'No'
+            DELETE FROM {DBTables.UNPRICED_CARDS.value}
+            WHERE {FieldsEnum.Da_Prezzare.value} = 'No'
             """
 
             if not query.exec_(delete_sql):
@@ -304,14 +330,15 @@ class MagazzinoTabController:
             QMessageBox.critical(
                 self.ui, "Errore", f"Errore nello spostamento:\n{str(e)}"
             )
+            print(traceback.format_exc())
 
     def backup_database(self):
         try:
             date_now = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-            backup_dir = get_resource_path(backup_folder)
+            backup_dir = get_resource_path(FolderNames.BACKUPS.value)
             os.makedirs(backup_dir, exist_ok=True)
             shutil.copy(
-                get_resource_path(main_db),
+                get_resource_path(DBNames.MAIN_DB.value),
                 os.path.join(
                     backup_dir,
                     f"backup_pokemon_cards_{date_now}.db",
@@ -326,7 +353,7 @@ class MagazzinoTabController:
             )
 
     def ripristina_backup(self):
-        backup_dir = get_resource_path(backup_folder)
+        backup_dir = get_resource_path(FolderNames.BACKUPS.value)
         backup_files = [
             f
             for f in os.listdir(backup_dir)
@@ -355,7 +382,7 @@ class MagazzinoTabController:
         try:
             shutil.copy(
                 os.path.join(backup_dir, backup_to_restore),
-                get_resource_path(main_db),
+                get_resource_path(DBNames.MAIN_DB.value),
             )
             self.model_magazzino.select()  # Ricarica i dati nel modello
             QMessageBox.information(

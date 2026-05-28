@@ -8,11 +8,36 @@ class DBTables(str, Enum):
     PURCHASES = "purchases"
     UNPRICED_CARDS = "unpriced_cards"
     DATABASE_CARDS = "DatabaseCards"
+    BOZZE_ACQUISTI = "draft_purchases"
 
 class DBNames(str, Enum):
      MAIN_DB = "pokemon.db"
      CARD_DB = "card_database.db"
 
+class FieldsEnum(str, Enum):
+    Quantità = "quantity"
+    Nome = "name"
+    Espansione = "set"
+    Espansione_ID = "setCode"
+    Condizione = "condition"
+    Lingua = "language"
+    Prezzo = "price"
+    Barcode = "barcode"
+    Prezzo_Vendita = "sale_price"
+    Data_Vendita = "sell_date"
+    Prezzo_Acquisto = "purchase_price"
+    Data_Acquisto = "purchase_date"
+    ID_Vendita = "sale_id"
+    Da_Prezzare = "to_price"
+    Prezzo_acquisto = "purchase_price"
+    ID_Acquisto = "purchase_id"
+    ID_Carta = "id"
+    ID_Bozza_Acquisto = "id_purchase_draft"
+    Totale = "total"
+    Oggetti = "items"
+    Numero_oggetti = "number_of_items"
+    ID_Cardmarket = "cardmarketId"
+    Prezzo_Valutazione = "estimated_price"
 
 cards_condizioni = [
     "Mint",
@@ -42,20 +67,11 @@ card_condizioni_icons = {
     "PO": ":/condizioni/condizioni/Poor.png",
 }
 
-backup_folder = "backups"
+class FolderNames(str, Enum):
+    BACKUPS = "backups"
 
-class FieldsEnum(str, Enum):
-    Quantità = "quantity"
-    Nome = "name"
-    Espansione = "set"
-    Set_Code = "setCode"
-    Condizione = "condition"
-    Lingua = "language"
-    Prezzo = "price"
-    Barcode = "barcode"
-    Prezzo_Vendita = "sale_price"
-    Data_Vendita = "sell_date"
-    SALE_ID = "sale_id"
+
+
 
 
 

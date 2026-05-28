@@ -10,7 +10,7 @@ from .models.delegates import CondizioneComboBoxDelegate1
 from dialogs.apri_bozza_acquisti import ApriBozzaAcquistiDialog
 from dialogs.salva_bozza_acquisti import SalvaBozzaAcquistiDialog
 from utils import createMessageBox, get_column_index, generate_barcode, auto_size_table_columns
-from config import database_table, purchase_table, unpriced_table
+from config import DBTables, DBNames, FieldsEnum
 from icons import icons  # noqa: F401
 
 import traceback
@@ -27,20 +27,28 @@ class AcquistiTabController(QObject):
         self.db_main = db_main  # Assign the main database connection to self.db_main
         self.db = db_cards  # Assign the database connection to self.db
         self.model_card_database = CardDatabaseModel(db_cards)
-        self.model_card_database.setTable(database_table)
+        self.model_card_database.setTable(DBTables.DATABASE_CARDS.value)
         self.model_card_database.select()
         self.ui.tableDatabaseAcquisti.setModel(self.model_card_database)
         self.ui.tableDatabaseAcquisti.doubleClicked.connect(
             self.aggiungi_a_lista_acquisti
         )
-        self.ui.tableDatabaseAcquisti.hideColumn(5)
+
+        for col in range(self.model_card_database.columnCount()):
+
+            field_name = self.model_card_database.headerData(col, Qt.Horizontal)  
+            if field_name not in {FieldsEnum.ID_Cardmarket.value, FieldsEnum.Nome.value, FieldsEnum.Espansione.value, FieldsEnum.Espansione_ID.value}:
+                self.ui.tableDatabaseAcquisti.hideColumn(col)
+            else:
+                field_name_ok = FieldsEnum(field_name).name.replace("_", " ")
+                self.model_card_database.setHeaderData(col, Qt.Horizontal, field_name_ok)
 
         self.ui.lineEditCercaAcquisti.textChanged.connect(self.filtra_tabella)
 
         self.ui.tableWidgetAcquisti.setColumnCount(8)
         self.ui.tableWidgetAcquisti.setHorizontalHeaderLabels(
             [
-                "ID",
+                "ID Cardmarket",
                 "ID Espansione",
                 "Nome Espansione",
                 "Nome",
@@ -75,20 +83,20 @@ class AcquistiTabController(QObject):
         if not testo:
             self.model_card_database.setFilter("")
         else:
-            filtro = f"""name LIKE '%{testo}%'
-            OR id LIKE '%{testo}%'
-            OR espansione_nome LIKE '%{testo}%'
-            OR espansione_id LIKE '%{testo}%'"""
+            filtro = f"""{FieldsEnum.Nome.value} LIKE '%{testo}%'
+            OR {FieldsEnum.ID_Cardmarket.value} LIKE '%{testo}%'
+            OR '{FieldsEnum.Espansione.value}' LIKE '%{testo}%'
+            OR {FieldsEnum.Espansione_ID.value} LIKE '%{testo}%'"""
             self.model_card_database.setFilter(filtro)
 
     def aggiungi_a_lista_acquisti(self, index):
         if not index.isValid():
             return
         record = self.model_card_database.record(index.row())
-        id_card = record.value("id")
-        nome = record.value("name")
-        espansione_id = record.value("espansione_id")
-        espansione_nome = record.value("espansione_nome")
+        id_card = record.value(FieldsEnum.ID_Cardmarket.value)
+        nome = record.value(FieldsEnum.Nome.value)
+        espansione_id = record.value(FieldsEnum.Espansione_ID.value)
+        espansione_nome = record.value(FieldsEnum.Espansione.value)
 
         row_pos = self.ui.tableWidgetAcquisti.rowCount()
         self.ui.tableWidgetAcquisti.insertRow(row_pos)
@@ -96,7 +104,7 @@ class AcquistiTabController(QObject):
         espansione_id_item = QtWidgets.QTableWidgetItem(str(espansione_id))
         espansione_nome_item = QtWidgets.QTableWidgetItem(str(espansione_nome))
         nome_item = QtWidgets.QTableWidgetItem(str(nome))
-        condizione_item = QtWidgets.QTableWidgetItem("Near Mint")
+        condizione_item = QtWidgets.QTableWidgetItem("NM")
         prezzo_item_stima = QtWidgets.QTableWidgetItem(str(0))
         prezzo_item_acquisto = QtWidgets.QTableWidgetItem(str(0))
 
@@ -244,7 +252,7 @@ class AcquistiTabController(QObject):
 
                 insert_query = QtSql.QSqlQuery(self.db_main)
                 insert_query.prepare(f"""
-                    INSERT INTO {purchase_table} (barcode, espansione_id, espansione_nome, nome, condizione, prezzo_acquisto, purchase_date)
+                    INSERT INTO {DBTables.PURCHASES.value} ({FieldsEnum.Barcode.value}, {FieldsEnum.Espansione_ID.value}, '{FieldsEnum.Espansione.value}', {FieldsEnum.Nome.value}, {FieldsEnum.Condizione.value}, {FieldsEnum.Prezzo.value}, {FieldsEnum.Data_Acquisto.value})
                     VALUES (:barcode, :espansione_id, :espansione_nome, :nome, :condizione, :prezzo, :data)
                 """)
                 insert_query.bindValue(":barcode", barcode)
@@ -255,6 +263,9 @@ class AcquistiTabController(QObject):
                 insert_query.bindValue(":prezzo", row_data["Prezzo acquisto"])
                 insert_query.bindValue(":data", acquisto_date)
                 if not insert_query.exec_():
+                    print("SQL ERROR:", insert_query.lastError().text())
+                    print("QUERY:", insert_query.lastQuery())
+                    print("BOUND:", insert_query.boundValues())
                     raise Exception(insert_query.lastError().text())
 
                 # Logica per aggiornare lo stock: se la carta esiste già
@@ -273,11 +284,11 @@ class AcquistiTabController(QObject):
 
                 insert_stock_query = QtSql.QSqlQuery(self.db_main)
                 insert_stock_query.prepare(f"""
-                    INSERT INTO {unpriced_table} (barcode, id, espansione_id, espansione_nome, name, condizione, prezzo, quantita_stock, prezzo_acquisto, da_prezzare)
+                    INSERT INTO {DBTables.UNPRICED_CARDS.value} ({FieldsEnum.Barcode.value}, {FieldsEnum.ID_Carta.value}, {FieldsEnum.Espansione_ID.value}, '{FieldsEnum.Espansione.value}', {FieldsEnum.Nome.value}, {FieldsEnum.Condizione.value}, {FieldsEnum.Prezzo.value}, {FieldsEnum.Quantità.value}, {FieldsEnum.Prezzo_Acquisto.value}, {FieldsEnum.Da_Prezzare.value})
                     VALUES (:barcode, :id, :espansione_id, :espansione_nome, :name, :condizione, :prezzo, 1, :prezzo_acquisto, 'Si')
                 """)
                 insert_stock_query.bindValue(":barcode", barcode)
-                insert_stock_query.bindValue(":id", row_data["ID"])
+                insert_stock_query.bindValue(":id", row_data["ID Cardmarket"])
                 insert_stock_query.bindValue(
                     ":espansione_id", row_data["ID Espansione"]
                 )
@@ -331,32 +342,32 @@ class AcquistiTabController(QObject):
         for row in range(self.ui.tableWidgetAcquisti.rowCount()):
             data.append(
                 {
-                    "id": self.ui.tableWidgetAcquisti.item(
-                        row, get_column_index(self.ui.tableWidgetAcquisti, "ID")
+                    FieldsEnum.ID_Cardmarket.value: self.ui.tableWidgetAcquisti.item(
+                        row, get_column_index(self.ui.tableWidgetAcquisti, "ID Cardmarket")
                     ).text(),
-                    "espansione_id": self.ui.tableWidgetAcquisti.item(
+                    FieldsEnum.Espansione_ID.value: self.ui.tableWidgetAcquisti.item(
                         row,
                         get_column_index(self.ui.tableWidgetAcquisti, "ID Espansione"),
                     ).text(),
-                    "espansione_nome": self.ui.tableWidgetAcquisti.item(
+                    FieldsEnum.Espansione.value: self.ui.tableWidgetAcquisti.item(
                         row,
                         get_column_index(
                             self.ui.tableWidgetAcquisti, "Nome Espansione"
                         ),
                     ).text(),
-                    "nome": self.ui.tableWidgetAcquisti.item(
+                    FieldsEnum.Nome.value: self.ui.tableWidgetAcquisti.item(
                         row, get_column_index(self.ui.tableWidgetAcquisti, "Nome")
                     ).text(),
-                    "condizione": self.ui.tableWidgetAcquisti.item(
+                    FieldsEnum.Condizione.value: self.ui.tableWidgetAcquisti.item(
                         row, get_column_index(self.ui.tableWidgetAcquisti, "Condizione")
                     ).text(),
-                    "prezzo_valutazione": self.ui.tableWidgetAcquisti.item(
+                    FieldsEnum.Prezzo_Valutazione.value: self.ui.tableWidgetAcquisti.item(
                         row,
                         get_column_index(
                             self.ui.tableWidgetAcquisti, "Prezzo valutazione"
                         ),
                     ).text(),
-                    "prezzo_acquisto": self.ui.tableWidgetAcquisti.item(
+                    FieldsEnum.Prezzo_Acquisto.value: self.ui.tableWidgetAcquisti.item(
                         row,
                         get_column_index(
                             self.ui.tableWidgetAcquisti, "Prezzo acquisto"
@@ -392,24 +403,25 @@ class AcquistiTabController(QObject):
             self.svuota_lista_acquisti()
             self.ui.tableWidgetAcquisti.blockSignals(True)
             for item in data:
+                print(item)
                 row_pos = self.ui.tableWidgetAcquisti.rowCount()
                 self.ui.tableWidgetAcquisti.insertRow(row_pos)
-                id_item = QtWidgets.QTableWidgetItem(str(item.get("id", "")))
+                id_item = QtWidgets.QTableWidgetItem(str(item.get(FieldsEnum.ID_Cardmarket.value, "")))
                 espansione_id_item = QtWidgets.QTableWidgetItem(
-                    str(item.get("espansione_id", ""))
+                    str(item.get(FieldsEnum.Espansione_ID.value, ""))
                 )
                 espansione_nome_item = QtWidgets.QTableWidgetItem(
-                    str(item.get("espansione_nome", ""))
+                    str(item.get(FieldsEnum.Espansione.value, ""))
                 )
-                nome_item = QtWidgets.QTableWidgetItem(str(item.get("nome", "")))
+                nome_item = QtWidgets.QTableWidgetItem(str(item.get(FieldsEnum.Nome.value, "")))
                 condizione_item = QtWidgets.QTableWidgetItem(
-                    str(item.get("condizione", "Mint"))
+                    str(item.get(FieldsEnum.Condizione.value, "Mint"))
                 )
                 prezzo_item_valutazione = QtWidgets.QTableWidgetItem(
-                    str(item.get("prezzo_valutazione", "0"))
+                    str(item.get(FieldsEnum.Prezzo_Valutazione.value, "0"))
                 )
                 prezzo_item_acquisto = QtWidgets.QTableWidgetItem(
-                    str(item.get("prezzo_acquisto", "0"))
+                    str(item.get(FieldsEnum.Prezzo_Acquisto.value, "0"))
                 )
 
                 nome_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)

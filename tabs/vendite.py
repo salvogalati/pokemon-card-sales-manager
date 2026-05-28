@@ -7,7 +7,7 @@ from PyQt5.QtCore import QObject, Qt
 from tabs.models.delegates import CenterIconDelegate
 from utils import pulisci_testo, createMessageBox
 from .models.card_database_model import CardDatabaseModel
-from config import stock_table, FieldsEnum, DBTables
+from config import FieldsEnum, DBTables
 from utils import get_column_index, auto_size_table_columns
 from icons import icons  # noqa: F401
 
@@ -21,8 +21,8 @@ class VenditeTabController(QObject):
         self.db_main = db_main  # Assign the main database connection to self.db_main
         # self.model = QtSql.QSqlTableModel(None, self.db_main)
         self.model = CardDatabaseModel(db_main)
-        self.model.setTable(stock_table)  # <-- cambia con la tua tabella
-        # self.model.setFilter("quantita_stock > 0")
+        self.model.setTable(DBTables.STOCK.value)  # <-- cambia con la tua tabella
+        self.model.setFilter(f"{FieldsEnum.Quantità.value} > 0")
         self.model.select()
 
         # Collega alla tabella
@@ -30,13 +30,18 @@ class VenditeTabController(QObject):
 
         for col in range(self.model.columnCount()):
             field_name = self.model.headerData(col, Qt.Horizontal)
-
-            if field_name not in {FieldsEnum.Quantità.value, FieldsEnum.Nome.value, FieldsEnum.Espansione.value, FieldsEnum.Set_Code.value, FieldsEnum.Condizione.value, FieldsEnum.Lingua.value, FieldsEnum.Prezzo.value}:
+            #print(field_name)
+            if field_name not in {FieldsEnum.Quantità.value, FieldsEnum.Nome.value, FieldsEnum.Espansione.value, FieldsEnum.Espansione_ID.value, FieldsEnum.Condizione.value, FieldsEnum.Lingua.value, FieldsEnum.Prezzo.value}:
                 self.ui.tableStock.hideColumn(col)
+            else:
+                field_name_ok = FieldsEnum(field_name).name.replace("_", " ")
+                self.model.setHeaderData(col, Qt.Horizontal, field_name_ok)
+
+            
 
         self.ui.tableStock.activated.connect(self.aggiungi_al_carrello)
         self.ui.tableStock.setItemDelegateForColumn(
-            self.model.fieldIndex("condition"), CenterIconDelegate()
+            self.model.fieldIndex(FieldsEnum.Condizione.value), CenterIconDelegate()
         )
 
         # self.ui.tableStock.doubleClicked.connect(self.aggiungi_al_carrello)
@@ -79,20 +84,22 @@ class VenditeTabController(QObject):
 
     def filtra_tabella(self, testo):
         if not testo:
-            self.model.setFilter("")
+            self.model.setFilter(f"{FieldsEnum.Quantità.value} > 0")
             self.model.select()
             return
         testo_sicuro = pulisci_testo(testo)
 
         filtro = f"""
-        {FieldsEnum.Set_Code.value} LIKE '%{testo_sicuro}%'
-        OR {FieldsEnum.Espansione.value} LIKE '%{testo_sicuro}%'
-        OR {FieldsEnum.Nome.value} LIKE '%{testo_sicuro}%'
-        OR {FieldsEnum.Barcode.value} LIKE '%{testo_sicuro}%'
-        OR {FieldsEnum.Condizione.value} LIKE '%{testo_sicuro}%'
+        (
+            {FieldsEnum.Espansione_ID.value} LIKE '%{testo_sicuro}%'
+            OR '{FieldsEnum.Espansione.value}' LIKE '%{testo_sicuro}%'
+            OR {FieldsEnum.Nome.value} LIKE '%{testo_sicuro}%'
+            OR {FieldsEnum.Barcode.value} LIKE '%{testo_sicuro}%'
+            OR {FieldsEnum.Condizione.value} LIKE '%{testo_sicuro}%'
+        )
         AND {FieldsEnum.Quantità.value} > 0
         """
-
+        print(filtro)
         self.model.setFilter(filtro)
         self.model.select()
 
@@ -125,7 +132,7 @@ class VenditeTabController(QObject):
             self.model.index(row, self.model.fieldIndex(FieldsEnum.Barcode.value))
         )
         espansione_id = self.model.data(
-            self.model.index(row, self.model.fieldIndex(FieldsEnum.Set_Code.value))
+            self.model.index(row, self.model.fieldIndex(FieldsEnum.Espansione_ID.value))
         )
         espansione_nome = self.model.data(
             self.model.index(row, self.model.fieldIndex(FieldsEnum.Espansione.value))
@@ -345,7 +352,7 @@ class VenditeTabController(QObject):
                 # INSERT vendita
                 insert_query = QtSql.QSqlQuery(self.db_main)
                 insert_query.prepare(f"""
-                    INSERT INTO {DBTables.SALES.value} ({FieldsEnum.Barcode.value}, {FieldsEnum.Set_Code.value}, {FieldsEnum.Espansione.value}, {FieldsEnum.Nome.value}, {FieldsEnum.Condizione.value}, {FieldsEnum.Prezzo.value}, {FieldsEnum.Prezzo_Vendita.value}, {FieldsEnum.Data_Vendita.value})
+                    INSERT INTO {DBTables.SALES.value} ({FieldsEnum.Barcode.value}, {FieldsEnum.Espansione_ID.value}, '{FieldsEnum.Espansione.value}', {FieldsEnum.Nome.value}, {FieldsEnum.Condizione.value}, {FieldsEnum.Prezzo.value}, {FieldsEnum.Prezzo_Vendita.value}, {FieldsEnum.Data_Vendita.value})
                     VALUES (:barcode, :espansione_id, :espansione_nome, :nome, :condizione, :ps, :pv, :date)
                 """)
 

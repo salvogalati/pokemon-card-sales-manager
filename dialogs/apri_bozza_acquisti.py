@@ -1,6 +1,6 @@
 from PyQt5 import QtWidgets, uic, QtSql
 from PyQt5 import QtCore
-from config import get_resource_path
+from config import DBTables, FieldsEnum, get_resource_path
 from utils import createMessageBox
 import os
 
@@ -17,7 +17,7 @@ class ApriBozzaAcquistiDialog(QtWidgets.QDialog):
 
         self.main_db = parent.db_main
         self.model = QtSql.QSqlTableModel(self, self.main_db)
-        self.model.setTable("draft_purchase")
+        self.model.setTable(DBTables.BOZZE_ACQUISTI.value)
         self.model.setEditStrategy(QtSql.QSqlTableModel.OnManualSubmit)
         self.model.select()
         self.tableViewBozzeAcquisti.setModel(self.model)
@@ -41,9 +41,9 @@ class ApriBozzaAcquistiDialog(QtWidgets.QDialog):
             msg.exec_()
             return
         selected_row = selected_indexes[0].row()
-        oggetti_data = self.model.record(selected_row).value("oggetti")
-        nome_bozza = self.model.record(selected_row).value("nome_cliente")
-        totale = self.model.record(selected_row).value("totale")
+        oggetti_data = self.model.record(selected_row).value(f"{FieldsEnum.Oggetti.value}")
+        nome_bozza = self.model.record(selected_row).value(f"{FieldsEnum.Nome.value}")
+        totale = self.model.record(selected_row).value(f"{FieldsEnum.Totale.value}")
         self.data = oggetti_data
         self.nome_bozza = nome_bozza
         self.totale = totale
@@ -53,7 +53,7 @@ class ApriBozzaAcquistiDialog(QtWidgets.QDialog):
         if not text:
             self.model.setFilter("")
             return
-        filter_str = f"nome_cliente LIKE '%{text}%'"
+        filter_str = f"{FieldsEnum.Nome.value} LIKE '%{text}%'"
         self.model.setFilter(filter_str)
         self.model.select()
 
@@ -64,7 +64,7 @@ class ApriBozzaAcquistiDialog(QtWidgets.QDialog):
             msg.exec_()
             return
         selected_row = selected_indexes[0].row()
-        record_id = self.model.record(selected_row).value("draft_purchase_id")
+        record_id = self.model.record(selected_row).value(f"{FieldsEnum.ID_Bozza_Acquisto.value}")
         msg_confirm = createMessageBox(
             "Conferma Cancellazione",
             "Sei sicuro di voler cancellare questa bozza? Questa azione non può essere annullata.",
@@ -74,7 +74,7 @@ class ApriBozzaAcquistiDialog(QtWidgets.QDialog):
         if msg_confirm.exec_() != QtWidgets.QMessageBox.Yes:
             return
         query = QtSql.QSqlQuery(self.main_db)
-        query.prepare("DELETE FROM draft_purchase WHERE draft_purchase_id = ?")
+        query.prepare(f"DELETE FROM {DBTables.BOZZE_ACQUISTI.value} WHERE {FieldsEnum.ID_Bozza_Acquisto.value} = ?")
         query.addBindValue(record_id)
         if not query.exec_():
             print(
@@ -96,7 +96,7 @@ class ApriBozzaAcquistiDialog(QtWidgets.QDialog):
         if msg_confirm.exec_() != QtWidgets.QMessageBox.Yes:
             return
         query = QtSql.QSqlQuery(self.main_db)
-        if not query.exec_("DELETE FROM draft_purchase"):
+        if not query.exec_(f"DELETE FROM {DBTables.BOZZE_ACQUISTI.value}"):
             print("Errore durante lo svuotamento delle bozze:", query.lastError().text())
             msg = createMessageBox("Errore", "Errore durante lo svuotamento delle bozze.")
             msg.exec_()

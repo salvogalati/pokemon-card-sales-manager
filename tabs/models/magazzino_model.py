@@ -1,7 +1,7 @@
 from PyQt5.QtSql import QSqlTableModel
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QIcon
-from config import card_condizioni_icons
+from config import card_condizioni_icons, FieldsEnum
 from icons import icons  # noqa: F401
 
 
@@ -19,7 +19,7 @@ class MagazzinoModel(QSqlTableModel):
         return flags
 
     def data(self, index, role=Qt.DisplayRole):
-        col = self.fieldIndex("da_prezzare")
+        col = self.fieldIndex(FieldsEnum.Da_Prezzare.value)
         value = super().data(index, Qt.EditRole)
 
         if index.column() == col:
@@ -32,7 +32,7 @@ class MagazzinoModel(QSqlTableModel):
                 else:
                     pass
                     # print(index.row(), value)
-        if index.column() == self.fieldIndex("condizione"):
+        if index.column() == self.fieldIndex(FieldsEnum.Condizione.value):
             # color = card_condizioni_colors.get(value, None)
             # if role == Qt.BackgroundRole:
             #     return QColor(color)

@@ -1,9 +1,10 @@
 from datetime import datetime
 
+from PyQt5.QtCore import Qt
 from PyQt5.QtSql import QSqlTableModel
 from .models.magazzino_model import MagazzinoModel
 from icons import icons  # noqa: F401
-from config import cards_condizioni, purchase_table, sales_table
+from config import card_condizioni_icons, DBTables, FieldsEnum
 from utils import pulisci_testo, createMessageBox, auto_size_table_columns
 from .models.delegates import CenterIconDelegate, CondizioneComboBoxDelegate
 
@@ -15,18 +16,28 @@ class StoricoTabController:
 
         self.model_magazzino = MagazzinoModel(self.ui.db_main)
         self.model_magazzino.setEditStrategy(QSqlTableModel.OnManualSubmit)
-        self.model_magazzino.setTable(sales_table)
+        self.model_magazzino.setTable(DBTables.SALES.value)
         self.model_magazzino.select()
 
         self.ui.tableViewStorico.setModel(self.model_magazzino)
-        self.ui.comboBoxCondizione_Storico.addItems([""] + cards_condizioni)
+        self.ui.comboBoxCondizione_Storico.addItems([""] + list(card_condizioni_icons.keys()))
         delegateCondizione = CondizioneComboBoxDelegate(self.ui.tableViewStorico)
         self.ui.tableViewStorico.setItemDelegateForColumn(
-            self.model_magazzino.fieldIndex("condizione"), delegateCondizione
+            self.model_magazzino.fieldIndex(FieldsEnum.Condizione.value), delegateCondizione
         )
         self.ui.tableViewStorico.setItemDelegateForColumn(
-            self.model_magazzino.fieldIndex("condizione"), CenterIconDelegate()
+            self.model_magazzino.fieldIndex(FieldsEnum.Condizione.value), CenterIconDelegate()
         )
+
+        for col in range(self.model_magazzino.columnCount()):
+            field_name = self.model_magazzino.headerData(col, Qt.Horizontal)
+            if field_name not in [e.value for e in FieldsEnum]:
+                pass
+                #elf.ui.tableViewMagazzino.hideColumn(col)
+            else:
+                field_name_ok = FieldsEnum(field_name).name.replace("_", " ")
+                self.model_magazzino.setHeaderData(col, Qt.Horizontal, field_name_ok)
+
         self.ui.comboBoxCondizione_Storico.currentTextChanged.connect(
             self.applica_filtri
         )
@@ -53,22 +64,22 @@ class StoricoTabController:
             if testo:
                 t = pulisci_testo(testo)
                 filtri.append(f"""
-                (espansione_id LIKE '%{t}%'
-                OR espansione_nome LIKE '%{t}%'
-                OR nome LIKE '%{t}%'
-                OR barcode LIKE '%{t}%')
+                ({FieldsEnum.Espansione_ID.value} LIKE '%{t}%'
+                OR '{FieldsEnum.Espansione.value}' LIKE '%{t}%'
+                OR {FieldsEnum.Nome.value} LIKE '%{t}%'
+                OR {FieldsEnum.Barcode.value} LIKE '%{t}%')
                 """)
 
             # CONDIZIONE
             condizione = self.ui.comboBoxCondizione_Storico.currentText()
             if condizione:
-                filtri.append(f"condizione = '{condizione}'")
+                filtri.append(f"{FieldsEnum.Condizione.value} = '{condizione}'")
 
             # PREZZO
             min_val = self.ui.doubleSpinBoxMinStorico.value()
             max_val = self.ui.doubleSpinBoxMaxStorico.value()
 
-            filtri.append(f"{self.fields['prezzo']} BETWEEN {min_val} AND {max_val}")
+            filtri.append(f"{FieldsEnum.Prezzo.value} BETWEEN {min_val} AND {max_val}")
 
             # DATA
             data_from = self.ui.dateTimeEditStorico_Da.dateTime()
@@ -91,10 +102,10 @@ class StoricoTabController:
             msg.exec_()
 
     def on_storico_changed(self, button):
-        table_mapping = {"Vendite": sales_table, "Acquisti": purchase_table}
+        table_mapping = {"Vendite": DBTables.SALES.value, "Acquisti": DBTables.PURCHASES.value}
         field_mapping = {
-            "Vendite": {"prezzo": "prezzo_vendita", "date": "sell_date"},
-            "Acquisti": {"prezzo": "prezzo_acquisto", "date": "purchase_date"},
+            "Vendite": {"prezzo": FieldsEnum.Prezzo_Vendita.value, "date": FieldsEnum.Data_Vendita.value},
+            "Acquisti": {"prezzo": FieldsEnum.Prezzo_Acquisto.value, "date": FieldsEnum.Data_Acquisto.value},
         }
 
         self.fields = {
@@ -105,11 +116,20 @@ class StoricoTabController:
         self.model_magazzino.select()
         delegateCondizione = CondizioneComboBoxDelegate(self.ui.tableViewStorico)
         self.ui.tableViewStorico.setItemDelegateForColumn(
-            self.model_magazzino.fieldIndex("condizione"), delegateCondizione
+            self.model_magazzino.fieldIndex(FieldsEnum.Condizione.value), delegateCondizione
         )
         self.ui.tableViewStorico.setItemDelegateForColumn(
-            self.model_magazzino.fieldIndex("condizione"), CenterIconDelegate()
+            self.model_magazzino.fieldIndex(FieldsEnum.Condizione.value), CenterIconDelegate()
         )
+
+        for col in range(self.model_magazzino.columnCount()):
+            field_name = self.model_magazzino.headerData(col, Qt.Horizontal)
+            if field_name not in [e.value for e in FieldsEnum]:
+                pass
+                #elf.ui.tableViewMagazzino.hideColumn(col)
+            else:
+                field_name_ok = FieldsEnum(field_name).name.replace("_", " ")
+                self.model_magazzino.setHeaderData(col, Qt.Horizontal, field_name_ok)
 
         self.applica_filtri()
 

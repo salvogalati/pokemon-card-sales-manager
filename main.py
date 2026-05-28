@@ -6,7 +6,7 @@ from tabs.acquisti import AcquistiTabController
 from tabs.vendite import VenditeTabController
 from tabs.storico import StoricoTabController
 from tabs.database import DatabaseTabController
-from config import main_db, card_db, get_resource_path
+from config import DBNames, get_resource_path
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -18,11 +18,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Connessione DB
         self.db_main = QtSql.QSqlDatabase.addDatabase("QSQLITE", "main_connection")
-        self.db_main.setDatabaseName(get_resource_path(main_db))
+        self.db_main.setDatabaseName(get_resource_path(DBNames.MAIN_DB.value))
         self.db_main.open()
 
         self.db_cards = QtSql.QSqlDatabase.addDatabase("QSQLITE", "card_db_connection")
-        self.db_cards.setDatabaseName(get_resource_path(card_db))
+        self.db_cards.setDatabaseName(get_resource_path(DBNames.CARD_DB.value))
         self.db_cards.open()
 
         if not self.db_main.isOpen() or not self.db_cards.isOpen():

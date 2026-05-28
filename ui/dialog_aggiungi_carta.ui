@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>331</width>
-    <height>205</height>
+    <width>487</width>
+    <height>206</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -43,7 +43,7 @@
           </font>
          </property>
          <property name="text">
-          <string>ID</string>
+          <string>Cardmarket ID</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -95,36 +95,6 @@
          </property>
         </widget>
        </item>
-       <item>
-        <widget class="QLabel" name="label_5">
-         <property name="font">
-          <font>
-           <pointsize>11</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Pricing cardmarket</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_6">
-         <property name="font">
-          <font>
-           <pointsize>11</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Image url</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
       </layout>
      </item>
      <item>
@@ -148,23 +118,6 @@
        </item>
        <item>
         <widget class="QLineEdit" name="lineEditEspansioneNome">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QDoubleSpinBox" name="doubleSpinBox">
-         <property name="minimum">
-          <double>0.010000000000000</double>
-         </property>
-         <property name="maximum">
-          <double>10000.989999999999782</double>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="lineEditImageURL">
          <property name="text">
           <string/>
          </property>

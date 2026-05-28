@@ -1,5 +1,5 @@
 from PyQt5 import QtWidgets, uic, QtSql
-from config import get_resource_path, database_table
+from config import get_resource_path, DBTables, FieldsEnum
 from utils import createMessageBox
 import os
 import traceback
@@ -17,12 +17,10 @@ class AggiungiCartaDatabaseDialog(QtWidgets.QDialog):
 
     def accept(self):
         card_data = {
-            "id": self.lineEditID.text().strip(),
-            "name": self.lineEditNome.text().strip(),
-            "espansione_id": self.lineEditEspansioneID.text().strip(),
-            "espansione_nome": self.lineEditEspansioneNome.text().strip(),
-            "image": self.lineEditImageURL.text().strip(),
-            "pricing_cardmarket": self.doubleSpinBox.value(),
+            FieldsEnum.ID_Cardmarket.value: self.lineEditID.text().strip(),
+            FieldsEnum.Nome.value: self.lineEditNome.text().strip(),
+            FieldsEnum.Espansione_ID.value: self.lineEditEspansioneID.text().strip(),
+            FieldsEnum.Espansione.value: self.lineEditEspansioneNome.text().strip(),
         }
         if not all(list(card_data.values())):
             msg = createMessageBox(
@@ -34,17 +32,13 @@ class AggiungiCartaDatabaseDialog(QtWidgets.QDialog):
             insert_query = QtSql.QSqlQuery(self.db_cards)
             print(card_data)
             insert_query.prepare(f"""
-                INSERT INTO {database_table} (id, name, espansione_id, espansione_nome, image, pricing_cardmarket_low)
-                VALUES (:id, :name, :espansione_id, :espansione_nome, :image, :pricing_cardmarket_low)
+                INSERT INTO {DBTables.DATABASE_CARDS.value} ({FieldsEnum.ID_Cardmarket.value}, {FieldsEnum.Nome.value}, {FieldsEnum.Espansione_ID.value}, '{FieldsEnum.Espansione.value}')
+                VALUES (:id, :name, :espansione_id, :espansione_nome)
             """)
-            insert_query.bindValue(":id", card_data["id"])
-            insert_query.bindValue(":name", card_data["name"])
-            insert_query.bindValue(":espansione_id", card_data["espansione_id"])
-            insert_query.bindValue(":espansione_nome", card_data["espansione_nome"])
-            insert_query.bindValue(":image", card_data["image"])
-            insert_query.bindValue(
-                ":pricing_cardmarket_low", card_data["pricing_cardmarket"]
-            )
+            insert_query.bindValue(":id", card_data[FieldsEnum.ID_Cardmarket.value])
+            insert_query.bindValue(":name", card_data[FieldsEnum.Nome.value])
+            insert_query.bindValue(":espansione_id", card_data[FieldsEnum.Espansione_ID.value])
+            insert_query.bindValue(":espansione_nome", card_data[FieldsEnum.Espansione.value])
             if not insert_query.exec_():
                 msg = createMessageBox(
                     "Errore",

@@ -1,7 +1,7 @@
 import json
 import os
 from PyQt5 import QtWidgets, uic, QtSql
-from config import get_resource_path
+from config import DBTables, FieldsEnum, get_resource_path
 from utils import createMessageBox
 
 
@@ -27,11 +27,11 @@ class SalvaBozzaAcquistiDialog(QtWidgets.QDialog):
             msg = createMessageBox("Errore", "Il nome del cliente è obbligatorio.")
             msg.exec_()
             return
-        prezzo_totale = sum(float(item["prezzo_acquisto"]) for item in data)
+        prezzo_totale = sum(float(item[FieldsEnum.Prezzo_Acquisto.value]) for item in data)
         # Salva la bozza nel database
         query = QtSql.QSqlQuery(self.main_db)
         query.prepare(
-            "INSERT INTO draft_purchase (nome_cliente, numero_oggetti, totale, oggetti) VALUES (:nome, :num, :tot, :ogg)"
+            f"INSERT INTO {DBTables.BOZZE_ACQUISTI.value} ({FieldsEnum.Nome.value}, {FieldsEnum.Numero_oggetti.value}, {FieldsEnum.Totale.value}, {FieldsEnum.Oggetti.value}) VALUES (:nome, :num, :tot, :ogg)"
         )
         query.bindValue(":nome", nome_cliente)
         query.bindValue(":num", len(data))
@@ -51,10 +51,10 @@ class SalvaBozzaAcquistiDialog(QtWidgets.QDialog):
 
     def update_bozza(self, data, name):
         data = json.loads(data)
-        prezzo_totale = sum(float(item["prezzo_acquisto"]) for item in data)
+        prezzo_totale = sum(float(item[FieldsEnum.Prezzo_Acquisto.value]) for item in data)
         query = QtSql.QSqlQuery(self.main_db)
         query.prepare(
-            "UPDATE draft_purchase SET nome_cliente = :nome, numero_oggetti = :num, totale = :tot, oggetti = :ogg WHERE nome_cliente = :nome"
+            f"UPDATE {DBTables.BOZZE_ACQUISTI.value} SET {FieldsEnum.Nome.value} = :nome, {FieldsEnum.Numero_oggetti.value} = :num, {FieldsEnum.Totale.value} = :tot, {FieldsEnum.Oggetti.value} = :ogg WHERE {FieldsEnum.Nome.value} = :nome"
         )
         query.bindValue(":nome", name)
         query.bindValue(":num", len(data))
