@@ -1,15 +1,18 @@
 import sys
 import os
+from enum import Enum
 
-main_db = "pokemon.db"
-card_db = "card_database.db"
+class DBTables(str, Enum):
+    STOCK = "stock"
+    SALES = "sales"
+    PURCHASES = "purchases"
+    UNPRICED_CARDS = "unpriced_cards"
+    DATABASE_CARDS = "DatabaseCards"
 
-stock_table = "stock"
-sales_table = "sales"
-purchase_table = "purchases"
-unpriced_table = "unpriced_cards"
+class DBNames(str, Enum):
+     MAIN_DB = "pokemon.db"
+     CARD_DB = "card_database.db"
 
-database_table = "DatabaseCards"
 
 cards_condizioni = [
     "Mint",
@@ -30,16 +33,30 @@ card_condizioni_colors = {
     "Poor": "#FF5722",
 }
 card_condizioni_icons = {
-    "Mint": ":/condizioni/condizioni/Mint.png",
-    "Near Mint": ":/condizioni/condizioni/Near Mint.png",
-    "Excellent": ":/condizioni/condizioni/Excellent.png",
-    "Good": ":/condizioni/condizioni/Good.png",
-    "Light Played": ":/condizioni/condizioni/Light Played.png",
-    "Played": ":/condizioni/condizioni/Played.png",
-    "Poor": ":/condizioni/condizioni/Poor.png",
+    "MT": ":/condizioni/condizioni/Mint.png",
+    "NM": ":/condizioni/condizioni/Near Mint.png",
+    "EX": ":/condizioni/condizioni/Excellent.png",
+    "GD": ":/condizioni/condizioni/Good.png",
+    "LP": ":/condizioni/condizioni/Light Played.png",
+    "PL": ":/condizioni/condizioni/Played.png",
+    "PO": ":/condizioni/condizioni/Poor.png",
 }
 
 backup_folder = "backups"
+
+class FieldsEnum(str, Enum):
+    Quantità = "quantity"
+    Nome = "name"
+    Espansione = "set"
+    Set_Code = "setCode"
+    Condizione = "condition"
+    Lingua = "language"
+    Prezzo = "price"
+    Barcode = "barcode"
+    Prezzo_Vendita = "sale_price"
+    Data_Vendita = "sell_date"
+    SALE_ID = "sale_id"
+
 
 
 def get_resource_path(filename):

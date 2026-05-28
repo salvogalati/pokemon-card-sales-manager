@@ -7,7 +7,7 @@ from PyQt5.QtCore import QObject, Qt
 from tabs.models.delegates import CenterIconDelegate
 from utils import pulisci_testo, createMessageBox
 from .models.card_database_model import CardDatabaseModel
-from config import stock_table
+from config import stock_table, FieldsEnum, DBTables
 from utils import get_column_index, auto_size_table_columns
 from icons import icons  # noqa: F401
 
@@ -27,11 +27,16 @@ class VenditeTabController(QObject):
 
         # Collega alla tabella
         self.ui.tableStock.setModel(self.model)
-        for col in ["barcode", "espansione_nome", "id"]:
-            self.ui.tableStock.hideColumn(self.model.fieldIndex(col))
+
+        for col in range(self.model.columnCount()):
+            field_name = self.model.headerData(col, Qt.Horizontal)
+
+            if field_name not in {FieldsEnum.Quantità.value, FieldsEnum.Nome.value, FieldsEnum.Espansione.value, FieldsEnum.Set_Code.value, FieldsEnum.Condizione.value, FieldsEnum.Lingua.value, FieldsEnum.Prezzo.value}:
+                self.ui.tableStock.hideColumn(col)
+
         self.ui.tableStock.activated.connect(self.aggiungi_al_carrello)
         self.ui.tableStock.setItemDelegateForColumn(
-            self.model.fieldIndex("condizione"), CenterIconDelegate()
+            self.model.fieldIndex("condition"), CenterIconDelegate()
         )
 
         # self.ui.tableStock.doubleClicked.connect(self.aggiungi_al_carrello)
@@ -80,12 +85,12 @@ class VenditeTabController(QObject):
         testo_sicuro = pulisci_testo(testo)
 
         filtro = f"""
-        espansione_id LIKE '%{testo_sicuro}%'
-        OR espansione_nome LIKE '%{testo_sicuro}%'
-        OR name LIKE '%{testo_sicuro}%'
-        OR barcode LIKE '%{testo_sicuro}%'
-        OR condizione LIKE '%{testo_sicuro}%'
-        AND quantita_stock > 0
+        {FieldsEnum.Set_Code.value} LIKE '%{testo_sicuro}%'
+        OR {FieldsEnum.Espansione.value} LIKE '%{testo_sicuro}%'
+        OR {FieldsEnum.Nome.value} LIKE '%{testo_sicuro}%'
+        OR {FieldsEnum.Barcode.value} LIKE '%{testo_sicuro}%'
+        OR {FieldsEnum.Condizione.value} LIKE '%{testo_sicuro}%'
+        AND {FieldsEnum.Quantità.value} > 0
         """
 
         self.model.setFilter(filtro)
@@ -94,7 +99,7 @@ class VenditeTabController(QObject):
     def cerca_barcode(self, codice):
         codice = pulisci_testo(codice)
 
-        filtro = f"barcode = '{codice}'"  # match ESATTO
+        filtro = f"{FieldsEnum.Barcode.value} = '{codice}'"  # match ESATTO
 
         self.model.setFilter(filtro)
         self.model.select()
@@ -117,23 +122,23 @@ class VenditeTabController(QObject):
 
         row = index.row()
         barcode = self.model.data(
-            self.model.index(row, self.model.fieldIndex("barcode"))
+            self.model.index(row, self.model.fieldIndex(FieldsEnum.Barcode.value))
         )
         espansione_id = self.model.data(
-            self.model.index(row, self.model.fieldIndex("espansione_id"))
+            self.model.index(row, self.model.fieldIndex(FieldsEnum.Set_Code.value))
         )
         espansione_nome = self.model.data(
-            self.model.index(row, self.model.fieldIndex("espansione_nome"))
+            self.model.index(row, self.model.fieldIndex(FieldsEnum.Espansione.value))
         )
-        nome = self.model.data(self.model.index(row, self.model.fieldIndex("name")))
+        nome = self.model.data(self.model.index(row, self.model.fieldIndex(FieldsEnum.Nome.value)))
         condizione = self.model.data(
-            self.model.index(row, self.model.fieldIndex("condizione"))
+            self.model.index(row, self.model.fieldIndex(FieldsEnum.Condizione.value))
         )
         prezzo_stock = self.model.data(
-            self.model.index(row, self.model.fieldIndex("prezzo"))
+            self.model.index(row, self.model.fieldIndex(FieldsEnum.Prezzo.value))
         )
         quantita_stock = self.model.data(
-            self.model.index(row, self.model.fieldIndex("quantita_stock"))
+            self.model.index(row, self.model.fieldIndex(FieldsEnum.Quantità.value))
         )
         stock_disponibile = int(quantita_stock)
         quantita_nel_carrello = 0
@@ -339,8 +344,8 @@ class VenditeTabController(QObject):
 
                 # INSERT vendita
                 insert_query = QtSql.QSqlQuery(self.db_main)
-                insert_query.prepare("""
-                    INSERT INTO sales (barcode, espansione_id, espansione_nome, nome, condizione, prezzo_stock, prezzo_vendita, sell_date)
+                insert_query.prepare(f"""
+                    INSERT INTO {DBTables.SALES.value} ({FieldsEnum.Barcode.value}, {FieldsEnum.Set_Code.value}, {FieldsEnum.Espansione.value}, {FieldsEnum.Nome.value}, {FieldsEnum.Condizione.value}, {FieldsEnum.Prezzo.value}, {FieldsEnum.Prezzo_Vendita.value}, {FieldsEnum.Data_Vendita.value})
                     VALUES (:barcode, :espansione_id, :espansione_nome, :nome, :condizione, :ps, :pv, :date)
                 """)
 
@@ -358,7 +363,7 @@ class VenditeTabController(QObject):
                 # UPDATE stock
                 update_query = QtSql.QSqlQuery(self.db_main)
                 update_query.prepare(
-                    "UPDATE stock SET quantita_stock = quantita_stock - 1 WHERE barcode = ?"
+                    f"UPDATE {DBTables.STOCK.value} SET {FieldsEnum.Quantità.value} = {FieldsEnum.Quantità.value} - 1 WHERE {FieldsEnum.Barcode.value} = ?"
                 )
                 update_query.addBindValue(barcode)
                 if not update_query.exec_():
@@ -367,7 +372,7 @@ class VenditeTabController(QObject):
                 # DELETE se stock = 0
                 delete_query = QtSql.QSqlQuery(self.db_main)
                 delete_query.prepare(
-                    "DELETE FROM stock WHERE barcode = ? AND quantita_stock <= 0"
+                    f"DELETE FROM {DBTables.STOCK.value} WHERE {FieldsEnum.Barcode.value} = ? AND {FieldsEnum.Quantità.value} <= 0"
                 )
                 delete_query.addBindValue(barcode)
 

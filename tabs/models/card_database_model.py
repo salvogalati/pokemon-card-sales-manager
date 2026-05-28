@@ -16,7 +16,7 @@ class CardDatabaseModel(QSqlTableModel):
         value = super().data(index, Qt.EditRole)
         if role == Qt.TextAlignmentRole:
             return Qt.AlignCenter
-        if index.column() == self.fieldIndex("condizione"):
+        if index.column() == self.fieldIndex("condition"):
             # color = card_condizioni_colors.get(value, None)
             # if role == Qt.BackgroundRole:
             #     return QColor(color)
