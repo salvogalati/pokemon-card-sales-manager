@@ -38,6 +38,7 @@ class FieldsEnum(str, Enum):
     Numero_oggetti = "number_of_items"
     ID_Cardmarket = "cardmarketId"
     Prezzo_Valutazione = "estimated_price"
+    Numero_Espansione = "collectorNumber"
 
 cards_condizioni = [
     "Mint",

@@ -1,4 +1,5 @@
 import json
+from unittest import result
 
 from PyQt5 import QtWidgets, QtGui
 from PyQt5 import QtSql
@@ -14,6 +15,7 @@ from config import DBTables, DBNames, FieldsEnum
 from icons import icons  # noqa: F401
 
 import traceback
+import webbrowser
 
 
 class AcquistiTabController(QObject):
@@ -75,6 +77,7 @@ class AcquistiTabController(QObject):
 
         self.ui.buttonSalvaBozzaAcquisti.clicked.connect(self.salva_bozza_acquisti)
         self.ui.buttonApriBozzaAcquisti.clicked.connect(self.apri_bozza_acquisti)
+        self.ui.buttonAcquistiCardmarket.clicked.connect(self.apri_sito_cardmarket)
 
         auto_size_table_columns(self.ui.tableDatabaseAcquisti, padding=30)
         auto_size_table_columns(self.ui.tableWidgetAcquisti, padding=20)
@@ -448,3 +451,85 @@ class AcquistiTabController(QObject):
             self.ui.tableWidgetAcquisti.blockSignals(True)
             self.aggiorna_totale(totale_da_pagare=float(dialog.totale))
             self.bozza = dialog.nome_bozza
+
+    def apri_sito_cardmarket_(self):
+        indexes = self.ui.tableWidgetAcquisti.selectionModel().selectedIndexes()
+
+        if not indexes:
+            return
+
+        model = self.ui.tableWidgetAcquisti.model()
+        index = indexes[0]
+        row = index.row()
+
+        col_id = get_column_index(self.ui.tableWidgetAcquisti, "ID Espansione")
+        col_nome_esp = get_column_index(self.ui.tableWidgetAcquisti, "Nome Espansione")
+        col_nome_carta = get_column_index(self.ui.tableWidgetAcquisti, "Nome")
+
+        id_espansione = model.data(model.index(row, col_id))
+        nome_espansione = model.data(model.index(row, col_nome_esp))
+        nome_carta = model.data(model.index(row, col_nome_carta))
+
+        url_base = "https://www.cardmarket.com/it/Pokemon/Products/Singles/ESPANSIONE/NOME-SETID"
+
+        url = (url_base
+            .replace("ESPANSIONE", "-".join([word.capitalize() for word in str(nome_espansione).split()]))
+            .replace("NOME", "-".join([word.capitalize() for word in str(nome_carta).split()]))
+            .replace("SETID", str(id_espansione)))
+
+        print(url)
+        #webbrowser.open(url)
+
+    def apri_sito_cardmarket(self):
+        indexes = self.ui.tableWidgetAcquisti.selectionModel().selectedIndexes()
+
+        if not indexes:
+            return
+
+        model = self.ui.tableWidgetAcquisti.model()
+        index = indexes[0]
+        row = index.row()
+
+        col_id = get_column_index(self.ui.tableWidgetAcquisti, "ID Cardmarket")
+
+
+        id_cardmarket = model.data(model.index(row, col_id))
+        query = QtSql.QSqlQuery(self.db)
+
+        query.prepare(f"SELECT * FROM {DBTables.DATABASE_CARDS.value} WHERE {FieldsEnum.ID_Cardmarket.value} = ?")
+        query.addBindValue(id_cardmarket)
+
+        query.exec()
+        result = self.fetch_one_as_dict(query)
+
+        url_base = "https://www.cardmarket.com/it/Pokemon/Products/Singles/{espansione}/{nome}-{setid}{numero}"
+        url_base = "https://www.cardmarket.com/it/Pokemon/Products/Search?category=-1&searchString={nome}+{setid}+{numero}&category=-1&searchMode=v2"
+        espansione_id = result.get(FieldsEnum.Espansione_ID.value)
+        nome_espansione = result.get(FieldsEnum.Espansione.value)
+        nome_espansione = nome_espansione.replace("BW Promos", "Celebrations")
+        nome_carta = result.get(FieldsEnum.Nome.value)
+        nome_carta = nome_carta.replace("_____'", "")
+        numero_espansione = result.get(FieldsEnum.Numero_Espansione.value)
+        # url = url_base.format(
+        #     espansione=nome_espansione.replace(" ", "-"),
+        #     nome="-".join(word.capitalize() for word in str(nome_carta).split()),
+        #     setid=espansione_id,
+        #     numero=numero_espansione
+        # )
+        url = url_base.format(
+            nome="+".join(word for word in str(nome_carta).split()),
+            setid=espansione_id,
+            numero=numero_espansione
+        )
+        print(result)
+        print(url)
+        webbrowser.open(url)
+
+    def fetch_one_as_dict(self, query):
+        if query.next():
+            record = query.record()
+            return {
+                record.fieldName(i): query.value(i)
+                for i in range(record.count())
+            }
+        return None

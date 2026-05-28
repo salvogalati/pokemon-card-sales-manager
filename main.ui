@@ -27,7 +27,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tabVendite">
        <attribute name="icon">
@@ -336,6 +336,16 @@
              </widget>
             </item>
             <item>
+             <widget class="QPushButton" name="buttonAcquistiCardmarket">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="text">
+               <string>Cardmarket</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QPushButton" name="buttonSvuotaAcquisti">
               <property name="enabled">
                <bool>false</bool>
@@ -351,6 +361,9 @@
            <widget class="QTableWidget" name="tableWidgetAcquisti">
             <property name="editTriggers">
              <set>QAbstractItemView::DoubleClicked</set>
+            </property>
+            <property name="selectionMode">
+             <enum>QAbstractItemView::SingleSelection</enum>
             </property>
            </widget>
           </item>
@@ -1489,7 +1502,7 @@ QDoubleSpinBox::up-arrow {
  </resources>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroupMagazzino"/>
   <buttongroup name="buttonGroupStorico"/>
+  <buttongroup name="buttonGroupMagazzino"/>
  </buttongroups>
 </ui>
