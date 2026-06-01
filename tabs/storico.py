@@ -1,7 +1,11 @@
 from datetime import datetime
+import os
+
+import pandas as pd
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtSql import QSqlTableModel
+from PyQt5.QtSql import QSqlQuery, QSqlTableModel
+from PyQt5.QtWidgets import QFileDialog
 from .models.magazzino_model import MagazzinoModel
 from icons import icons  # noqa: F401
 from config import card_condizioni_icons, DBTables, FieldsEnum
@@ -12,12 +16,13 @@ from .models.delegates import CenterIconDelegate, CondizioneComboBoxDelegate
 class StoricoTabController:
     def __init__(self, ui):
         self.ui = ui
-        self.fields = {"prezzo": "prezzo_vendita", "date": "sell_date"}
+        self.fields = {"prezzo": FieldsEnum.Prezzo_Vendita.value, "date": FieldsEnum.Data_Vendita.value}
 
         self.model_magazzino = MagazzinoModel(self.ui.db_main)
         self.model_magazzino.setEditStrategy(QSqlTableModel.OnManualSubmit)
         self.model_magazzino.setTable(DBTables.SALES.value)
         self.model_magazzino.select()
+        self.aggiorna_totale_storico()
 
         self.ui.tableViewStorico.setModel(self.model_magazzino)
         self.ui.comboBoxCondizione_Storico.addItems([""] + list(card_condizioni_icons.keys()))
@@ -45,6 +50,7 @@ class StoricoTabController:
         self.ui.lineEditStoricoSearch.textChanged.connect(self.applica_filtri)
 
         self.ui.buttonGroupStorico.buttonClicked.connect(self.on_storico_changed)
+        self.ui.button_exportStorico.clicked.connect(self.export_storico)
 
         self.ui.doubleSpinBoxMinStorico.valueChanged.connect(self.on_price_changed)
         self.ui.doubleSpinBoxMaxStorico.valueChanged.connect(self.on_price_changed)
@@ -96,6 +102,7 @@ class StoricoTabController:
             print(filtro_finale)
             self.model_magazzino.setFilter(filtro_finale)
             self.model_magazzino.select()
+            self.aggiorna_totale_storico()
 
         except Exception as e:
             msg = createMessageBox("Errore", f"Si è verificato un errore: {str(e)}")
@@ -105,7 +112,7 @@ class StoricoTabController:
         table_mapping = {"Vendite": DBTables.SALES.value, "Acquisti": DBTables.PURCHASES.value}
         field_mapping = {
             "Vendite": {"prezzo": FieldsEnum.Prezzo_Vendita.value, "date": FieldsEnum.Data_Vendita.value},
-            "Acquisti": {"prezzo": FieldsEnum.Prezzo_Acquisto.value, "date": FieldsEnum.Data_Acquisto.value},
+            "Acquisti": {"prezzo": FieldsEnum.Prezzo.value, "date": FieldsEnum.Data_Acquisto.value},
         }
 
         self.fields = {
@@ -132,6 +139,69 @@ class StoricoTabController:
                 self.model_magazzino.setHeaderData(col, Qt.Horizontal, field_name_ok)
 
         self.applica_filtri()
+
+    def aggiorna_totale_storico(self):
+        query = QSqlQuery(self.ui.db_main)
+        sql = (
+            f"SELECT COALESCE(SUM({self.fields['prezzo']}), 0), COUNT(*) "
+            f"FROM {self.model_magazzino.tableName()}"
+        )
+        filtro = self.model_magazzino.filter()
+        if filtro:
+            sql += f" WHERE {filtro}"
+
+        if query.exec_(sql) and query.next():
+            totale = query.value(0) or 0
+            totale_carte = query.value(1) or 0
+            self.ui.label_totale_storico.setText(f"Totale: {totale} € | Carte: {totale_carte}")
+        else:
+            self.ui.label_totale_storico.setText("Totale: 0 € | Carte: 0")
+
+    def export_storico(self):
+        file_path, selected_filter = QFileDialog.getSaveFileName(
+            self.ui,
+            "Esporta storico",
+            "storico.csv",
+            "CSV (*.csv);;Excel (*.xlsx)"
+        )
+
+        if not file_path:
+            return
+
+        try:
+            export_rows = []
+            headers = []
+
+            for col in range(self.model_magazzino.columnCount()):
+                header = self.model_magazzino.headerData(col, Qt.Horizontal)
+                headers.append(str(header))
+
+            for row in range(self.model_magazzino.rowCount()):
+                row_values = {}
+                for col, header in enumerate(headers):
+                    index = self.model_magazzino.index(row, col)
+                    row_values[header] = self.model_magazzino.data(index, Qt.DisplayRole)
+                export_rows.append(row_values)
+
+            df = pd.DataFrame(export_rows, columns=headers)
+
+            extension = os.path.splitext(file_path)[1].lower()
+            if not extension:
+                if "Excel" in selected_filter:
+                    file_path += ".xlsx"
+                    extension = ".xlsx"
+                else:
+                    file_path += ".csv"
+                    extension = ".csv"
+
+            if extension == ".xlsx":
+                df.to_excel(file_path, index=False)
+            else:
+                df.to_csv(file_path, index=False, encoding="utf-8-sig")
+
+            createMessageBox("Export completato", f"File esportato correttamente:\n{file_path}").exec_()
+        except Exception as e:
+            createMessageBox("Errore export", f"Impossibile esportare lo storico: {str(e)}").exec_()
 
     def update_spin_limits(self):
         min_val = self.ui.doubleSpinBoxMinStorico.value()
