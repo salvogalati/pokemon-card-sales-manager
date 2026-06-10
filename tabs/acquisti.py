@@ -47,7 +47,7 @@ class AcquistiTabController(QObject):
 
         self.ui.lineEditCercaAcquisti.textChanged.connect(self.filtra_tabella)
 
-        self.ui.tableWidgetAcquisti.setColumnCount(8)
+        self.ui.tableWidgetAcquisti.setColumnCount(9)
         self.ui.tableWidgetAcquisti.setHorizontalHeaderLabels(
             [
                 "ID Cardmarket",
@@ -55,6 +55,7 @@ class AcquistiTabController(QObject):
                 "Nome Espansione",
                 "Nome",
                 "Condizione",
+                "Lingua",
                 "Prezzo valutazione",
                 "Prezzo acquisto",
                 "",
@@ -108,6 +109,7 @@ class AcquistiTabController(QObject):
         espansione_nome_item = QtWidgets.QTableWidgetItem(str(espansione_nome))
         nome_item = QtWidgets.QTableWidgetItem(str(nome))
         condizione_item = QtWidgets.QTableWidgetItem("NM")
+        lingua_item = QtWidgets.QTableWidgetItem("Italiano")
         prezzo_item_stima = QtWidgets.QTableWidgetItem(str(0))
         prezzo_item_acquisto = QtWidgets.QTableWidgetItem(str(0))
 
@@ -126,15 +128,16 @@ class AcquistiTabController(QObject):
         self.ui.tableWidgetAcquisti.setItem(row_pos, 2, espansione_nome_item)
         self.ui.tableWidgetAcquisti.setItem(row_pos, 3, nome_item)
         self.ui.tableWidgetAcquisti.setItem(row_pos, 4, condizione_item)
-        self.ui.tableWidgetAcquisti.setItem(row_pos, 5, prezzo_item_stima)
-        self.ui.tableWidgetAcquisti.setItem(row_pos, 6, prezzo_item_acquisto)
+        self.ui.tableWidgetAcquisti.setItem(row_pos, 5, lingua_item)
+        self.ui.tableWidgetAcquisti.setItem(row_pos, 6, prezzo_item_stima)
+        self.ui.tableWidgetAcquisti.setItem(row_pos, 7, prezzo_item_acquisto)
 
         btn = QtWidgets.QPushButton("")
         btn.setIcon(QtGui.QIcon(":/icons/trash-2.svg"))
         btn.setToolTip("Rimuovi dal carrello")
         btn.clicked.connect(self.rimuovi_riga_button)
 
-        self.ui.tableWidgetAcquisti.setCellWidget(row_pos, 7, btn)
+        self.ui.tableWidgetAcquisti.setCellWidget(row_pos, 8, btn)
         self.aggiorna_totale()
 
     def aggiorna_totale(self, totale_da_pagare=None):
@@ -255,14 +258,15 @@ class AcquistiTabController(QObject):
 
                 insert_query = QtSql.QSqlQuery(self.db_main)
                 insert_query.prepare(f"""
-                    INSERT INTO {DBTables.PURCHASES.value} ({FieldsEnum.Barcode.value}, {FieldsEnum.Espansione_ID.value}, '{FieldsEnum.Espansione.value}', {FieldsEnum.Nome.value}, {FieldsEnum.Condizione.value}, {FieldsEnum.Prezzo.value}, {FieldsEnum.Data_Acquisto.value})
-                    VALUES (:barcode, :espansione_id, :espansione_nome, :nome, :condizione, :prezzo, :data)
+                    INSERT INTO {DBTables.PURCHASES.value} ({FieldsEnum.Barcode.value}, {FieldsEnum.Espansione_ID.value}, '{FieldsEnum.Espansione.value}', {FieldsEnum.Nome.value}, {FieldsEnum.Condizione.value}, {FieldsEnum.Lingua.value}, {FieldsEnum.Prezzo.value}, {FieldsEnum.Data_Acquisto.value})
+                    VALUES (:barcode, :espansione_id, :espansione_nome, :nome, :condizione, :lingua, :prezzo, :data)
                 """)
                 insert_query.bindValue(":barcode", barcode)
                 insert_query.bindValue(":espansione_id", row_data["ID Espansione"])
                 insert_query.bindValue(":espansione_nome", row_data["Nome Espansione"])
                 insert_query.bindValue(":nome", row_data["Nome"])
                 insert_query.bindValue(":condizione", row_data["Condizione"])
+                insert_query.bindValue(":lingua", row_data["Lingua"])
                 insert_query.bindValue(":prezzo", row_data["Prezzo acquisto"])
                 insert_query.bindValue(":data", acquisto_date)
                 if not insert_query.exec_():
@@ -287,8 +291,8 @@ class AcquistiTabController(QObject):
 
                 insert_stock_query = QtSql.QSqlQuery(self.db_main)
                 insert_stock_query.prepare(f"""
-                    INSERT INTO {DBTables.UNPRICED_CARDS.value} ({FieldsEnum.Barcode.value}, {FieldsEnum.ID_Carta.value}, {FieldsEnum.Espansione_ID.value}, '{FieldsEnum.Espansione.value}', {FieldsEnum.Nome.value}, {FieldsEnum.Condizione.value}, {FieldsEnum.Prezzo.value}, {FieldsEnum.Quantità.value}, {FieldsEnum.Prezzo_Acquisto.value}, {FieldsEnum.Da_Prezzare.value})
-                    VALUES (:barcode, :id, :espansione_id, :espansione_nome, :name, :condizione, :prezzo, 1, :prezzo_acquisto, 'Si')
+                    INSERT INTO {DBTables.UNPRICED_CARDS.value} ({FieldsEnum.Barcode.value}, {FieldsEnum.ID_Carta.value}, {FieldsEnum.Espansione_ID.value}, '{FieldsEnum.Espansione.value}', {FieldsEnum.Nome.value}, {FieldsEnum.Condizione.value}, {FieldsEnum.Lingua.value}, {FieldsEnum.Prezzo.value}, {FieldsEnum.Quantità.value}, {FieldsEnum.Prezzo_Acquisto.value}, {FieldsEnum.Da_Prezzare.value})
+                    VALUES (:barcode, :id, :espansione_id, :espansione_nome, :name, :condizione, :lingua, :prezzo, 1, :prezzo_acquisto, 'Si')
                 """)
                 insert_stock_query.bindValue(":barcode", barcode)
                 insert_stock_query.bindValue(":id", row_data["ID Cardmarket"])
@@ -300,6 +304,7 @@ class AcquistiTabController(QObject):
                 )
                 insert_stock_query.bindValue(":name", row_data["Nome"])
                 insert_stock_query.bindValue(":condizione", row_data["Condizione"])
+                insert_stock_query.bindValue(":lingua", row_data["Lingua"])
                 insert_stock_query.bindValue(
                     ":prezzo", float(row_data["Prezzo acquisto"])
                 )
@@ -364,6 +369,9 @@ class AcquistiTabController(QObject):
                     FieldsEnum.Condizione.value: self.ui.tableWidgetAcquisti.item(
                         row, get_column_index(self.ui.tableWidgetAcquisti, "Condizione")
                     ).text(),
+                    FieldsEnum.Lingua.value: self.ui.tableWidgetAcquisti.item(
+                        row, get_column_index(self.ui.tableWidgetAcquisti, "Lingua")
+                    ).text(),
                     FieldsEnum.Prezzo_Valutazione.value: self.ui.tableWidgetAcquisti.item(
                         row,
                         get_column_index(
@@ -420,6 +428,9 @@ class AcquistiTabController(QObject):
                 condizione_item = QtWidgets.QTableWidgetItem(
                     str(item.get(FieldsEnum.Condizione.value, "Mint"))
                 )
+                lingua_item = QtWidgets.QTableWidgetItem(
+                    str(item.get(FieldsEnum.Lingua.value, "Italiano"))
+                )
                 prezzo_item_valutazione = QtWidgets.QTableWidgetItem(
                     str(item.get(FieldsEnum.Prezzo_Valutazione.value, "0"))
                 )
@@ -439,15 +450,16 @@ class AcquistiTabController(QObject):
                 self.ui.tableWidgetAcquisti.setItem(row_pos, 2, espansione_nome_item)
                 self.ui.tableWidgetAcquisti.setItem(row_pos, 3, nome_item)
                 self.ui.tableWidgetAcquisti.setItem(row_pos, 4, condizione_item)
-                self.ui.tableWidgetAcquisti.setItem(row_pos, 5, prezzo_item_valutazione)
-                self.ui.tableWidgetAcquisti.setItem(row_pos, 6, prezzo_item_acquisto)
+                self.ui.tableWidgetAcquisti.setItem(row_pos, 5, lingua_item)
+                self.ui.tableWidgetAcquisti.setItem(row_pos, 6, prezzo_item_valutazione)
+                self.ui.tableWidgetAcquisti.setItem(row_pos, 7, prezzo_item_acquisto)
 
                 btn = QtWidgets.QPushButton("")
                 btn.setIcon(QtGui.QIcon(":/icons/trash-2.svg"))
                 btn.setToolTip("Rimuovi dal carrello")
                 btn.clicked.connect(self.rimuovi_riga_button)
 
-                self.ui.tableWidgetAcquisti.setCellWidget(row_pos, 7, btn)
+                self.ui.tableWidgetAcquisti.setCellWidget(row_pos, 8, btn)
             self.ui.tableWidgetAcquisti.blockSignals(True)
             self.aggiorna_totale(totale_da_pagare=float(dialog.totale))
             self.bozza = dialog.nome_bozza

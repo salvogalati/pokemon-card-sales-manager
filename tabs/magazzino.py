@@ -181,6 +181,7 @@ class MagazzinoTabController:
 
         filtro_ricerca = f"""
         {FieldsEnum.Espansione_ID.value} LIKE '%{testo_sicuro}%'
+        OR {FieldsEnum.ID_Cardmarket.value} LIKE '%{testo_sicuro}%'
         OR '{FieldsEnum.Espansione.value}' LIKE '%{testo_sicuro}%'
         OR {FieldsEnum.Nome.value} LIKE '%{testo_sicuro}%'
         OR {FieldsEnum.Barcode.value} LIKE '%{testo_sicuro}%'
@@ -298,8 +299,8 @@ class MagazzinoTabController:
 
             # 2. INSERT (solo nuove carte)
             insert_sql = f"""
-            INSERT INTO {DBTables.STOCK.value} ({FieldsEnum.Nome.value}, {FieldsEnum.ID_Cardmarket.value}, {FieldsEnum.Espansione_ID.value}, {FieldsEnum.Prezzo_Acquisto.value}, {FieldsEnum.Quantità.value}, {FieldsEnum.Condizione.value}, {FieldsEnum.Prezzo.value}, {FieldsEnum.Prezzo_Acquisto.value}, {FieldsEnum.Barcode.value})
-            SELECT {FieldsEnum.Nome.value}, {FieldsEnum.ID_Carta.value}, {FieldsEnum.Espansione_ID.value}, {FieldsEnum.Prezzo_Acquisto.value}, {FieldsEnum.Quantità.value}, {FieldsEnum.Condizione.value}, {FieldsEnum.Prezzo.value}, {FieldsEnum.Prezzo_Acquisto.value}, {FieldsEnum.Barcode.value}
+            INSERT INTO {DBTables.STOCK.value} ({FieldsEnum.Nome.value}, {FieldsEnum.ID_Cardmarket.value}, {FieldsEnum.Espansione_ID.value}, {FieldsEnum.Prezzo_Acquisto.value}, {FieldsEnum.Quantità.value}, {FieldsEnum.Condizione.value}, {FieldsEnum.Lingua.value}, {FieldsEnum.Prezzo.value}, {FieldsEnum.Prezzo_Acquisto.value}, {FieldsEnum.Barcode.value})
+            SELECT {FieldsEnum.Nome.value}, {FieldsEnum.ID_Carta.value}, {FieldsEnum.Espansione_ID.value}, {FieldsEnum.Prezzo_Acquisto.value}, {FieldsEnum.Quantità.value}, {FieldsEnum.Condizione.value}, {FieldsEnum.Lingua.value}, {FieldsEnum.Prezzo.value}, {FieldsEnum.Prezzo_Acquisto.value}, {FieldsEnum.Barcode.value}
             FROM {DBTables.UNPRICED_CARDS.value} u
             WHERE {FieldsEnum.Da_Prezzare.value} = 'No'
             AND NOT EXISTS (
@@ -394,3 +395,5 @@ class MagazzinoTabController:
                 "Errore Ripristino",
                 f"Errore durante il ripristino del database\nERRORE: {str(e)}",
             )
+            return False
+        return True

@@ -54,7 +54,7 @@ class VenditeTabController(QObject):
 
         self.ui.button_svuota_carrello.clicked.connect(self.svuota_carrello)
 
-        self.ui.tableWidget_carrello.setColumnCount(8)
+        self.ui.tableWidget_carrello.setColumnCount(9)
         self.ui.tableWidget_carrello.setHorizontalHeaderLabels(
             [
                 "Barcode",
@@ -62,6 +62,7 @@ class VenditeTabController(QObject):
                 "ID Espansione",
                 "Nome Espansione",
                 "Condizione",
+                "Lingua",
                 "Prezzo stock",
                 "Prezzo di vendita",
                 " ",
@@ -141,6 +142,9 @@ class VenditeTabController(QObject):
         condizione = self.model.data(
             self.model.index(row, self.model.fieldIndex(FieldsEnum.Condizione.value))
         )
+        lingua = self.model.data(
+            self.model.index(row, self.model.fieldIndex(FieldsEnum.Lingua.value))
+        )
         prezzo_stock = self.model.data(
             self.model.index(row, self.model.fieldIndex(FieldsEnum.Prezzo.value))
         )
@@ -170,6 +174,7 @@ class VenditeTabController(QObject):
         espansione_nome_item = QtWidgets.QTableWidgetItem(str(espansione_nome))
         nome_item = QtWidgets.QTableWidgetItem(str(nome))
         condizione_item = QtWidgets.QTableWidgetItem(str(condizione))
+        lingua_item = QtWidgets.QTableWidgetItem(str(lingua))
         prezzo_item = QtWidgets.QTableWidgetItem(str(prezzo_stock))
         prezzo_vendita_item = QtWidgets.QTableWidgetItem(str(prezzo_stock))
         # ID NON editabile
@@ -186,15 +191,16 @@ class VenditeTabController(QObject):
         self.ui.tableWidget_carrello.setItem(row_pos, 2, espansione_id_item)
         self.ui.tableWidget_carrello.setItem(row_pos, 3, espansione_nome_item)
         self.ui.tableWidget_carrello.setItem(row_pos, 4, condizione_item)
-        self.ui.tableWidget_carrello.setItem(row_pos, 5, prezzo_item)
-        self.ui.tableWidget_carrello.setItem(row_pos, 6, prezzo_vendita_item)
+        self.ui.tableWidget_carrello.setItem(row_pos, 5, lingua_item)
+        self.ui.tableWidget_carrello.setItem(row_pos, 6, prezzo_item)
+        self.ui.tableWidget_carrello.setItem(row_pos, 7, prezzo_vendita_item)
 
         # Pulsante rimuovi
         btn = QtWidgets.QPushButton("")
         btn.setIcon(QtGui.QIcon(":/icons/trash-2.svg"))
         btn.setToolTip("Rimuovi dal carrello")
         btn.clicked.connect(self.rimuovi_riga_button)
-        self.ui.tableWidget_carrello.setCellWidget(row_pos, 7, btn)
+        self.ui.tableWidget_carrello.setCellWidget(row_pos, 8, btn)
 
         self.aggiorna_totale()
 
@@ -331,6 +337,9 @@ class VenditeTabController(QObject):
                 condizione = self.ui.tableWidget_carrello.item(
                     row, get_column_index(self.ui.tableWidget_carrello, "Condizione")
                 ).text()
+                lingua = self.ui.tableWidget_carrello.item(
+                    row, get_column_index(self.ui.tableWidget_carrello, "Lingua")
+                ).text()
                 prezzo_stock = float(
                     self.ui.tableWidget_carrello.item(
                         row,
@@ -352,8 +361,8 @@ class VenditeTabController(QObject):
                 # INSERT vendita
                 insert_query = QtSql.QSqlQuery(self.db_main)
                 insert_query.prepare(f"""
-                    INSERT INTO {DBTables.SALES.value} ({FieldsEnum.Barcode.value}, {FieldsEnum.Espansione_ID.value}, '{FieldsEnum.Espansione.value}', {FieldsEnum.Nome.value}, {FieldsEnum.Condizione.value}, {FieldsEnum.Prezzo.value}, {FieldsEnum.Prezzo_Vendita.value}, {FieldsEnum.Data_Vendita.value})
-                    VALUES (:barcode, :espansione_id, :espansione_nome, :nome, :condizione, :ps, :pv, :date)
+                    INSERT INTO {DBTables.SALES.value} ({FieldsEnum.Barcode.value}, {FieldsEnum.Espansione_ID.value}, '{FieldsEnum.Espansione.value}', {FieldsEnum.Nome.value}, {FieldsEnum.Condizione.value}, {FieldsEnum.Lingua.value}, {FieldsEnum.Prezzo.value}, {FieldsEnum.Prezzo_Vendita.value}, {FieldsEnum.Data_Vendita.value})
+                    VALUES (:barcode, :espansione_id, :espansione_nome, :nome, :condizione, :lingua, :ps, :pv, :date)
                 """)
 
                 insert_query.bindValue(":barcode", barcode)
@@ -361,6 +370,7 @@ class VenditeTabController(QObject):
                 insert_query.bindValue(":espansione_nome", espansione_nome)
                 insert_query.bindValue(":nome", nome)
                 insert_query.bindValue(":condizione", condizione)
+                insert_query.bindValue(":lingua", lingua)
                 insert_query.bindValue(":ps", prezzo_stock)
                 insert_query.bindValue(":pv", prezzo_vendita)
                 insert_query.bindValue(":date", sell_date)
